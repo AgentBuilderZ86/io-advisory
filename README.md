@@ -15,6 +15,7 @@ sur GitHub Pages. Les outils sont 100 % statiques (HTML/CSS/JS, aucune dépendan
 index.html                        ← Hub de la mission (+ sauvegarde/restauration JSON)
 tools/
   executive-story.html            ← Premium : narration plein écran CODIR (10 slides) + export deck PDF
+  corpgpt.html                    ← Premium : assistant IA conversationnel (RAG local sur la base mission)
   jumeau-usine.html               ← Premium : jumeau visuel de la sucrerie, UC cartographiés sur les équipements
   monte-carlo.html                ← Premium : simulation probabiliste du portefeuille (P10/P50/P90)
   acculturation.html              ← Phase 1 : séminaire C-Level, 50 Champions (3 cohortes × 6 modules), 1-to-1, com
@@ -98,6 +99,13 @@ Le module **`tools/conformite.html`** centralise les aspects de conformité, tra
   pour le CODIR : 10 slides (mandat, diagnostic, potentiel, funnel, roadmap, ROI, CoE,
   conformité, vision) avec animations, navigation clavier/tactile, lecture auto, plein écran
   et **export du deck en PDF** (impression navigateur).
+- **CorpGPT** (`tools/corpgpt.html`) — l'assistant conversationnel de la mission, **embarqué
+  dans le portail** (« vendre l'IA avec de l'IA »). Moteur de **RAG local** : recherche par
+  mots-clés sur une base de ~25 entrées (mission, phases, 10 use cases, roadmap & budgets, ROI,
+  conformité, CoE, Charte, benchmark, équipe), réponses **avec sources citées**, suggestions,
+  effet de frappe, historique persisté. Bandeau garde-fous : souveraineté 🇲🇦, RAG maîtrisé,
+  human-in-the-loop, confidentialité. *(Démo 100 % locale, sans LLM/back-end ; en production :
+  RAG souverain sur la base documentaire Cosumar avec supervision humaine.)*
 - **Jumeau visuel de l'usine** (`tools/jumeau-usine.html`) — schéma interactif de la
   sucrerie (amont agricole, ligne de production diffusion→centrifugation, énergie & vapeur,
   stockage/expédition, administration, logistique). Chaque use case s'allume sur l'équipement
