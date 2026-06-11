@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roadmap Builder — Sia × Cosumar</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/sia.css">
+<style>
+.wave-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:start}
+.wave{border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);background:#fff;min-height:200px}
+.wave-head{padding:16px 18px;color:#fff}
+.w1 .wave-head{background:linear-gradient(135deg,var(--teal),var(--teal-dark))}
+.w2 .wave-head{background:linear-gradient(135deg,var(--navy2),var(--navy))}
+.w3 .wave-head{background:linear-gradient(135deg,var(--navy),var(--navy-dark))}
+.wave-head .wt{font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem}
+.wave-head .wp{font-size:.76rem;opacity:.85;margin-top:2px}
+.wave-head .wb{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;margin-top:9px}
+.wave-head .wbl{font-size:.7rem;opacity:.8}
+.wave-body{padding:12px;display:flex;flex-direction:column;gap:9px;min-height:80px}
+.uc-card{background:var(--cream);border:1px solid var(--line);border-left:4px solid var(--navy2);border-radius:9px;padding:11px 13px;cursor:grab;transition:.15s}
+.uc-card:hover{box-shadow:var(--shadow)}
+.uc-card.dragging{opacity:.4}
+.uc-card .ucn{font-weight:700;font-size:.84rem;color:var(--navy-dark)}
+.uc-card .ucm{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center}
+.uc-card .ucb{font-weight:700;color:var(--teal-dark);font-size:.78rem;margin-left:auto}
+.wave-body.dropok{outline:2px dashed var(--teal);outline-offset:-4px;background:rgba(0,168,150,.04)}
+.dir-budget td:first-child{font-weight:600;color:var(--navy-dark)}
+.stack{display:flex;height:30px;border-radius:8px;overflow:hidden;border:1px solid var(--line);margin-top:6px}
+.stack-seg{display:flex;align-items:center;justify-content:center;color:#fff;font-size:.7rem;font-weight:700;min-width:0}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="brand-dot"></span><span class="brand-name">Sia<b>·</b>Cosumar</span><span class="brand-sub">Roadmap Builder</span></div>
+  <nav class="topnav">
+    <a href="../index.html" class="home">← Hub</a>
+    <a href="dashboard-copil.html">COPIL</a>
+    <a href="dashboard-entretiens.html">Entretiens</a>
+    <a href="use-cases-ia.html">Use Cases</a>
+    <a href="roadmap-builder.html" class="active">Roadmap</a>
+    <a href="simulateur-coe.html">CoE</a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="flex between center wrap-f">
+      <div><div class="eyebrow">🗺️ Phase 3 · Roadmap</div>
+      <h1 class="page-title">Roadmap IA — 3 vagues</h1></div>
+      <div class="flex gap"><button class="btn ghost sm" onclick="resetRoadmap()">↺ Réinitialiser</button><button class="btn teal" onclick="exportRoadmap()">⬇ Export CSV</button></div>
+    </div>
+    <p class="page-sub">Glissez-déposez les use cases entre les vagues pour construire la trajectoire. Budgets recalculés en temps réel par vague et par direction.</p>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi teal"><div class="kpi-val" id="k-tot">—</div><div class="kpi-label">Budget total (médian)</div></div>
+    <div class="kpi navy"><div class="kpi-val">10</div><div class="kpi-label">Use cases</div></div>
+    <div class="kpi gold"><div class="kpi-val">8</div><div class="kpi-label">Directions</div></div>
+    <div class="kpi"><div class="kpi-val">36</div><div class="kpi-label">Mois d'horizon</div></div>
+  </div>
+
+  <div class="wave-cols" id="waves"></div>
+
+  <div class="grid-2 mt">
+    <div class="panel"><div class="panel-head"><h3>Budget par direction</h3><span class="ph-sub">médian, K MAD</span></div><div class="panel-pad"><div class="tbl-scroll"><table class="tbl dir-budget"><thead><tr><th>Direction</th><th>V1</th><th>V2</th><th>V3</th><th>Total</th></tr></thead><tbody id="dir-body"></tbody></table></div></div></div>
+    <div class="panel"><div class="panel-head"><h3>Répartition budgétaire par vague</h3></div><div class="panel-pad" id="wave-split"></div></div>
+  </div>
+</div>
+
+<footer class="sia-foot"><div><b>Sia × Cosumar</b> · Roadmap Builder</div><div>0-12m · 12-24m · 24-36m</div></footer>
+<div id="toast"></div>
+<script src="../assets/sia.js"></script>
+<script>
+const DEFAULT=[
+ {id:1,name:"Maintenance prédictive turbines",dir:"Industrielle",b:200,app:"Build",w:2},
+ {id:2,name:"Optimisation process sucrier",dir:"Industrielle",b:300,app:"Build",w:3},
+ {id:3,name:"Prévision récolte satellite",dir:"Amont Agricole",b:400,app:"Buy",w:3},
+ {id:4,name:"Demand forecasting sucre",dir:"Supply Chain",b:150,app:"Buy",w:1},
+ {id:5,name:"OCR factures fournisseurs",dir:"Financière",b:75,app:"Buy",w:1},
+ {id:6,name:"Chatbot RH CorpGPT",dir:"RH",b:115,app:"Build",w:1},
+ {id:7,name:"Détection anomalies énergie",dir:"Industrielle",b:150,app:"Build",w:1},
+ {id:8,name:"Analyse contrats NLP",dir:"Juridique",b:100,app:"Buy",w:2},
+ {id:9,name:"People analytics & turnover",dir:"RH",b:160,app:"Build",w:3},
+ {id:10,name:"Route optimization livraisons",dir:"Supply Chain",b:225,app:"Buy",w:2},
+];
+const WAVES={1:{t:"Vague 1 — Quick Wins",p:"0-12 mois",cls:"w1"},2:{t:"Vague 2 — Structurants",p:"12-24 mois",cls:"w2"},3:{t:"Vague 3 — Transformants",p:"24-36 mois",cls:"w3"}};
+const directions=["Industrielle","Amont Agricole","Supply Chain","Financière","RH","Juridique"];
+const appChip={Build:'navy',Buy:'teal',Borrow:'gold',Bot:'amber'};
+const waveColor={1:'var(--teal)',2:'var(--navy2)',3:'var(--navy-dark)'};
+let UC=[];
+function load(){ UC=JSON.parse(JSON.stringify(store.get('roadmap.uc',DEFAULT))); }
+function save(){ store.set('roadmap.uc',UC); }
+
+function render(){
+  let h='';
+  [1,2,3].forEach(w=>{
+    const items=UC.filter(u=>u.w===w), bud=items.reduce((a,u)=>a+u.b,0);
+    h+=`<div class="wave ${WAVES[w].cls}"><div class="wave-head"><div class="wt">${WAVES[w].t}</div><div class="wp">${WAVES[w].p}</div><div class="wb">${fmtK(bud*1000)} MAD</div><div class="wbl">${items.length} use case${items.length>1?'s':''}</div></div><div class="wave-body" data-wave="${w}" ondragover="allow(event)" ondragleave="leave(event)" ondrop="drop(event,${w})">`;
+    items.forEach(u=>{ h+=`<div class="uc-card" draggable="true" ondragstart="dragStart(event,${u.id})" ondragend="dragEnd(event)"><div class="ucn">${u.name}</div><div class="ucm"><span class="chip navy" style="font-size:.68rem">${u.dir}</span><span class="chip ${appChip[u.app]}" style="font-size:.68rem">${u.app}</span><span class="ucb">${u.b}K</span></div></div>`; });
+    if(!items.length) h+='<div class="muted tac" style="padding:18px;font-size:.8rem">Déposez un UC ici</div>';
+    h+='</div></div>';
+  });
+  document.getElementById('waves').innerHTML=h;
+  // totals
+  const tot=UC.reduce((a,u)=>a+u.b,0);
+  document.getElementById('k-tot').textContent=fmtK(tot*1000)+' MAD';
+  // by direction
+  let db='';
+  directions.forEach(d=>{ const a=UC.filter(u=>u.dir===d);
+    const v1=a.filter(u=>u.w===1).reduce((x,u)=>x+u.b,0),v2=a.filter(u=>u.w===2).reduce((x,u)=>x+u.b,0),v3=a.filter(u=>u.w===3).reduce((x,u)=>x+u.b,0);
+    if(a.length) db+=`<tr><td>${d}</td><td>${v1||'—'}</td><td>${v2||'—'}</td><td>${v3||'—'}</td><td><b>${v1+v2+v3}K</b></td></tr>`;
+  });
+  document.getElementById('dir-body').innerHTML=db;
+  // wave split stacked
+  let ws='';
+  [1,2,3].forEach(w=>{ const b=UC.filter(u=>u.w===w).reduce((a,u)=>a+u.b,0);
+    ws+=`<div class="mb"><div class="flex between" style="margin-bottom:2px"><span style="font-weight:600;font-size:.85rem;color:var(--navy-dark)">${WAVES[w].t}</span><span class="muted" style="font-size:.8rem">${b}K · ${tot?Math.round(b/tot*100):0}%</span></div><div class="bar"><span style="width:${tot?b/tot*100:0}%;background:${waveColor[w]}"></span></div></div>`;
+  });
+  ws+='<div class="divider"></div><div class="stack">';
+  ['Build','Buy','Borrow','Bot'].forEach(app=>{ const b=UC.filter(u=>u.app===app).reduce((a,u)=>a+u.b,0); if(b) ws+=`<div class="stack-seg" style="width:${b/tot*100}%;background:${app==='Build'?'var(--navy)':app==='Buy'?'var(--teal)':'var(--gold)'}" title="${app}: ${b}K">${app} ${b}K</div>`; });
+  ws+='</div><div class="muted tac" style="font-size:.74rem;margin-top:6px">Répartition Build / Buy</div>';
+  document.getElementById('wave-split').innerHTML=ws;
+  save();
+}
+let dragId=null;
+function dragStart(e,id){ dragId=id; e.target.classList.add('dragging'); }
+function dragEnd(e){ e.target.classList.remove('dragging'); }
+function allow(e){ e.preventDefault(); e.currentTarget.classList.add('dropok'); }
+function leave(e){ e.currentTarget.classList.remove('dropok'); }
+function drop(e,w){ e.preventDefault(); e.currentTarget.classList.remove('dropok'); const u=UC.find(x=>x.id===dragId); if(u){ u.w=w; render(); toast(u.name+' → '+WAVES[w].t); } }
+function resetRoadmap(){ store.set('roadmap.uc',DEFAULT); load(); render(); toast('Roadmap réinitialisée'); }
+function exportRoadmap(){
+  const rows=[["ID","Use Case","Direction","Approche","Vague","Horizon","Budget médian K MAD"]];
+  UC.sort((a,b)=>a.w-b.w||a.id-b.id).forEach(u=>rows.push([u.id,u.name,u.dir,u.app,"V"+u.w,WAVES[u.w].p,u.b]));
+  rows.push([]); rows.push(["","","","","","TOTAL",UC.reduce((a,u)=>a+u.b,0)]);
+  downloadCSV('Cosumar_Roadmap_IA.csv',rows);
+}
+load();render();
+</script>
+</body>
+</html>

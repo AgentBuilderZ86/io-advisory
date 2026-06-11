@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Use Cases IA — Sia × Cosumar</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/sia.css">
+<style>
+.uc-layout{display:grid;grid-template-columns:340px 1fr;gap:22px;align-items:start}
+.uc-list{display:flex;flex-direction:column;gap:9px;max-height:78vh;overflow:auto;padding-right:4px}
+.uc-item{background:#fff;border:1px solid var(--line);border-left:4px solid var(--navy2);border-radius:11px;padding:13px 15px;cursor:pointer;transition:.18s;box-shadow:var(--shadow)}
+.uc-item:hover{transform:translateX(3px)}
+.uc-item.active{border-left-color:var(--teal);background:rgba(0,168,150,.05);box-shadow:var(--shadow-lg)}
+.uc-item .un{font-weight:700;font-size:.88rem;color:var(--navy-dark);line-height:1.25}
+.uc-item .umeta{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap}
+.uc-item .uscore{float:right;font-family:'Syne',sans-serif;font-weight:800;color:var(--teal-dark)}
+.detail-head{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-start}
+.radar-wrap{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.gauge{text-align:center}
+.gauge svg{transform:rotate(-90deg)}
+.gauge .gv{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;fill:var(--navy-dark)}
+.axis-row{display:flex;align-items:center;gap:12px;margin-bottom:11px}
+.axis-row .al{width:150px;font-size:.82rem;font-weight:600;color:var(--navy-dark)}
+.axis-row .bar{flex:1}
+.axis-row .av{width:34px;text-align:right;font-weight:700;font-size:.82rem;color:var(--muted)}
+.gng{padding:7px 16px;border-radius:10px;font-weight:800;font-family:'Syne',sans-serif;font-size:.95rem}
+.gng.go{background:rgba(39,174,96,.14);color:#1d7a44}
+.gng.cond{background:rgba(229,165,10,.18);color:#9a7308}
+.gng.no{background:rgba(224,84,78,.14);color:#b13b36}
+.funnel{display:flex;flex-direction:column;gap:4px;align-items:center;margin:10px 0}
+.funnel-stage{color:#fff;font-weight:700;padding:13px;border-radius:9px;text-align:center;width:100%;transition:.3s}
+.f1{background:var(--navy-dark);width:100%}.f2{background:var(--navy2);width:75%}.f3{background:var(--teal);width:50%}
+.funnel-arrow{color:var(--muted);font-size:1rem}
+.risk-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.risk-item:last-child{border:none}
+.risk-item .ri-sev{width:8px;border-radius:5px;flex-shrink:0}
+.mini-card{background:var(--cream);border:1px solid var(--line);border-radius:11px;padding:14px 16px}
+.mini-card .ml{font-size:.74rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.mini-card .mv{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;color:var(--navy-dark);margin-top:4px}
+@media(max-width:880px){.uc-layout{grid-template-columns:1fr}.uc-list{max-height:none}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="brand-dot"></span><span class="brand-name">Sia<b>·</b>Cosumar</span><span class="brand-sub">Use Cases IA</span></div>
+  <nav class="topnav">
+    <a href="../index.html" class="home">← Hub</a>
+    <a href="dashboard-copil.html">COPIL</a>
+    <a href="dashboard-entretiens.html">Entretiens</a>
+    <a href="use-cases-ia.html" class="active">Use Cases</a>
+    <a href="roadmap-builder.html">Roadmap</a>
+    <a href="simulateur-coe.html">CoE</a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="eyebrow">💡 Phase 3 · Qualification</div>
+    <h1 class="page-title">Analyse & qualification des Use Cases IA</h1>
+    <p class="page-sub">10 use cases pré-chargés. Pour chacun : prérequis (5 axes), valeur/ROI, risques & de-risking, position dans le funnel 3 filtres, fiche projet et décision Go/No-Go.</p>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi navy"><div class="kpi-val">10</div><div class="kpi-label">UC qualifiés</div></div>
+    <div class="kpi teal"><div class="kpi-val" id="k-go">—</div><div class="kpi-label">Go / Conditionnels</div></div>
+    <div class="kpi gold"><div class="kpi-val" id="k-budget">—</div><div class="kpi-label">Budget cumulé (médian)</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-v1">—</div><div class="kpi-label">UC en Vague 1</div></div>
+  </div>
+
+  <div class="uc-layout">
+    <div class="uc-list" id="uc-list"></div>
+    <div class="panel" id="uc-detail"></div>
+  </div>
+</div>
+
+<footer class="sia-foot"><div><b>Sia × Cosumar</b> · Use Cases IA</div><div>Build / Buy / Borrow / Bot · Confidentiel</div></footer>
+<div id="toast"></div>
+<script src="../assets/sia.js"></script>
+<script>
+// 5 axes prérequis: Data, Tech/SI, Compétences, Sponsor, Conformité (0-100)
+const UC=[
+ {id:1,name:"Maintenance prédictive turbines",dir:"Industrielle",fam:"ML & Predictive",vague:"V2",budget:"150-250K MAD",bmid:200,app:"Build",
+  prereq:{Données:75,"Tech / SI":70,Compétences:55,Sponsor:85,Conformité:90},
+  value:{roi:"+18% dispo. équipements",payback:"14 mois",gain:"Réduction arrêts non planifiés -30%"},
+  risks:[{r:"Historique capteurs IoT incomplet",s:"med",m:"Instrumentation complémentaire + 6 mois de collecte"},{r:"Faux positifs alertes",s:"low",m:"Seuils calibrés avec experts maintenance"}],
+  desc:"Modèles prédictifs sur signaux vibratoires/thermiques des turbines de la sucrerie pour anticiper les pannes et planifier la maintenance."},
+ {id:2,name:"Optimisation process sucrier",dir:"Industrielle",fam:"Prescriptive",vague:"V3",budget:"200-400K MAD",bmid:300,app:"Build",
+  prereq:{Données:60,"Tech / SI":65,Compétences:45,Sponsor:75,Conformité:85},
+  value:{roi:"+2 pts rendement extraction",payback:"22 mois",gain:"Optimisation diffusion / cristallisation"},
+  risks:[{r:"Complexité modèle physico-chimique",s:"high",m:"POC ciblé sur une étape, jumeau numérique progressif"},{r:"Intégration MES Qubes",s:"med",m:"API MES + couche d'orchestration"}],
+  desc:"IA prescriptive pour optimiser en continu les paramètres du procédé sucrier (température, débit, pH) et maximiser le rendement."},
+ {id:3,name:"Prévision récolte satellite",dir:"Amont Agricole",fam:"ML & Predictive",vague:"V3",budget:"300-500K MAD",bmid:400,app:"Buy",
+  prereq:{Données:55,"Tech / SI":50,Compétences:50,Sponsor:70,Conformité:80},
+  value:{roi:"Planning broyage optimisé",payback:"24 mois",gain:"Prévision tonnage betterave/canne ±8%"},
+  risks:[{r:"Dépendance fournisseur imagerie",s:"med",m:"Cadre Buy + clause réversibilité"},{r:"Couverture parcellaire hétérogène",s:"med",m:"Cartographie SIG préalable"}],
+  desc:"Estimation des rendements agricoles par télédétection satellite et ML, pour planifier l'approvisionnement des sucreries."},
+ {id:4,name:"Demand forecasting sucre",dir:"Supply Chain",fam:"ML & Predictive",vague:"V1",budget:"100-200K MAD",bmid:150,app:"Buy",
+  prereq:{Données:80,"Tech / SI":75,Compétences:60,Sponsor:80,Conformité:90},
+  value:{roi:"-15% coûts de stock",payback:"9 mois",gain:"Précision prévision demande +25%"},
+  risks:[{r:"Saisonnalité forte / ramadan",s:"low",m:"Features calendaires & événementielles"},{r:"Intégration SAP IBP",s:"low",m:"Connecteur natif IBP"}],
+  desc:"Prévision de la demande sucre (B2B/B2C) intégrée à SAP IBP pour réduire ruptures et surstocks."},
+ {id:5,name:"OCR factures fournisseurs",dir:"Financière",fam:"Cognitive Automation",vague:"V1",budget:"50-100K MAD",bmid:75,app:"Buy",
+  prereq:{Données:85,"Tech / SI":80,Compétences:70,Sponsor:75,Conformité:85},
+  value:{roi:"-70% temps de saisie",payback:"6 mois",gain:"~12 000 factures/an automatisées"},
+  risks:[{r:"Formats fournisseurs variés",s:"low",m:"OCR + validation human-in-the-loop"},{r:"Conformité archivage légal",s:"low",m:"Coffre-fort numérique conforme"}],
+  desc:"Extraction automatique des données de factures (OCR/IDP) et rapprochement avec SAP MM/FI pour fluidifier le P2P."},
+ {id:6,name:"Chatbot RH CorpGPT",dir:"RH",fam:"GenAI & LLMs",vague:"V1",budget:"80-150K MAD",bmid:115,app:"Build",
+  prereq:{Données:65,"Tech / SI":70,Compétences:55,Sponsor:85,Conformité:60},
+  value:{roi:"-40% tickets RH niveau 1",payback:"11 mois",gain:"Assistant RH 24/7 multilingue (FR/AR)"},
+  risks:[{r:"Hallucinations LLM",s:"med",m:"RAG sur base documentaire RH + garde-fous"},{r:"Données personnelles CNDP",s:"high",m:"Hébergement souverain, anonymisation, human-in-the-loop"}],
+  desc:"Assistant conversationnel (CorpGPT) répondant aux questions RH des collaborateurs à partir des politiques internes, en RAG."},
+ {id:7,name:"Détection anomalies énergie",dir:"Industrielle",fam:"Analytical AI",vague:"V1",budget:"100-200K MAD",bmid:150,app:"Build",
+  prereq:{Données:78,"Tech / SI":72,Compétences:55,Sponsor:78,Conformité:88},
+  value:{roi:"-8% facture énergétique",payback:"10 mois",gain:"Détection dérives consommation temps réel"},
+  risks:[{r:"Granularité comptage énergie",s:"med",m:"Sous-comptage ciblé sur postes clés"},{r:"Bruit signaux",s:"low",m:"Modèles robustes + lissage"}],
+  desc:"Détection d'anomalies de consommation énergétique (vapeur, électricité) pour réduire les gaspillages industriels."},
+ {id:8,name:"Analyse contrats NLP",dir:"Juridique",fam:"GenAI & LLMs",vague:"V2",budget:"80-120K MAD",bmid:100,app:"Buy",
+  prereq:{Données:60,"Tech / SI":65,Compétences:50,Sponsor:65,Conformité:70},
+  value:{roi:"-50% temps de revue contrats",payback:"15 mois",gain:"Extraction clauses & échéances"},
+  risks:[{r:"Confidentialité contrats",s:"high",m:"LLM en environnement souverain, accès restreint"},{r:"Précision juridique",s:"med",m:"Validation juriste systématique"}],
+  desc:"Analyse NLP des contrats fournisseurs/clients : extraction de clauses, échéances, risques, et synthèse assistée."},
+ {id:9,name:"People analytics & turnover",dir:"RH",fam:"ML & Predictive",vague:"V3",budget:"120-200K MAD",bmid:160,app:"Build",
+  prereq:{Données:58,"Tech / SI":62,Compétences:48,Sponsor:70,Conformité:50},
+  value:{roi:"-12% turnover ciblé",payback:"20 mois",gain:"Identification facteurs de départ"},
+  risks:[{r:"Biais & équité (discrimination)",s:"high",m:"Audit de biais, exclusion variables sensibles, charte IA"},{r:"Acceptabilité sociale",s:"high",m:"Dialogue social, transparence, opt-in"}],
+  desc:"Modèles prédictifs des risques de turnover et analyse des facteurs RH, dans un cadre éthique strict."},
+ {id:10,name:"Route optimization livraisons",dir:"Supply Chain",fam:"Prescriptive",vague:"V2",budget:"150-300K MAD",bmid:225,app:"Buy",
+  prereq:{Données:70,"Tech / SI":68,Compétences:52,Sponsor:72,Conformité:85},
+  value:{roi:"-14% coûts transport",payback:"16 mois",gain:"Optimisation tournées & taux de remplissage"},
+  risks:[{r:"Qualité données géo/clients",s:"med",m:"Nettoyage référentiel adresses"},{r:"Adoption chauffeurs",s:"med",m:"App mobile simple + conduite du changement"}],
+  desc:"Optimisation prescriptive des tournées de livraison sucre pour réduire les coûts logistiques et l'empreinte carbone."},
+];
+
+function prereqScore(p){ const v=Object.values(p); return Math.round(v.reduce((a,b)=>a+b,0)/v.length); }
+function decision(uc){ const s=prereqScore(uc.prereq); const hasHigh=uc.risks.some(r=>r.s==='high');
+  if(s>=72 && !hasHigh) return{k:'go',t:'GO'};
+  if(s>=55) return{k:'cond',t:'GO CONDITIONNEL'};
+  return{k:'no',t:'NO-GO (à reconsidérer)'};
+}
+const sevColor={high:'#E0544E',med:'#E5A50A',low:'#27AE60'};
+const sevLabel={high:'Élevé',med:'Moyen',low:'Faible'};
+const appChip={Build:'navy',Buy:'teal',Borrow:'gold',Bot:'amber'};
+
+function renderList(){
+  let h='';
+  UC.forEach((uc,i)=>{ const s=prereqScore(uc.prereq);
+    h+=`<div class="uc-item ${i===sel?'active':''}" onclick="select(${i})"><span class="uscore">${s}</span><div class="un">${uc.id}. ${uc.name}</div><div class="umeta"><span class="chip navy">${uc.dir}</span><span class="chip ${appChip[uc.app]}">${uc.app}</span><span class="chip">${uc.vague}</span></div></div>`;
+  });
+  document.getElementById('uc-list').innerHTML=h;
+}
+let sel=0;
+function select(i){ sel=i; renderList(); renderDetail(); }
+
+function gauge(score){
+  const r=46,c=2*Math.PI*r,off=c*(1-score/100);
+  const col=score>=72?'#27AE60':score>=55?'#E5A50A':'#E0544E';
+  return `<div class="gauge"><svg width="120" height="120" viewBox="0 0 120 120"><circle cx="60" cy="60" r="${r}" fill="none" stroke="#E6ECF4" stroke-width="11"/><circle cx="60" cy="60" r="${r}" fill="none" stroke="${col}" stroke-width="11" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}"/><text x="60" y="60" text-anchor="middle" dominant-baseline="central" class="gv" transform="rotate(90 60 60)">${score}</text></svg><div class="muted" style="font-size:.76rem;margin-top:2px">Prérequis global</div></div>`;
+}
+function renderDetail(){
+  const uc=UC[sel], s=prereqScore(uc.prereq), dec=decision(uc);
+  let axes='';
+  Object.entries(uc.prereq).forEach(([k,v])=>{ const col=v>=70?'var(--teal)':v>=55?'var(--gold)':'var(--red)';
+    axes+=`<div class="axis-row"><span class="al">${k}</span><div class="bar"><span style="width:${v}%;background:${col}"></span></div><span class="av">${v}</span></div>`; });
+  let risks='';
+  uc.risks.forEach(rk=>{ risks+=`<div class="risk-item"><div class="ri-sev" style="background:${sevColor[rk.s]}"></div><div><div style="font-weight:600;color:var(--navy-dark);font-size:.86rem">${rk.r} <span class="chip ${rk.s==='high'?'red':rk.s==='med'?'amber':'green'}" style="margin-left:6px">${sevLabel[rk.s]}</span></div><div class="muted" style="font-size:.8rem;margin-top:3px">🛡️ De-risking : ${rk.m}</div></div></div>`; });
+  document.getElementById('uc-detail').innerHTML=`
+   <div class="panel-pad">
+    <div class="detail-head">
+      <div><div class="eyebrow" style="margin-bottom:8px">${uc.fam}</div><h2 style="font-size:1.35rem;color:var(--navy-dark)">${uc.id}. ${uc.name}</h2><div class="flex gap wrap-f" style="margin-top:9px"><span class="chip navy">${uc.dir}</span><span class="chip ${appChip[uc.app]}">${uc.app}</span><span class="chip teal">${uc.vague}</span><span class="chip gold">${uc.budget}</span></div></div>
+      <div class="gng ${dec.k}">${dec.t}</div>
+    </div>
+    <p class="muted mt" style="line-height:1.6">${uc.desc}</p>
+    <div class="divider"></div>
+    <h3 style="font-size:1rem;color:var(--navy-dark);margin-bottom:14px">Analyse des prérequis — 5 axes</h3>
+    <div class="radar-wrap"><div style="flex:1;min-width:280px">${axes}</div>${gauge(s)}</div>
+    <div class="divider"></div>
+    <h3 style="font-size:1rem;color:var(--navy-dark);margin-bottom:12px">Valeur & ROI</h3>
+    <div class="grid-3"><div class="mini-card"><div class="ml">ROI attendu</div><div class="mv">${uc.value.roi}</div></div><div class="mini-card"><div class="ml">Payback</div><div class="mv">${uc.value.payback}</div></div><div class="mini-card"><div class="ml">Gain clé</div><div class="mv" style="font-size:.92rem">${uc.value.gain}</div></div></div>
+    <div class="divider"></div>
+    <h3 style="font-size:1rem;color:var(--navy-dark);margin-bottom:8px">Risques & de-risking</h3>${risks}
+    <div class="divider"></div>
+    <div class="grid-2">
+      <div><h3 style="font-size:1rem;color:var(--navy-dark);margin-bottom:12px">Funnel 3 filtres</h3>
+        <div class="funnel">
+          <div class="funnel-stage f1">① Présélection collaborative ✓</div><div class="funnel-arrow">▼</div>
+          <div class="funnel-stage f2">② Qualification technique / ROI ✓</div><div class="funnel-arrow">▼</div>
+          <div class="funnel-stage f3">③ Priorisation COPIL → ${uc.vague}</div>
+        </div></div>
+      <div><h3 style="font-size:1rem;color:var(--navy-dark);margin-bottom:12px">Fiche projet — décision</h3>
+        <div class="mini-card" style="background:#fff"><table class="tbl" style="font-size:.82rem"><tbody>
+        <tr><td class="muted">Approche</td><td><b>${uc.app}</b> — ${({Build:'développement interne',Buy:'solution éditeur',Borrow:'partenaire/API',Bot:'automatisation'})[uc.app]}</td></tr>
+        <tr><td class="muted">Budget</td><td><b>${uc.budget}</b></td></tr>
+        <tr><td class="muted">Vague roadmap</td><td><b>${uc.vague}</b> — ${({V1:'0-12m Quick Win',V2:'12-24m Structurant',V3:'24-36m Transformant'})[uc.vague]}</td></tr>
+        <tr><td class="muted">Score prérequis</td><td><span class="scorebox">${s}/100</span></td></tr>
+        <tr><td class="muted">Recommandation</td><td><span class="chip ${dec.k==='go'?'green':dec.k==='cond'?'amber':'red'}">${dec.t}</span></td></tr>
+        </tbody></table></div></div>
+    </div>
+   </div>`;
+}
+function renderKPIs(){
+  const go=UC.filter(u=>decision(u).k!=='no').length;
+  document.getElementById('k-go').textContent=go+'/10';
+  const med=UC.reduce((a,u)=>a+u.bmid,0);
+  document.getElementById('k-budget').textContent=fmtK(med*1000);
+  document.getElementById('k-v1').textContent=UC.filter(u=>u.vague==='V1').length;
+}
+renderList();renderDetail();renderKPIs();
+</script>
+</body>
+</html>
