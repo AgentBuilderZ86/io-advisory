@@ -29,7 +29,23 @@
 .res-row .pos{color:#1d7a44;font-weight:700}.res-row .neg{color:#b13b36;font-weight:700}
 .chart-box{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px}
 .legend{display:flex;gap:16px;justify-content:center;font-size:.76rem;color:var(--muted);margin-top:6px}
-@media(max-width:880px){.bc-layout{grid-template-columns:1fr}.scn{grid-template-columns:1fr}}
+.bk-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.bk-h{font-family:'Syne',sans-serif;font-size:.92rem;margin-bottom:10px}
+.bk-tbl{width:100%;border-collapse:collapse;font-size:.78rem}
+.bk-tbl th{text-align:left;font-size:.64rem;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);padding:6px 7px;border-bottom:1.5px solid var(--line2)}
+.bk-tbl td{padding:7px;border-bottom:1px solid var(--line);vertical-align:top}
+.bk-tbl .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bk-tbl .pn{font-weight:600;color:var(--navy-dark)}
+.bk-tbl .pr{font-size:.7rem;color:var(--muted)}
+.bk-tbl tr.sub td{background:var(--cream);font-weight:700;color:var(--navy-dark)}
+.bk-tbl tr.tot td{border-top:2px solid var(--line2);font-weight:800;color:var(--navy)}
+.hyp-list{list-style:none;font-size:.8rem;line-height:1.5}
+.hyp-list li{padding:5px 0 5px 18px;position:relative;color:var(--text);border-bottom:1px solid var(--line)}
+.hyp-list li:last-child{border:none}
+.hyp-list li::before{content:'▸';position:absolute;left:0;color:var(--teal)}
+.hyp-list b{color:var(--navy-dark)}
+.disclaimer{font-size:.74rem;color:#9a7320;background:rgba(201,151,43,.1);border:1px solid rgba(201,151,43,.28);border-radius:9px;padding:10px 13px;margin-top:14px;line-height:1.5}
+@media(max-width:880px){.bc-layout{grid-template-columns:1fr}.scn{grid-template-columns:1fr}.bk-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -52,7 +68,7 @@
       <h1 class="page-title">Calculateur ROI — Build vs Buy</h1></div>
       <div class="flex gap"><button class="btn ghost sm" onclick="resetBC()">↺ Hypothèses par défaut</button><button class="btn teal" onclick="exportBC()">⬇ Export CSV</button></div>
     </div>
-    <p class="page-sub">Business case par use case : comparez les scénarios <b>Build</b> et <b>Buy</b> sur l'horizon retenu — TCO, VAN (NPV), délai de retour (payback) et ROI. Toutes les hypothèses sont ajustables (K MAD).</p>
+    <p class="page-sub">Business case par use case : comparez les scénarios <b>Build</b> et <b>Buy</b> sur l'horizon retenu — TCO, VAN (NPV), délai de retour (payback) et ROI. Chaque chiffrage est <b>décomposé en postes et justifié aux TJM du marché marocain</b> (voir « Chiffrage détaillé » plus bas). Hypothèses ajustables (K MAD, HT).</p>
   </div>
 
   <div class="kpi-row">
@@ -100,6 +116,30 @@
         <div class="flex between center"><h3 style="color:var(--navy-dark);font-size:.98rem">Cash-flow cumulé actualisé</h3><span class="muted" style="font-size:.76rem">K MAD · ligne 0 = seuil de rentabilité</span></div>
         <div id="chart"></div>
         <div class="legend"><span class="flex center gap"><span class="dot" style="background:var(--navy)"></span>Build</span><span class="flex center gap"><span class="dot" style="background:var(--teal)"></span>Buy</span></div>
+      </div>
+
+      <div class="panel mt">
+        <div class="panel-head"><h3>Chiffrage détaillé & justification — contexte marché marocain 🇲🇦</h3><span class="ph-sub">décomposition des CAPEX/OPEX en postes, jours-homme aux TJM locaux</span></div>
+        <div class="panel-pad">
+          <p class="muted" style="font-size:.82rem;margin-bottom:14px">Les montants saisis ci-dessus sont décomposés en postes et traduits en <b>jours-homme</b> aux <b>taux journaliers moyens (TJM) du marché marocain</b> (profils data/IA, ESN / Casablanca Finance City). Modifier un CAPEX/OPEX recalcule la répartition.</p>
+          <div class="bk-grid">
+            <div><h4 class="bk-h" style="color:var(--navy)">🔧 Build — décomposition</h4><div id="bk-build"></div></div>
+            <div><h4 class="bk-h" style="color:var(--teal-dark)">🛒 Buy — décomposition</h4><div id="bk-buy"></div></div>
+          </div>
+          <div class="divider"></div>
+          <h4 class="bk-h" style="color:var(--navy-dark)">📌 Hypothèses & contexte marché marocain</h4>
+          <div class="grid-2" style="gap:18px;margin-top:10px">
+            <div>
+              <div class="muted" style="font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">TJM indicatifs — profils data/IA (MAD/jour, chargé)</div>
+              <div class="tbl-scroll"><table class="tbl" style="font-size:.8rem"><tbody id="tjm-body"></tbody></table></div>
+            </div>
+            <div>
+              <div class="muted" style="font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Paramètres & facteurs locaux</div>
+              <ul class="hyp-list" id="hyp-list"></ul>
+            </div>
+          </div>
+          <div class="disclaimer">⚠️ Ordres de grandeur <b>indicatifs</b> (marché marocain, 2026) destinés au cadrage budgétaire — à confirmer par devis fournisseurs / ESN et chiffrage RH interne. Montants <b>hors taxes</b> (TVA 20 %).</div>
+        </div>
       </div>
     </div>
   </div>
@@ -189,6 +229,67 @@ function calc(){
   document.getElementById('k-roi').textContent=Math.round(best.roi)+' %';
   document.getElementById('k-reco').textContent=buildWins?'Build':'Buy';
   drawChart(rb.disc,ry.disc,horizon);
+  renderBreakdown(ins);
+}
+
+// ---------- Chiffrage détaillé — contexte marché marocain ----------
+// TJM = taux journalier moyen (MAD/jour, chargé) — profils data/IA, ESN / CFC Maroc 2026 (indicatif)
+const TJM={pm:5000,arch:6000,de:4200,ds:4800,integ:3800,change:3500,run:4500};
+const BUILD_CAPEX=[
+ {p:"Cadrage & gestion de projet",pr:"Chef de projet / PO",w:.12,tjm:TJM.pm},
+ {p:"Architecture & MLOps",pr:"Architecte IA",w:.10,tjm:TJM.arch},
+ {p:"Data engineering (pipelines, qualité)",pr:"Data Engineer",w:.22,tjm:TJM.de},
+ {p:"Data science / modélisation",pr:"Data Scientist / ML",w:.34,tjm:TJM.ds},
+ {p:"Intégration SI (SAP, MES, CRM…)",pr:"Ingénieur intégration",w:.14,tjm:TJM.integ},
+ {p:"Infrastructure & licences (setup)",pr:"Cloud souverain · outils",w:.08,tjm:0},
+];
+const BUILD_OPEX=[
+ {p:"Hébergement souverain (cloud / on-prem)",pr:"OPEX récurrent",w:.35,tjm:0},
+ {p:"Run & MLOps (supervision modèles)",pr:"Data/ML Engineer",w:.30,tjm:TJM.run},
+ {p:"Licences & abonnements outils",pr:"OPEX récurrent",w:.20,tjm:0},
+ {p:"Support & maintenance évolutive",pr:"Data Scientist",w:.15,tjm:TJM.ds},
+];
+const BUY_CAPEX=[
+ {p:"Licence & frais de mise en service",pr:"Éditeur (souvent EUR/USD)",w:.35,tjm:0},
+ {p:"Intégration & paramétrage",pr:"Intégrateur local / ESN",w:.38,tjm:TJM.integ},
+ {p:"Migration & reprise de données",pr:"Data Engineer",w:.12,tjm:TJM.de},
+ {p:"Formation & conduite du changement",pr:"Consultant change",w:.15,tjm:TJM.change},
+];
+const BUY_OPEX=[
+ {p:"Abonnement annuel (licences SaaS)",pr:"Éditeur (souvent EUR/USD)",w:.70,tjm:0},
+ {p:"Support & maintenance éditeur",pr:"OPEX récurrent",w:.20,tjm:0},
+ {p:"Hébergement / connecteur souverain",pr:"OPEX récurrent",w:.10,tjm:0},
+];
+function bkTable(capexLines,capexTot,opexLines,opexTot){
+  const row=(l,amountK)=>{ const mad=amountK*1000; const jours=l.tjm?Math.round(mad/l.tjm*10)/10:null;
+    return `<tr><td><div class="pn">${l.p}</div><div class="pr">${l.pr}</div></td><td class="num">${jours!=null?jours.toLocaleString('fr-FR')+' j':'—'}</td><td class="num">${l.tjm?l.tjm.toLocaleString('fr-FR'):'—'}</td><td class="num">${Math.round(amountK)} K</td><td class="num">${Math.round(l.w*100)}%</td></tr>`; };
+  let h=`<table class="bk-tbl"><thead><tr><th>Poste</th><th class="num">Jours-h</th><th class="num">TJM</th><th class="num">Montant</th><th class="num">%</th></tr></thead><tbody>`;
+  h+=`<tr class="sub"><td colspan="5">CAPEX initial — ${Math.round(capexTot)} K MAD</td></tr>`;
+  capexLines.forEach(l=>h+=row(l,l.w*capexTot));
+  h+=`<tr class="sub"><td colspan="5">OPEX annuel — ${Math.round(opexTot)} K MAD/an</td></tr>`;
+  opexLines.forEach(l=>h+=row(l,l.w*opexTot));
+  // total jours capex (effort)
+  const jh=capexLines.reduce((a,l)=>a+(l.tjm?(l.w*capexTot*1000)/l.tjm:0),0);
+  h+=`<tr class="tot"><td>Effort projet (CAPEX)</td><td class="num">${Math.round(jh)} j</td><td></td><td class="num">${Math.round(capexTot)} K</td><td></td></tr>`;
+  h+='</tbody></table>';
+  return h;
+}
+function renderBreakdown(ins){
+  document.getElementById('bk-build').innerHTML=bkTable(BUILD_CAPEX,ins.build[0],BUILD_OPEX,ins.build[1]);
+  document.getElementById('bk-buy').innerHTML=bkTable(BUY_CAPEX,ins.buy[0],BUY_OPEX,ins.buy[1]);
+}
+function renderMarketHyp(){
+  const tjm=[["Chef de projet / Product Owner",TJM.pm],["Architecte IA / MLOps",TJM.arch],["Data Scientist / ML Engineer",TJM.ds],["Data Engineer",TJM.de],["Ingénieur d'intégration SI",TJM.integ],["Consultant conduite du changement",TJM.change]];
+  document.getElementById('tjm-body').innerHTML=tjm.map(([n,v])=>`<tr><td class="pn" style="font-weight:600;color:var(--navy-dark)">${n}</td><td class="num" style="text-align:right;font-weight:700;color:var(--navy)">${v.toLocaleString('fr-FR')} MAD/j</td></tr>`).join('');
+  const hyp=[
+   "<b>Profils data/IA rares</b> au Maroc : TJM tirés vers le haut, recours fréquent aux ESN de Casablanca Finance City.",
+   "<b>Build</b> = jours-homme internes/ESN × TJM ; pèse sur la masse salariale mais capitalise le savoir-faire et l'IP.",
+   "<b>Buy</b> = licences souvent libellées en <b>EUR/USD</b> (≈ 11 MAD/EUR, ≈ 10 MAD/USD) → exposition au change.",
+   "<b>Souveraineté</b> : l'hébergement souverain marocain (CNDP) peut induire un surcoût vs cloud public international.",
+   "<b>Ramp-up an 1</b> : bénéfices partiels la 1ère année (déploiement, adoption) — modélisé par la montée en charge.",
+   "Montants <b>HT</b> ; <b>TVA 20 %</b> applicable ; aides possibles (Maroc Digital, programmes d'innovation).",
+  ];
+  document.getElementById('hyp-list').innerHTML=hyp.map(h=>`<li>${h}</li>`).join('');
 }
 function drawChart(b,y,horizon){
   const W=720,H=240,P=42;
@@ -217,7 +318,7 @@ function exportBC(){
   });
   downloadCSV('Cosumar_Business_Case_ROI.csv',rows);
 }
-loadState();renderList();fillInputs();calc();
+loadState();renderMarketHyp();renderList();fillInputs();calc();
 </script>
 </body>
 </html>
