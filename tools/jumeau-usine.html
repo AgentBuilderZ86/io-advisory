@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jumeau visuel de l'usine — Sia × Cosumar</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/sia.css">
+<style>
+.twin-layout{display:grid;grid-template-columns:1fr 360px;gap:22px;align-items:start}
+.map-panel{background:linear-gradient(160deg,#0a2236,#071521);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,.06);position:relative;overflow:hidden}
+.map-panel svg{width:100%;height:auto;display:block}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.fbtn{font-size:.78rem;font-weight:600;padding:7px 13px;border-radius:20px;border:1.5px solid var(--line2);background:#fff;color:var(--muted);cursor:pointer;transition:.18s}
+.fbtn.on{color:#fff;border-color:transparent}
+.fbtn.on.all{background:var(--navy-dark)}
+.fbtn.on.v1{background:var(--teal)}.fbtn.on.v2{background:var(--navy2)}.fbtn.on.v3{background:var(--gold)}
+/* svg blocks */
+.zlabel{font-family:'DM Sans',sans-serif;font-weight:700;fill:#fff;font-size:13px}
+.zsub{fill:rgba(255,255,255,.55);font-size:10px}
+.zicon{font-size:20px}
+.zone-rect{transition:.25s}
+.zone-rect.hl{stroke:var(--teal-l,#5fd6c6);stroke-width:2.5;filter:drop-shadow(0 0 10px rgba(0,168,150,.6))}
+.mk{cursor:pointer}
+.mk .dot{transition:.2s}
+.mk:hover .dot{filter:brightness(1.2)}
+.mk.dim{opacity:.18;pointer-events:none}
+.mk.sel .dot{stroke:#fff;stroke-width:3}
+.mklabel{fill:#fff;font-size:10px;font-weight:700;text-anchor:middle;pointer-events:none}
+/* detail */
+.detail{position:sticky;top:78px}
+.dpanel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.dhead{padding:18px 20px;color:#fff;background:linear-gradient(135deg,var(--navy),var(--navy-dark))}
+.dhead.v1{background:linear-gradient(135deg,var(--teal),#048A7E)}
+.dhead.v2{background:linear-gradient(135deg,var(--navy2),var(--navy))}
+.dhead.v3{background:linear-gradient(135deg,var(--gold),#a8801f)}
+.dhead .de{font-size:.7rem;letter-spacing:1.5px;text-transform:uppercase;opacity:.8}
+.dhead h3{font-size:1.15rem;margin-top:5px;line-height:1.15}
+.dbody{padding:18px 20px}
+.drow{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:.84rem}
+.drow:last-child{border:none}
+.drow .dl{color:var(--muted)}.drow .dv{font-weight:700;color:var(--navy-dark);text-align:right}
+.legend-zone{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:.74rem;color:rgba(255,255,255,.6);padding:0 6px 4px}
+.empty-hint{padding:40px 24px;text-align:center;color:var(--muted)}
+.empty-hint .eh{font-size:2.4rem;margin-bottom:10px}
+@media(max-width:980px){.twin-layout{grid-template-columns:1fr}.detail{position:static}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="brand-dot"></span><span class="brand-name">Sia<b>·</b>Cosumar</span><span class="brand-sub">Jumeau visuel usine</span></div>
+  <nav class="topnav">
+    <a href="../index.html" class="home">← Hub</a>
+    <a href="executive-story.html">🎬 Story</a>
+    <a href="jumeau-usine.html" class="active">Jumeau</a>
+    <a href="use-cases-ia.html">Use Cases</a>
+    <a href="monte-carlo.html">Monte-Carlo</a>
+    <a href="conformite.html">Conformité</a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="flex between center wrap-f">
+      <div><div class="eyebrow">🏭 Phase 3 · Cartographie de la valeur</div>
+      <h1 class="page-title">Jumeau visuel de la sucrerie</h1></div>
+      <button class="btn teal" onclick="tour()">▶ Lancer la tournée IA</button>
+    </div>
+    <p class="page-sub">Chaque use case IA s'allume sur l'équipement ou la fonction concernée — de l'amont agricole à l'expédition. Survolez ou cliquez un point lumineux pour explorer la valeur créée.</p>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi teal"><div class="kpi-val">10</div><div class="kpi-label">Use cases cartographiés</div></div>
+    <div class="kpi navy"><div class="kpi-val">6</div><div class="kpi-label">Zones de l'usine couvertes</div></div>
+    <div class="kpi gold"><div class="kpi-val" id="k-vis">10</div><div class="kpi-label">Affichés (filtre actif)</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-bud">—</div><div class="kpi-label">Budget cartographié</div></div>
+  </div>
+
+  <div class="filters">
+    <span class="muted" style="font-size:.8rem;font-weight:600;margin-right:4px">Filtrer par vague :</span>
+    <button class="fbtn on all" data-f="all" onclick="setFilter('all')">Toutes</button>
+    <button class="fbtn v1" data-f="V1" onclick="setFilter('V1')">● Vague 1 · Quick Wins</button>
+    <button class="fbtn v2" data-f="V2" onclick="setFilter('V2')">● Vague 2 · Structurants</button>
+    <button class="fbtn v3" data-f="V3" onclick="setFilter('V3')">● Vague 3 · Transformants</button>
+  </div>
+
+  <div class="twin-layout">
+    <div class="map-panel">
+      <div id="map"></div>
+      <div class="legend-zone">
+        <span>🌱 Amont agricole</span><span>⚡ Énergie & vapeur</span><span>🏭 Ligne de production</span>
+        <span>🏪 Stockage & expédition</span><span>🏢 Administration</span><span>🚚 Logistique</span>
+      </div>
+    </div>
+    <div class="detail">
+      <div class="dpanel" id="detail"></div>
+    </div>
+  </div>
+</div>
+
+<footer class="sia-foot"><div><b>Sia × Cosumar</b> · Jumeau visuel de l'usine</div><div>Cartographie de la valeur IA</div></footer>
+<div id="toast"></div>
+<script src="../assets/sia.js"></script>
+<script>
+// ----- Zones (blocs SVG) -----
+const VB={w:1160,h:560};
+const zones=[
+ {id:'amont',icon:'🌱',label:'Amont agricole',sub:'Champs & réception',x:24,y:54,w:210,h:88},
+ {id:'energie',icon:'⚡',label:'Énergie & vapeur',sub:'Chaudière · turbines',x:466,y:48,w:228,h:88},
+ {id:'stock',icon:'🏪',label:'Stockage & expédition',sub:'Silos · quais',x:946,y:54,w:188,h:88},
+ {id:'admin',icon:'🏢',label:'Administration',sub:'Finance · RH · Juridique',x:24,y:424,w:520,h:100},
+ {id:'logi',icon:'🚚',label:'Logistique & livraisons',sub:'Flotte · tournées',x:824,y:424,w:310,h:100},
+];
+const proc=[
+ {id:'rec',label:'Réception',x:24},
+ {id:'dif',label:'Diffusion',x:208},
+ {id:'epu',label:'Épuration',x:392},
+ {id:'eva',label:'Évaporation',x:576},
+ {id:'cri',label:'Cristallisation',x:760},
+ {id:'cen',label:'Centrifugation',x:944},
+];
+const PW=160,PH=86,PY=236;
+// ----- Use cases (markers) -----
+const UC=[
+ {id:1,name:"Maintenance prédictive turbines",zone:"Énergie & vapeur",fam:"ML & Predictive",vague:"V3",budget:"150-250K MAD",bmid:200,app:"Build",val:"+18% disponibilité · -30% arrêts",x:512,y:92},
+ {id:7,name:"Détection anomalies énergie",zone:"Énergie & vapeur",fam:"Analytical AI",vague:"V1",budget:"100-200K MAD",bmid:150,app:"Build",val:"-8% facture énergétique",x:632,y:92},
+ {id:2,name:"Optimisation process sucrier",zone:"Ligne de production",fam:"Prescriptive",vague:"V3",budget:"200-400K MAD",bmid:300,app:"Build",val:"+2 pts rendement extraction",x:840,y:300},
+ {id:3,name:"Prévision récolte satellite",zone:"Amont agricole",fam:"ML & Predictive",vague:"V3",budget:"300-500K MAD",bmid:400,app:"Buy",val:"Prévision tonnage ±8%",x:128,y:92},
+ {id:4,name:"Demand forecasting sucre",zone:"Stockage & expédition",fam:"ML & Predictive",vague:"V1",budget:"100-200K MAD",bmid:150,app:"Buy",val:"-15% coûts de stock",x:1040,y:92},
+ {id:5,name:"OCR factures fournisseurs",zone:"Administration · Finance",fam:"Cognitive Automation",vague:"V1",budget:"50-100K MAD",bmid:75,app:"Buy",val:"-70% temps de saisie",x:120,y:470},
+ {id:6,name:"Chatbot RH CorpGPT",zone:"Administration · RH",fam:"GenAI & LLMs",vague:"V1",budget:"80-150K MAD",bmid:115,app:"Build",val:"-40% tickets RH niveau 1",x:250,y:470},
+ {id:8,name:"Analyse contrats NLP",zone:"Administration · Juridique",fam:"GenAI & LLMs",vague:"V2",budget:"80-120K MAD",bmid:100,app:"Buy",val:"-50% temps de revue",x:380,y:470},
+ {id:9,name:"People analytics & turnover",zone:"Administration · RH",fam:"ML & Predictive",vague:"V3",budget:"120-200K MAD",bmid:160,app:"Build",val:"-12% turnover ciblé",x:470,y:470},
+ {id:10,name:"Route optimization livraisons",zone:"Logistique & livraisons",fam:"Prescriptive",vague:"V2",budget:"150-300K MAD",bmid:225,app:"Buy",val:"-14% coûts transport",x:978,y:470},
+];
+const waveCol={V1:'#00A896',V2:'#2E75B6',V3:'#C9972B'};
+const appChip={Build:'navy',Buy:'teal',Borrow:'gold',Bot:'amber'};
+const zoneOf={1:'energie',7:'energie',2:'cri',3:'amont',4:'stock',5:'admin',6:'admin',8:'admin',9:'admin',10:'logi'};
+
+let filter='all', sel=null;
+
+function blockSVG(x,y,w,h,icon,label,sub,id){
+  return `<g><rect id="z-${id}" class="zone-rect" x="${x}" y="${y}" width="${w}" height="${h}" rx="14"
+     fill="rgba(255,255,255,.05)" stroke="rgba(255,255,255,.14)" stroke-width="1.4"/>
+     <text class="zicon" x="${x+18}" y="${y+34}">${icon}</text>
+     <text class="zlabel" x="${x+46}" y="${y+30}">${label}</text>
+     <text class="zsub" x="${x+46}" y="${y+47}">${sub}</text></g>`;
+}
+function pipe(x1,y1,x2,y2,col,dash){
+  return `<path d="M${x1} ${y1} L${x2} ${y2}" stroke="${col||'rgba(0,168,150,.45)'}" stroke-width="3" fill="none"
+    stroke-linecap="round" ${dash?'stroke-dasharray="2 8" opacity=".5"':'stroke-dasharray="10 8"'}>
+    ${dash?'':'<animate attributeName="stroke-dashoffset" from="36" to="0" dur="1.4s" repeatCount="indefinite"/>'}</path>`;
+}
+function markerSVG(u){
+  const c=waveCol[u.vague];
+  return `<g class="mk" data-id="${u.id}" data-vague="${u.vague}" transform="translate(${u.x},${u.y})" onclick="selectUC(${u.id})" onmouseenter="hoverUC(${u.id},true)" onmouseleave="hoverUC(${u.id},false)">
+    <circle r="9" fill="${c}" opacity=".25"><animate attributeName="r" values="9;22;9" dur="2.4s" repeatCount="indefinite"/><animate attributeName="opacity" values=".35;0;.35" dur="2.4s" repeatCount="indefinite"/></circle>
+    <circle class="dot" r="9" fill="${c}" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>
+    <text class="mklabel" y="4">${u.id}</text>
+  </g>`;
+}
+function render(){
+  let s=`<svg viewBox="0 0 ${VB.w} ${VB.h}" role="img" aria-label="Schéma de la sucrerie">`;
+  // subtle grid bg
+  s+=`<defs><linearGradient id="flow" x1="0" x2="1"><stop offset="0" stop-color="#00A896"/><stop offset="1" stop-color="#2E75B6"/></linearGradient></defs>`;
+  // pipes between process units
+  for(let i=0;i<proc.length-1;i++){ s+=pipe(proc[i].x+PW,PY+PH/2,proc[i+1].x,PY+PH/2); }
+  // amont -> reception
+  s+=pipe(129,142,104,PY);
+  // energie -> process (down to evaporation)
+  s+=pipe(580,136,proc[3].x+PW/2,PY);
+  // centrifugation -> stockage
+  s+=pipe(proc[5].x+PW,PY+PH/2,1040,142);
+  // info links (dashed light) admin & logi
+  s+=pipe(280,424,300,PY+PH,'rgba(255,255,255,.25)',1);
+  s+=pipe(980,424,proc[5].x+PW/2,PY+PH,'rgba(255,255,255,.25)',1);
+  // zones
+  zones.forEach(z=>s+=blockSVG(z.x,z.y,z.w,z.h,z.icon,z.label,z.sub,z.id));
+  // process units
+  proc.forEach(p=>{ s+=`<g><rect id="z-${p.id}" class="zone-rect" x="${p.x}" y="${PY}" width="${PW}" height="${PH}" rx="12"
+     fill="rgba(46,117,182,.12)" stroke="rgba(255,255,255,.16)" stroke-width="1.4"/>
+     <text class="zsub" x="${p.x+PW/2}" y="${PY+22}" text-anchor="middle" style="fill:rgba(255,255,255,.45)">étape</text>
+     <text class="zlabel" x="${p.x+PW/2}" y="${PY+50}" text-anchor="middle" style="font-size:12px">${p.label}</text></g>`; });
+  // title
+  s+=`<text x="24" y="30" style="fill:rgba(255,255,255,.4);font-size:11px;letter-spacing:2px;font-weight:700">SUCRERIE COSUMAR · FLUX DE PRODUCTION</text>`;
+  // markers
+  UC.forEach(u=>s+=markerSVG(u));
+  s+='</svg>';
+  document.getElementById('map').innerHTML=s;
+  applyFilter();
+}
+function applyFilter(){
+  let vis=0,bud=0;
+  document.querySelectorAll('.mk').forEach(m=>{
+    const v=m.dataset.vague, show=(filter==='all'||v===filter);
+    m.classList.toggle('dim',!show);
+    if(show){ vis++; const u=UC.find(x=>x.id==m.dataset.id); bud+=u.bmid; }
+  });
+  document.getElementById('k-vis').textContent=vis;
+  document.getElementById('k-bud').textContent=fmtK(bud*1000)+' MAD';
+}
+function setFilter(f){
+  filter=f;
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.toggle('on',b.dataset.f===f));
+  applyFilter();
+}
+function hoverUC(id,on){
+  const z=zoneOf[id]; const r=document.getElementById('z-'+z);
+  if(r) r.classList.toggle('hl',on);
+}
+function selectUC(id){
+  sel=id;
+  document.querySelectorAll('.mk').forEach(m=>m.classList.toggle('sel',m.dataset.id==id));
+  const u=UC.find(x=>x.id===id);
+  const d=document.getElementById('detail');
+  d.innerHTML=`<div class="dhead ${u.vague.toLowerCase()}"><div class="de">${u.zone}</div><h3>${u.id}. ${u.name}</h3></div>
+   <div class="dbody">
+     <div class="drow"><span class="dl">Famille IA</span><span class="dv">${u.fam}</span></div>
+     <div class="drow"><span class="dl">Vague</span><span class="dv">${u.vague} · ${({V1:'0-12m',V2:'12-24m',V3:'24-36m'})[u.vague]}</span></div>
+     <div class="drow"><span class="dl">Approche</span><span class="dv">${u.app}</span></div>
+     <div class="drow"><span class="dl">Budget</span><span class="dv">${u.budget}</span></div>
+     <div class="drow"><span class="dl">Valeur clé</span><span class="dv" style="color:var(--teal-dark)">${u.val}</span></div>
+     <div class="flex gap" style="margin-top:16px">
+       <a class="btn sm teal" href="use-cases-ia.html" style="flex:1;justify-content:center">Fiche détaillée →</a>
+       <a class="btn sm ghost" href="roi-business-case.html" style="flex:1;justify-content:center">ROI →</a>
+     </div>
+   </div>`;
+}
+function showEmpty(){
+  document.getElementById('detail').innerHTML=`<div class="empty-hint"><div class="eh">🏭</div><b style="color:var(--navy-dark)">Explorez le jumeau</b><div style="font-size:.85rem;margin-top:8px">Survolez un point lumineux pour situer le use case sur l'usine, cliquez pour voir le détail.</div></div>`;
+}
+// guided tour
+let tourT=null;
+function tour(){
+  if(tourT){ clearInterval(tourT); tourT=null; return; }
+  const list=UC.filter(u=>filter==='all'||u.vague===filter);
+  let i=0;
+  const step=()=>{ if(i>=list.length){ clearInterval(tourT); tourT=null; return; } selectUC(list[i].id); i++; };
+  step(); tourT=setInterval(step,2200);
+  toast('Tournée IA — '+list.length+' use cases');
+}
+render();showEmpty();
+</script>
+</body>
+</html>
