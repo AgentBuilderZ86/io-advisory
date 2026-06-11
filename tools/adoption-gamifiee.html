@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adoption gamifiée — Champions IA · Sia × Cosumar</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/sia.css">
+<style>
+.podium{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:14px;align-items:end;margin-bottom:24px}
+.pod{border-radius:16px;padding:20px 16px;text-align:center;color:#fff;position:relative;box-shadow:var(--shadow-lg)}
+.pod.p1{background:linear-gradient(160deg,#d4a83a,#b07d18);order:2}
+.pod.p2{background:linear-gradient(160deg,#9fb2c9,#6c8099);order:1}
+.pod.p3{background:linear-gradient(160deg,#c98a5e,#9a5f37);order:3}
+.pod .medal{font-size:1.8rem}
+.pod .pav{width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;margin:8px auto;border:2px solid rgba(255,255,255,.5)}
+.pod .pn{font-weight:700;font-size:.92rem}
+.pod .pc{font-size:.72rem;opacity:.85}
+.pod .ppts{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;margin-top:8px}
+.pod.p1{padding-top:30px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.fbtn{font-size:.78rem;font-weight:600;padding:7px 13px;border-radius:20px;border:1.5px solid var(--line2);background:#fff;color:var(--muted);cursor:pointer;transition:.15s}
+.fbtn.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.lb-row{display:grid;grid-template-columns:44px 1fr 130px 150px 90px;gap:12px;align-items:center;padding:11px 14px;border-bottom:1px solid var(--line);transition:.12s}
+.lb-row:hover{background:var(--cream)}
+.lb-row.head{font-size:.7rem;text-transform:uppercase;letter-spacing:.5px;color:var(--navy-dark);font-weight:700;border-bottom:2px solid var(--line2)}
+.rank{font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;color:var(--muted);text-align:center}
+.rank.top{color:var(--gold)}
+.who{display:flex;align-items:center;gap:11px;min-width:0}
+.av{width:36px;height:36px;border-radius:50%;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;flex-shrink:0;font-family:'Syne',sans-serif}
+.who .wn{font-weight:600;font-size:.86rem;color:var(--navy-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who .wd{font-size:.72rem;color:var(--muted)}
+.lvl-pill{font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:14px;color:#fff;white-space:nowrap;display:inline-block}
+.badges-mini{display:flex;gap:3px;flex-wrap:wrap}
+.bdg{font-size:.95rem;cursor:default}
+.pts{font-family:'Syne',sans-serif;font-weight:800;color:var(--navy-dark);text-align:right}
+.pts small{font-weight:400;color:var(--muted);font-size:.7rem}
+.challenge{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--shadow);border-left:4px solid var(--teal)}
+.challenge .cht{font-weight:700;color:var(--navy-dark);font-size:.9rem}
+.challenge .chd{font-size:.76rem;color:var(--muted);margin:3px 0 10px}
+.badge-cat{display:flex;gap:11px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.badge-cat:last-child{border:none}
+.badge-cat .bi{font-size:1.4rem}
+.badge-cat .bn{font-weight:700;font-size:.82rem;color:var(--navy-dark)}
+.badge-cat .bx{font-size:.74rem;color:var(--muted)}
+@media(max-width:880px){.lb-row{grid-template-columns:34px 1fr 80px;gap:8px}.lb-col-hide{display:none}.podium{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="brand-dot"></span><span class="brand-name">Sia<b>·</b>Cosumar</span><span class="brand-sub">Adoption gamifiée</span></div>
+  <nav class="topnav">
+    <a href="../index.html" class="home">← Hub</a>
+    <a href="acculturation.html">Formation</a>
+    <a href="adoption-gamifiee.html" class="active">Champions</a>
+    <a href="corpgpt.html">🤖 CorpGPT</a>
+    <a href="dashboard-copil.html">COPIL</a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="flex between center wrap-f">
+      <div><div class="eyebrow">🏆 Phase 1 · Adoption & engagement</div>
+      <h1 class="page-title">Leaderboard des Champions IA</h1></div>
+      <div class="flex gap"><button class="btn ghost sm" onclick="resetGame()">↺ Réinitialiser</button><button class="btn teal" onclick="simWeek()">⚡ Simuler la semaine</button></div>
+    </div>
+    <p class="page-sub">Transformer l'acculturation en mouvement : les 50 Champions IA gagnent des points en suivant les modules, en proposant des idées, en déployant des quick wins et en accompagnant leurs collègues. Niveaux, badges et défis collectifs.</p>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi gold"><div class="kpi-val" id="k-pts">—</div><div class="kpi-label">Points cumulés</div></div>
+    <div class="kpi teal"><div class="kpi-val" id="k-adopt">—</div><div class="kpi-label">Taux d'engagement</div><div class="kpi-foot" id="k-adopt-foot"></div></div>
+    <div class="kpi navy"><div class="kpi-val" id="k-badges">—</div><div class="kpi-label">Badges décernés</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-ideas">—</div><div class="kpi-label">Idées soumises</div></div>
+  </div>
+
+  <div class="podium" id="podium"></div>
+
+  <div class="grid-2" style="grid-template-columns:1.6fr 1fr;align-items:start">
+    <div class="panel">
+      <div class="panel-head"><h3>Classement</h3>
+        <input id="search" placeholder="Rechercher…" style="width:auto;min-width:160px" oninput="renderLB()">
+      </div>
+      <div class="panel-pad">
+        <div class="filters">
+          <button class="fbtn on" data-c="all" onclick="setCohort('all')">Toutes cohortes</button>
+          <button class="fbtn" data-c="1" onclick="setCohort('1')">Cohorte 1</button>
+          <button class="fbtn" data-c="2" onclick="setCohort('2')">Cohorte 2</button>
+          <button class="fbtn" data-c="3" onclick="setCohort('3')">Cohorte 3</button>
+        </div>
+        <div class="lb-row head"><span>#</span><span>Champion</span><span class="lb-col-hide">Niveau</span><span class="lb-col-hide">Badges</span><span style="text-align:right">Points</span></div>
+        <div id="lb" style="max-height:560px;overflow:auto"></div>
+      </div>
+    </div>
+    <div>
+      <div class="panel panel-pad mb">
+        <h3 style="color:var(--navy-dark);margin-bottom:12px;font-size:1rem">🎯 Défis collectifs</h3>
+        <div id="challenges" style="display:flex;flex-direction:column;gap:14px"></div>
+      </div>
+      <div class="panel panel-pad">
+        <h3 style="color:var(--navy-dark);margin-bottom:6px;font-size:1rem">🏅 Catalogue des badges</h3>
+        <div id="badge-cat"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="sia-foot"><div><b>Sia × Cosumar</b> · Adoption gamifiée</div><div>50 Champions IA · Phase 1</div></footer>
+<div id="toast"></div>
+<script src="../assets/sia.js"></script>
+<script>
+const firstN=["Youssef","Salma","Karim","Nadia","Omar","Hind","Rachid","Leila","Mehdi","Sanaa","Anas","Imane","Tarik","Fatima","Hamza","Khadija","Yassine","Soukaina","Reda","Meryem","Aymane","Asmae","Bilal","Loubna","Ayoub","Wafa","Zakaria","Hajar","Ilyas","Nawal","Othmane","Siham","Marouane","Dounia","Adil","Rim","Hicham","Najwa","Saad","Lina","Driss","Amina","Walid","Ghita","Mounir","Salma","Nabil","Oumaima","Tariq","Iman"];
+const lastN=["El Amrani","Benani","Tazi","Berrada","Cherkaoui","Idrissi","Fassi","Alaoui","Bennani","Sebti","Lahlou","Kabbaj","Naciri","Sqalli","Bouzoubaa","Mernissi","Chraibi","Lamrani","Bennis","Sekkat"];
+const depts=["Industrielle","Supply Chain","Financière","RH","Amont Agricole","Commerciale","SI / Digital","Juridique"];
+const LEVELS=[
+ {n:"Novice",min:0,c:"#9aa7bd"},{n:"Explorateur",min:120,c:"#2E75B6"},
+ {n:"Praticien",min:280,c:"#00A896"},{n:"Expert",min:520,c:"#1F4E79"},{n:"Ambassadeur",min:820,c:"#C9972B"}];
+const BADGES=[
+ {id:"cert",i:"🎓",n:"Certifié IA",x:"6 modules de formation complétés"},
+ {id:"idea",i:"💡",n:"Idéateur",x:"≥ 3 idées de use cases soumises"},
+ {id:"deploy",i:"🚀",n:"Déployeur",x:"A contribué à un quick win en production"},
+ {id:"mentor",i:"🤝",n:"Mentor",x:"A accompagné ≥ 5 collègues"},
+ {id:"streak",i:"🔥",n:"Assidu",x:"Série d'activité ≥ 4 semaines"},
+ {id:"top",i:"⭐",n:"Top 10",x:"Dans le top 10 du classement"},
+];
+const cohortCol={1:"#1F4E79",2:"#00A896",3:"#C9972B"};
+function rnd(i,s){ return Math.abs(Math.sin((i+1)*(s*7.31+1.7))*43758.5453)%1; }
+let champions=[];
+function build(){
+  for(let i=0;i<50;i++){
+    const cohort=i<17?1:i<34?2:3;
+    const modules=Math.floor(rnd(i,1)*7);           // 0-6
+    const ideas=Math.floor(rnd(i,2)*6);             // 0-5
+    const deploys=rnd(i,3)<.35?(rnd(i,9)<.5?1:2):0; // 0-2
+    const mentor=Math.floor(rnd(i,4)*9);            // 0-8
+    const streak=Math.floor(rnd(i,5)*6);            // 0-5
+    champions.push({id:i,name:firstN[i%firstN.length]+" "+lastN[(i*3)%lastN.length],cohort,dept:depts[i%depts.length],modules,ideas,deploys,mentor,streak});
+  }
+}
+function basePoints(c){ return c.modules*40 + c.ideas*25 + c.deploys*70 + c.mentor*15 + c.streak*10; }
+function points(c){ const d=store.get('adopt.deltas',{}); return basePoints(c)+(d[c.id]||0); }
+function level(p){ let l=LEVELS[0]; LEVELS.forEach(x=>{ if(p>=x.min)l=x; }); return l; }
+function nextLevel(p){ return LEVELS.find(x=>x.min>p); }
+function badgesOf(c,rankMap){
+  const b=[];
+  if(c.modules>=6)b.push("cert"); if(c.ideas>=3)b.push("idea"); if(c.deploys>=1)b.push("deploy");
+  if(c.mentor>=5)b.push("mentor"); if(c.streak>=4)b.push("streak");
+  if(rankMap[c.id]<=10)b.push("top");
+  return b;
+}
+let cohortF='all';
+function ranked(){
+  const arr=champions.map(c=>({c,p:points(c)})).sort((a,b)=>b.p-a.p);
+  const rankMap={}; arr.forEach((x,i)=>rankMap[x.c.id]=i+1);
+  return {arr,rankMap};
+}
+function renderKPI(){
+  const tot=champions.reduce((a,c)=>a+points(c),0);
+  const active=champions.filter(c=>points(c)>=120).length;
+  const ideas=champions.reduce((a,c)=>a+c.ideas,0);
+  const {rankMap}=ranked();
+  const badges=champions.reduce((a,c)=>a+badgesOf(c,rankMap).length,0);
+  document.getElementById('k-pts').textContent=tot.toLocaleString('fr-FR');
+  document.getElementById('k-adopt').textContent=Math.round(active/50*100)+'%';
+  document.getElementById('k-adopt-foot').textContent=active+'/50 champions engagés';
+  document.getElementById('k-badges').textContent=badges;
+  document.getElementById('k-ideas').textContent=ideas;
+}
+function renderPodium(){
+  const {arr,rankMap}=ranked();
+  const top=arr.slice(0,3);
+  document.getElementById('podium').innerHTML=top.map((x,i)=>{
+    const c=x.c, medal=["🥇","🥈","🥉"][i], lv=level(x.p);
+    return `<div class="pod p${i+1}"><div class="medal">${medal}</div><div class="pav">${initials(c.name)}</div><div class="pn">${c.name}</div><div class="pc">Cohorte ${c.cohort} · ${c.dept}</div><div class="ppts">${x.p.toLocaleString('fr-FR')} <span style="font-size:.7rem;font-weight:400">pts</span></div><div style="margin-top:6px"><span class="lvl-pill" style="background:rgba(255,255,255,.25)">${lv.n}</span></div></div>`;
+  }).join('');
+}
+function initials(n){ return n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+function renderLB(){
+  const {arr,rankMap}=ranked();
+  const q=(document.getElementById('search').value||'').toLowerCase();
+  let rows=arr.filter(x=>(cohortF==='all'||x.c.cohort==+cohortF)&&(x.c.name.toLowerCase().includes(q)||x.c.dept.toLowerCase().includes(q)));
+  document.getElementById('lb').innerHTML=rows.map(x=>{
+    const c=x.c, r=rankMap[c.id], lv=level(x.p), bs=badgesOf(c,rankMap);
+    const nl=nextLevel(x.p); const prog=nl?Math.round((x.p-lv.min)/(nl.min-lv.min)*100):100;
+    return `<div class="lb-row"><div class="rank ${r<=3?'top':''}">${r<=3?["🥇","🥈","🥉"][r-1]:r}</div>
+      <div class="who"><div class="av" style="background:${cohortCol[c.cohort]}">${initials(c.name)}</div><div style="min-width:0"><div class="wn">${c.name}</div><div class="wd">Cohorte ${c.cohort} · ${c.dept}</div></div></div>
+      <div class="lb-col-hide"><span class="lvl-pill" style="background:${lv.c}">${lv.n}</span><div class="bar" style="margin-top:6px"><span style="width:${prog}%;background:${lv.c}"></span></div></div>
+      <div class="lb-col-hide badges-mini">${bs.map(b=>{const bd=BADGES.find(z=>z.id===b);return `<span class="bdg" title="${bd.n} — ${bd.x}">${bd.i}</span>`;}).join('')||'<span class="muted" style="font-size:.72rem">—</span>'}</div>
+      <div class="pts">${x.p.toLocaleString('fr-FR')}<br><small>pts</small></div></div>`;
+  }).join('');
+}
+function setCohort(c){ cohortF=c; document.querySelectorAll('.fbtn').forEach(b=>b.classList.toggle('on',b.dataset.c===c)); renderLB(); }
+function renderChallenges(){
+  const certs=champions.filter(c=>c.modules>=6).length;
+  const ideas=champions.reduce((a,c)=>a+c.ideas,0);
+  const deploys=champions.filter(c=>c.deploys>=1).length;
+  const ch=[
+   {t:"🎓 Certification des 50 Champions",d:"6 modules complétés par champion",v:certs,max:50},
+   {t:"💡 Défi d'idéation",d:"objectif : 60 idées de use cases",v:Math.min(ideas,60),max:60},
+   {t:"🚀 Contributeurs aux quick wins",d:"champions ayant déployé un UC",v:deploys,max:50},
+  ];
+  document.getElementById('challenges').innerHTML=ch.map(x=>{ const pct=Math.round(x.v/x.max*100);
+    return `<div class="challenge"><div class="cht">${x.t}</div><div class="chd">${x.d}</div><div class="flex between" style="margin-bottom:5px"><span class="muted" style="font-size:.78rem">${x.v}/${x.max}</span><b style="color:var(--navy-dark);font-size:.82rem">${pct}%</b></div><div class="bar"><span style="width:${pct}%;background:${pct>=100?'var(--green)':'var(--teal)'}"></span></div></div>`;
+  }).join('');
+}
+function renderBadgeCat(){
+  document.getElementById('badge-cat').innerHTML=BADGES.map(b=>`<div class="badge-cat"><div class="bi">${b.i}</div><div><div class="bn">${b.n}</div><div class="bx">${b.x}</div></div></div>`).join('');
+}
+function renderAll(){ renderKPI();renderPodium();renderLB();renderChallenges();renderBadgeCat(); }
+function simWeek(){
+  const d=store.get('adopt.deltas',{});
+  // ~15 champions gagnent des points aléatoires cette semaine
+  for(let k=0;k<15;k++){ const i=Math.floor(Math.random()*50); d[i]=(d[i]||0)+(10+Math.floor(Math.random()*8)*5); }
+  store.set('adopt.deltas',d);
+  renderAll();
+  toast('Activité de la semaine enregistrée — classement mis à jour ⚡');
+}
+function resetGame(){ store.set('adopt.deltas',{}); renderAll(); toast('Scores réinitialisés'); }
+build();renderAll();
+</script>
+</body>
+</html>
