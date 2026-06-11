@@ -19,6 +19,7 @@ tools/
   use-cases-ia.html               ← Phase 3 : 10 UC, prérequis, ROI, risques, funnel 3 filtres, Go/No-Go
   roadmap-builder.html            ← Phase 3 : roadmap 3 vagues (drag & drop), budgets, export CSV
   simulateur-coe.html             ← Phase 4 : staffing/budget CoE, RACI, Charte IA, plan compétences
+  conformite.html                 ← Transversal : référentiels locaux/intl, EU AI Act, AIPD/DPIA, souveraineté
 assets/
   sia.css  sia.js                 ← Design system Sia (palette navy/teal, Syne + DM Sans)
 excel/
@@ -58,11 +59,33 @@ python3 excel/build_excels.py
 - **Build / Buy / Borrow / Bot** — cadre de décision par use case
 - **IA Responsable** — 8 principes, alignement Morocco AI 2030 / EU AI Act / UNESCO
 
-## 🔐 Contraintes réglementaires
+## 🛡️ Conformité & réglementation
 
-Conformité **CNDP**, hébergement souverain marocain pour les données sensibles,
-alignement **Morocco AI 2030** / **Digital Morocco 2030**, éthique IA
-(équité, transparence, explicabilité).
+Le module **`tools/conformite.html`** centralise les aspects de conformité, traités
+*by design* à chaque phase de la mission :
+
+**Réglementation locale 🇲🇦**
+- **CNDP — Loi 09-08** (protection des données personnelles)
+- **Loi 05-20** cybersécurité & **DGSSI / DNSSI**
+- **Morocco AI 2030** / **Digital Morocco 2030**
+- **Code du travail** (encadrement people analytics / RH)
+
+**Réglementation & standards internationaux 🌍**
+- **EU AI Act** (Règlement UE 2024/1689) — classification par niveau de risque
+- **RGPD / GDPR** (AIPD art. 35, décision automatisée art. 22)
+- **UNESCO** — Recommandation sur l'éthique de l'IA · **OCDE** — Principes IA
+- **ISO/IEC 42001** (management de l'IA), **ISO/IEC 27001** (sécurité), **NIST AI RMF**
+
+**Fonctionnalités du module**
+- Cartographie des 12 référentiels (local + international)
+- Classification des 10 use cases par niveau de risque EU AI Act (export CSV)
+- Checklist de conformité par use case (AIPD/DPIA, registre, human-in-the-loop…)
+- Matrice de traçabilité **Charte IA (8 principes) ↔ Réglementation**
+- Souveraineté & matrice de résidence des données (Public/Interne/Confidentiel/Critique)
+  et garde-fous GenAI pour CorpGPT
+
+> Hébergement **souverain marocain** obligatoire pour les données critiques (RH, secrets
+> industriels) ; éthique IA : équité, transparence, explicabilité, human-in-the-loop.
 
 ---
 

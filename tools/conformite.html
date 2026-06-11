@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conformité & Réglementation IA — Sia × Cosumar</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/sia.css">
+<style>
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:22px;flex-wrap:wrap}
+.tab{padding:10px 16px;font-size:.86rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent}
+.tab.active{color:var(--navy);border-color:var(--teal)}
+.tabpane{display:none}.tabpane.active{display:block}
+.reg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+.reg{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border-top:4px solid var(--navy2);position:relative}
+.reg.intl{border-top-color:var(--teal)}
+.reg .rflag{font-size:1.3rem}
+.reg .rcode{font-family:'Syne',sans-serif;font-weight:800;color:var(--navy-dark);font-size:1rem;margin-top:6px}
+.reg .rname{font-size:.8rem;color:var(--muted);margin-top:2px;min-height:32px}
+.reg .rdesc{font-size:.82rem;color:var(--text);margin-top:10px;line-height:1.55}
+.reg .rtags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.risk-legend{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 18px}
+.risk-pill{font-size:.74rem;font-weight:700;padding:5px 12px;border-radius:20px;color:#fff}
+.r-unaccept{background:#7a1f1a}.r-high{background:var(--red)}.r-limited{background:var(--gold)}.r-minimal{background:var(--green)}
+.ck-item{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.ck-item:last-child{border:none}
+.ck-item input{width:18px;height:18px;accent-color:var(--teal);flex-shrink:0;margin-top:1px;cursor:pointer}
+.ck-item .ckn{font-weight:600;font-size:.86rem;color:var(--navy-dark)}
+.ck-item.done .ckn{text-decoration:line-through;color:var(--muted)}
+.ck-item .ckm{font-size:.76rem;color:var(--muted);margin-top:2px}
+.ck-item .ckref{font-size:.68rem;font-weight:700;color:var(--teal-dark);background:rgba(0,168,150,.1);padding:2px 7px;border-radius:5px;white-space:nowrap}
+.map-row td:first-child{font-weight:600;color:var(--navy-dark)}
+.sov{display:flex;gap:14px;align-items:flex-start;padding:14px;border:1px solid var(--line);border-radius:11px;background:var(--cream);margin-bottom:12px}
+.sov .si{font-size:1.4rem}
+.sov .st{font-weight:700;color:var(--navy-dark);font-size:.9rem}
+.sov .sd{font-size:.8rem;color:var(--muted);margin-top:3px;line-height:1.5}
+.gradebox{font-family:'Syne',sans-serif;font-weight:800;font-size:.95rem;padding:5px 12px;border-radius:8px;color:#fff;display:inline-block}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="brand-dot"></span><span class="brand-name">Sia<b>·</b>Cosumar</span><span class="brand-sub">Conformité & Réglementation</span></div>
+  <nav class="topnav">
+    <a href="../index.html" class="home">← Hub</a>
+    <a href="dashboard-copil.html">COPIL</a>
+    <a href="use-cases-ia.html">Use Cases</a>
+    <a href="roadmap-builder.html">Roadmap</a>
+    <a href="simulateur-coe.html">CoE</a>
+    <a href="conformite.html" class="active">Conformité</a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="eyebrow">🛡️ Transversal · IA Responsable</div>
+    <h1 class="page-title">Conformité & cadre réglementaire IA</h1>
+    <p class="page-sub">Cartographie des obligations légales — locales (Maroc) et internationales — applicables au déploiement de l'IA chez Cosumar. Classification des use cases par niveau de risque, checklists de conformité et traçabilité.</p>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi navy"><div class="kpi-val">12</div><div class="kpi-label">Référentiels suivis</div><div class="kpi-foot">5 locaux · 7 internationaux</div></div>
+    <div class="kpi gold"><div class="kpi-val" id="k-high">—</div><div class="kpi-label">UC à risque élevé</div><div class="kpi-foot">EU AI Act — Annexe III</div></div>
+    <div class="kpi teal"><div class="kpi-val" id="k-comp">—</div><div class="kpi-label">Conformité moyenne</div><div class="kpi-foot">checklist par UC</div></div>
+    <div class="kpi"><div class="kpi-val">100%</div><div class="kpi-label">Données sensibles</div><div class="kpi-foot">hébergement souverain 🇲🇦</div></div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="ref">📚 Référentiels</div>
+    <div class="tab" data-tab="risk">⚖️ Classification EU AI Act</div>
+    <div class="tab" data-tab="check">✅ Checklist par use case</div>
+    <div class="tab" data-tab="map">🔗 Charte ↔ Réglementation</div>
+    <div class="tab" data-tab="sov">🇲🇦 Souveraineté & données</div>
+  </div>
+
+  <!-- REFERENTIELS -->
+  <div class="tabpane active" id="tab-ref">
+    <h3 style="color:var(--navy-dark);margin:0 0 4px">Réglementation locale — Maroc 🇲🇦</h3>
+    <p class="muted" style="font-size:.85rem;margin-bottom:14px">Cadre national applicable obligatoirement aux traitements opérés au Maroc.</p>
+    <div class="reg-grid" id="reg-local" style="margin-bottom:30px"></div>
+    <h3 style="color:var(--navy-dark);margin:0 0 4px">Réglementation & standards internationaux 🌍</h3>
+    <p class="muted" style="font-size:.85rem;margin-bottom:14px">Applicables (export UE, filiales) ou retenus comme standards de référence (best practice).</p>
+    <div class="reg-grid" id="reg-intl"></div>
+  </div>
+
+  <!-- RISK CLASSIFICATION -->
+  <div class="tabpane" id="tab-risk">
+    <div class="panel panel-pad mb">
+      <h3 style="color:var(--navy-dark);margin-bottom:8px">Pyramide de risque — EU AI Act</h3>
+      <p class="muted" style="font-size:.85rem;margin-bottom:10px">Chaque use case est classé selon l'approche par les risques de l'EU AI Act (Règlement UE 2024/1689). Les systèmes à risque élevé déclenchent des obligations renforcées (documentation, supervision humaine, gestion des risques, évaluation de conformité).</p>
+      <div class="risk-legend">
+        <span class="risk-pill r-unaccept">Inacceptable — interdit</span>
+        <span class="risk-pill r-high">Élevé — obligations renforcées</span>
+        <span class="risk-pill r-limited">Limité — transparence</span>
+        <span class="risk-pill r-minimal">Minimal — bonnes pratiques</span>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>Classification des 10 use cases</h3><button class="btn sm teal" onclick="exportRisk()">⬇ CSV</button></div>
+      <div class="tbl-scroll"><table class="tbl"><thead><tr><th>Use Case</th><th>Direction</th><th>Niveau de risque</th><th>Justification</th><th>Obligations clés</th></tr></thead><tbody id="risk-body"></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- CHECKLIST -->
+  <div class="tabpane" id="tab-check">
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-head"><h3>Checklist de conformité</h3>
+          <select id="ck-uc" onchange="renderCheck()" style="width:auto;min-width:200px"></select>
+        </div>
+        <div class="panel-pad">
+          <div class="flex between center mb"><span class="muted" style="font-size:.82rem">Avancement</span><span class="gradebox" id="ck-grade" style="background:var(--teal)">0%</span></div>
+          <div class="bar mb"><span id="ck-bar" style="width:0%"></span></div>
+          <div id="ck-list"></div>
+        </div>
+      </div>
+      <div class="panel panel-pad">
+        <h3 style="color:var(--navy-dark);margin-bottom:8px">Démarche AIPD / DPIA</h3>
+        <p class="muted" style="font-size:.84rem;line-height:1.6">L'<b>Analyse d'Impact relative à la Protection des Données</b> (AIPD / DPIA) est requise pour tout traitement susceptible d'engendrer un risque élevé pour les droits des personnes — obligatoire au titre de la <b>CNDP (loi 09-08)</b> et du <b>RGPD (art. 35)</b> pour les exports UE.</p>
+        <div class="divider"></div>
+        <h4 style="color:var(--navy-dark);font-size:.92rem;margin-bottom:10px">Étapes type</h4>
+        <ol style="font-size:.84rem;color:var(--text);line-height:1.9;padding-left:18px">
+          <li>Description du traitement & finalités</li>
+          <li>Base légale & test de proportionnalité</li>
+          <li>Cartographie des données & flux (résidence)</li>
+          <li>Évaluation des risques (droits & libertés)</li>
+          <li>Mesures de mitigation (sécurité, minimisation)</li>
+          <li>Avis du DPO & consultation CNDP si requis</li>
+          <li>Revue périodique & journalisation</li>
+        </ol>
+        <div class="divider"></div>
+        <div class="sov" style="margin:0"><div class="si">🧑‍⚖️</div><div><div class="st">Human-in-the-loop systématique</div><div class="sd">Aucune décision produisant des effets juridiques ou significatifs (RH, crédit, sanction) n'est entièrement automatisée — supervision humaine garantie (RGPD art. 22 · EU AI Act).</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAPPING -->
+  <div class="tabpane" id="tab-map">
+    <div class="panel"><div class="panel-head"><h3>Traçabilité — Charte IA Cosumar ↔ Réglementation</h3><span class="ph-sub">8 principes × référentiels</span></div>
+      <div class="tbl-scroll"><table class="tbl map-row"><thead><tr><th>Principe de la Charte IA</th><th>Réglementation locale</th><th>Réglementation / standard international</th></tr></thead><tbody id="map-body"></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- SOUVERAINETE -->
+  <div class="tabpane" id="tab-sov">
+    <div class="grid-2">
+      <div class="panel panel-pad">
+        <h3 style="color:var(--navy-dark);margin-bottom:12px">Souveraineté & résidence des données</h3>
+        <div class="sov"><div class="si">🇲🇦</div><div><div class="st">Hébergement souverain marocain</div><div class="sd">Les données sensibles et stratégiques (RH, contrats, données industrielles critiques) sont hébergées au Maroc, en cohérence avec la stratégie de souveraineté numérique nationale.</div></div></div>
+        <div class="sov"><div class="si">🗂️</div><div><div class="st">Classification des données</div><div class="sd">Public · Interne · Confidentiel · Critique. Le niveau détermine l'hébergement autorisé et les mesures de chiffrement.</div></div></div>
+        <div class="sov"><div class="si">🔐</div><div><div class="st">Chiffrement & contrôle d'accès</div><div class="sd">Chiffrement au repos et en transit, gestion des habilitations (moindre privilège), journalisation des accès — alignés ISO/IEC 27001 & DGSSI.</div></div></div>
+        <div class="sov"><div class="si">🔄</div><div><div class="st">Réversibilité & anti lock-in</div><div class="sd">Clauses de réversibilité dans les contrats Buy/Borrow, portabilité des données et des modèles (cadre Build/Buy/Borrow/Bot).</div></div></div>
+      </div>
+      <div class="panel panel-pad">
+        <h3 style="color:var(--navy-dark);margin-bottom:12px">Matrice résidence par classe de données</h3>
+        <div class="tbl-scroll"><table class="tbl"><thead><tr><th>Classe</th><th>Exemples</th><th>Hébergement</th><th>LLM / GenAI</th></tr></thead><tbody>
+          <tr><td><span class="chip green">Public</span></td><td>Communication, doc. publique</td><td>Cloud international OK</td><td>Autorisé</td></tr>
+          <tr><td><span class="chip navy">Interne</span></td><td>Reporting, prévisions</td><td>Cloud avec garanties UE/MA</td><td>Sous conditions</td></tr>
+          <tr><td><span class="chip amber">Confidentiel</span></td><td>Contrats, finances</td><td>Souverain 🇲🇦 privilégié</td><td>Environnement privé</td></tr>
+          <tr><td><span class="chip red">Critique</span></td><td>Données RH, secrets industriels</td><td>Souverain 🇲🇦 obligatoire</td><td>On-prem / souverain only</td></tr>
+        </tbody></table></div>
+        <div class="divider"></div>
+        <h4 style="color:var(--navy-dark);font-size:.92rem;margin-bottom:8px">CorpGPT — garde-fous GenAI</h4>
+        <ul style="font-size:.82rem;color:var(--text);line-height:1.8;padding-left:18px">
+          <li>Déploiement en environnement souverain / privé</li>
+          <li>RAG sur base documentaire maîtrisée (pas d'entraînement sur données perso)</li>
+          <li>Filtres anti-fuite (DLP) & anonymisation</li>
+          <li>Information explicite : l'utilisateur dialogue avec une IA</li>
+          <li>Journalisation & supervision humaine</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="sia-foot"><div><b>Sia × Cosumar</b> · Conformité & Réglementation IA</div><div>CNDP · EU AI Act · RGPD · UNESCO · ISO 42001</div></footer>
+<div id="toast"></div>
+<script src="../assets/sia.js"></script>
+<script>
+// ---------- Référentiels ----------
+const localRegs=[
+ {flag:"🇲🇦",code:"CNDP — Loi 09-08",name:"Protection des données à caractère personnel",desc:"Cadre marocain de référence. Déclaration/autorisation des traitements, droits des personnes, encadrement des données sensibles.",tags:["Obligatoire","Données perso"]},
+ {flag:"🛡️",code:"Loi 05-20",name:"Cybersécurité",desc:"Obligations de sécurité des SI d'importance vitale, gestion des incidents, supervisée par la DGSSI.",tags:["Obligatoire","Sécurité"]},
+ {flag:"🇲🇦",code:"DGSSI / DNSSI",name:"Directive Nationale Sécurité des SI",desc:"Mesures de sécurité de référence pour les systèmes d'information sensibles au Maroc.",tags:["Sécurité","Souveraineté"]},
+ {flag:"🚀",code:"Morocco AI / Digital 2030",name:"Stratégie nationale IA & numérique",desc:"Cadre d'orientation national : souveraineté numérique, développement de l'IA de confiance, talents data.",tags:["Stratégie","Alignement"]},
+ {flag:"⚖️",code:"Code du travail",name:"Droit social marocain",desc:"Encadre les traitements RH (people analytics, recrutement) : non-discrimination, information, dialogue social.",tags:["RH","Équité"]},
+];
+const intlRegs=[
+ {flag:"🇪🇺",code:"EU AI Act",name:"Règlement UE 2024/1689 sur l'IA",desc:"Approche par les risques (inacceptable › élevé › limité › minimal). Applicable en cas d'export UE ou d'usage affectant des personnes dans l'UE.",tags:["Applicable export","Risque"]},
+ {flag:"🇪🇺",code:"RGPD / GDPR",name:"Règlement UE 2016/679",desc:"Protection des données pour les traitements liés à l'UE. AIPD (art. 35), décision automatisée (art. 22), droits renforcés.",tags:["Applicable export","Données perso"]},
+ {flag:"🕊️",code:"UNESCO",name:"Recommandation sur l'éthique de l'IA (2021)",desc:"Référentiel éthique adopté par le Maroc : dignité humaine, équité, durabilité, supervision humaine.",tags:["Éthique","Référence"]},
+ {flag:"🌐",code:"OCDE",name:"Principes IA de l'OCDE",desc:"IA digne de confiance : transparence, robustesse, responsabilité, croissance inclusive.",tags:["Éthique","Référence"]},
+ {flag:"📘",code:"ISO/IEC 42001",name:"Système de management de l'IA (AIMS)",desc:"Standard de référence pour gouverner le cycle de vie de l'IA de manière responsable et auditable.",tags:["Standard","Gouvernance"]},
+ {flag:"🔒",code:"ISO/IEC 27001",name:"Sécurité de l'information (SMSI)",desc:"Socle de sécurité de l'information — base des mesures techniques et organisationnelles.",tags:["Standard","Sécurité"]},
+ {flag:"🧭",code:"NIST AI RMF",name:"AI Risk Management Framework",desc:"Cadre de gestion des risques IA (Govern, Map, Measure, Manage) — bonne pratique de référence.",tags:["Standard","Risque"]},
+];
+function renderRegs(){
+  const card=(r,intl)=>`<div class="reg ${intl?'intl':''}"><div class="rflag">${r.flag}</div><div class="rcode">${r.code}</div><div class="rname">${r.name}</div><div class="rdesc">${r.desc}</div><div class="rtags">${r.tags.map(t=>`<span class="chip ${intl?'teal':'navy'}">${t}</span>`).join('')}</div></div>`;
+  document.getElementById('reg-local').innerHTML=localRegs.map(r=>card(r,false)).join('');
+  document.getElementById('reg-intl').innerHTML=intlRegs.map(r=>card(r,true)).join('');
+}
+
+// ---------- Risk classification ----------
+const UCRISK=[
+ {n:"Maintenance prédictive turbines",d:"Industrielle",risk:"minimal",j:"Données industrielles (capteurs), pas de personnes physiques.",o:"Bonnes pratiques, qualité données, cybersécurité."},
+ {n:"Optimisation process sucrier",d:"Industrielle",risk:"minimal",j:"Optimisation procédé, aucune donnée personnelle.",o:"Documentation technique, traçabilité modèle."},
+ {n:"Prévision récolte satellite",d:"Amont Agricole",risk:"minimal",j:"Imagerie & agronomie, pas de personnes.",o:"Qualité des données, dépendance fournisseur."},
+ {n:"Demand forecasting sucre",d:"Supply Chain",risk:"minimal",j:"Données agrégées de marché.",o:"Bonnes pratiques, gouvernance data."},
+ {n:"OCR factures fournisseurs",d:"Financière",risk:"limited",j:"Traite des données (contacts fournisseurs) — risque limité.",o:"Minimisation, human-in-the-loop validation, archivage conforme."},
+ {n:"Chatbot RH CorpGPT",d:"RH",risk:"limited",j:"Système conversationnel : obligation de transparence (informer l'utilisateur qu'il s'agit d'une IA).",o:"Transparence, RAG maîtrisé, anonymisation, supervision."},
+ {n:"Détection anomalies énergie",d:"Industrielle",risk:"minimal",j:"Données techniques de consommation.",o:"Bonnes pratiques, robustesse."},
+ {n:"Analyse contrats NLP",d:"Juridique",risk:"limited",j:"Documents confidentiels — confidentialité & exactitude.",o:"Environnement souverain, validation juriste, accès restreint."},
+ {n:"People analytics & turnover",d:"RH",risk:"high",j:"Système relatif à l'emploi & la gestion des travailleurs — risque ÉLEVÉ (EU AI Act Annexe III).",o:"AIPD, audit de biais, supervision humaine, transparence, dialogue social, documentation renforcée."},
+ {n:"Route optimization livraisons",d:"Supply Chain",risk:"minimal",j:"Optimisation logistique, données géo/clients agrégées.",o:"Qualité référentiel, bonnes pratiques."},
+];
+const riskMeta={unaccept:{c:'r-unaccept',l:'Inacceptable'},high:{c:'r-high',l:'Élevé'},limited:{c:'r-limited',l:'Limité'},minimal:{c:'r-minimal',l:'Minimal'}};
+function renderRisk(){
+  let h='';
+  UCRISK.forEach(u=>{ const m=riskMeta[u.risk];
+    h+=`<tr><td><b style="color:var(--navy-dark)">${u.n}</b></td><td><span class="chip navy">${u.d}</span></td><td><span class="risk-pill ${m.c}">${m.l}</span></td><td style="max-width:280px;color:var(--muted);font-size:.8rem">${u.j}</td><td style="max-width:280px;font-size:.8rem">${u.o}</td></tr>`;
+  });
+  document.getElementById('risk-body').innerHTML=h;
+  document.getElementById('k-high').textContent=UCRISK.filter(u=>u.risk==='high').length;
+}
+function exportRisk(){
+  const rows=[["Use Case","Direction","Niveau de risque EU AI Act","Justification","Obligations clés"]];
+  UCRISK.forEach(u=>rows.push([u.n,u.d,riskMeta[u.risk].l,u.j,u.o]));
+  downloadCSV('Cosumar_Classification_EU_AI_Act.csv',rows);
+}
+
+// ---------- Checklist ----------
+const CHECKS=[
+ {n:"AIPD / DPIA réalisée",m:"Analyse d'impact pour traitements à risque",ref:"CNDP · RGPD 35"},
+ {n:"Déclaration / autorisation CNDP",m:"Formalité préalable selon la finalité",ref:"Loi 09-08"},
+ {n:"Base légale du traitement définie",m:"Consentement, intérêt légitime, obligation…",ref:"CNDP · RGPD"},
+ {n:"Registre des traitements à jour",m:"Inventaire des traitements IA",ref:"RGPD 30"},
+ {n:"Hébergement souverain (données sensibles)",m:"Résidence Maroc pour données critiques",ref:"Souveraineté"},
+ {n:"Minimisation & durée de conservation",m:"Données strictement nécessaires",ref:"CNDP · RGPD"},
+ {n:"Droits des personnes assurés",m:"Accès, rectification, opposition",ref:"Loi 09-08"},
+ {n:"Human-in-the-loop / supervision",m:"Pas de décision auto. significative",ref:"RGPD 22 · AI Act"},
+ {n:"Documentation technique du système",m:"Conception, données, performance",ref:"EU AI Act 11"},
+ {n:"Évaluation des biais & équité",m:"Audit de non-discrimination",ref:"AI Act · UNESCO"},
+ {n:"Transparence vis-à-vis des utilisateurs",m:"Information IA & explicabilité",ref:"AI Act · OCDE"},
+ {n:"Traçabilité & journalisation",m:"Logs des décisions & accès",ref:"ISO 42001"},
+ {n:"Mesures de cybersécurité",m:"Chiffrement, habilitations, incidents",ref:"Loi 05-20 · ISO 27001"},
+ {n:"Plan de gestion des risques IA",m:"Identification & mitigation continues",ref:"NIST · ISO 42001"},
+];
+let ckUC=0;
+function initCheckSelect(){
+  document.getElementById('ck-uc').innerHTML=UCRISK.map((u,i)=>`<option value="${i}">${u.n}</option>`).join('');
+}
+function ckKey(i){ return 'conf.ck.'+ckUC; }
+function renderCheck(){
+  ckUC=+document.getElementById('ck-uc').value;
+  const high=UCRISK[ckUC].risk==='high', limited=UCRISK[ckUC].risk==='limited';
+  // pre-mark some as done for non-high to show realistic state, but use stored if present
+  let state=store.get(ckKey(),null);
+  if(!state){ state=CHECKS.map((c,i)=> high? false : (limited? i<7 : i<5 || [11,12,13].includes(i)) ); }
+  let h='';
+  CHECKS.forEach((c,i)=>{
+    h+=`<div class="ck-item ${state[i]?'done':''}"><input type="checkbox" ${state[i]?'checked':''} onchange="toggleCk(${i},this.checked)"><div style="flex:1"><div class="ckn">${c.n}</div><div class="ckm">${c.m}</div></div><span class="ckref">${c.ref}</span></div>`;
+  });
+  document.getElementById('ck-list').innerHTML=h;
+  window.__ckState=state;
+  updateGrade(state);
+}
+function toggleCk(i,v){ window.__ckState[i]=v; store.set(ckKey(),window.__ckState); renderCheck(); }
+function updateGrade(state){
+  const done=state.filter(Boolean).length, pct=Math.round(done/state.length*100);
+  document.getElementById('ck-bar').style.width=pct+'%';
+  const g=document.getElementById('ck-grade'); g.textContent=pct+'%';
+  g.style.background=pct>=90?'var(--green)':pct>=60?'var(--gold)':'var(--red)';
+  // global average across all UC
+  let tot=0;
+  UCRISK.forEach((u,idx)=>{ const s=store.get('conf.ck.'+idx,null); tot += s? s.filter(Boolean).length/CHECKS.length : (idx===ckUC? done/state.length:0); });
+  document.getElementById('k-comp').textContent=Math.round(tot/UCRISK.length*100)+'%';
+}
+
+// ---------- Mapping ----------
+const MAP=[
+ ["🇲🇦 Conformité CNDP","Loi 09-08 · DGSSI","RGPD"],
+ ["🛡️ Souveraineté des données","Stratégie souveraineté · Loi 05-20","—"],
+ ["🧑 Human-in-the-loop","—","RGPD art. 22 · EU AI Act"],
+ ["🔍 Transparence","CNDP (information)","EU AI Act · OCDE"],
+ ["⚖️ Responsabilité","Code des obligations","ISO/IEC 42001 · OCDE"],
+ ["🔐 Sécurité","Loi 05-20 · DGSSI","ISO/IEC 27001 · NIST"],
+ ["🤝 Équité","Code du travail · CNDP","EU AI Act · UNESCO"],
+ ["🌱 Bien-être","Morocco AI 2030","UNESCO · OCDE"],
+];
+function renderMap(){
+  document.getElementById('map-body').innerHTML=MAP.map(([p,l,i])=>`<tr><td>${p}</td><td><span class="chip navy">${l}</span></td><td><span class="chip teal">${i}</span></td></tr>`).join('');
+}
+
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); document.getElementById('tab-'+t.dataset.tab).classList.add('active');
+}));
+renderRegs();renderRisk();initCheckSelect();renderCheck();renderMap();
+</script>
+</body>
+</html>

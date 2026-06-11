@@ -114,4 +114,5 @@ footer.sia-foot b{color:var(--navy-dark)}
   .topnav a:not(.home):not(.active){display:none}
   .wrap{padding:24px 18px 60px}
   .grid-2,.grid-3{grid-template-columns:1fr}
+  .compliance-split{grid-template-columns:1fr!important}
 }
