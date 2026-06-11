@@ -15,6 +15,7 @@ sur GitHub Pages. Les outils sont 100 % statiques (HTML/CSS/JS, aucune dépendan
 index.html                        ← Hub de la mission (+ sauvegarde/restauration JSON)
 tools/
   executive-story.html            ← Premium : narration plein écran CODIR (10 slides) + export deck PDF
+  jumeau-usine.html               ← Premium : jumeau visuel de la sucrerie, UC cartographiés sur les équipements
   monte-carlo.html                ← Premium : simulation probabiliste du portefeuille (P10/P50/P90)
   acculturation.html              ← Phase 1 : séminaire C-Level, 50 Champions (3 cohortes × 6 modules), 1-to-1, com
   dashboard-copil.html            ← Pilotage : Gantt 18 sem., livrables, risques, décisions, allocation
@@ -97,6 +98,11 @@ Le module **`tools/conformite.html`** centralise les aspects de conformité, tra
   pour le CODIR : 10 slides (mandat, diagnostic, potentiel, funnel, roadmap, ROI, CoE,
   conformité, vision) avec animations, navigation clavier/tactile, lecture auto, plein écran
   et **export du deck en PDF** (impression navigateur).
+- **Jumeau visuel de l'usine** (`tools/jumeau-usine.html`) — schéma interactif de la
+  sucrerie (amont agricole, ligne de production diffusion→centrifugation, énergie & vapeur,
+  stockage/expédition, administration, logistique). Chaque use case s'allume sur l'équipement
+  concerné ; survol → mise en valeur de la zone, clic → fiche, filtres par vague et
+  **tournée guidée** animée.
 - **Simulateur Monte-Carlo** (`tools/monte-carlo.html`) — au lieu d'un ROI unique, une
   **distribution probabiliste** de la VAN du portefeuille : tirages triangulaires (coûts,
   bénéfices) + probabilité de succès par use case, propagés sur 2 000 à 20 000 scénarios.
