@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard COPIL — Sia × Cosumar</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/sia.css">
+<style>
+.gantt{overflow:auto}
+.gantt table{border-collapse:collapse;width:100%;min-width:920px}
+.gantt th,.gantt td{font-size:.74rem}
+.gantt thead th{text-align:center;padding:8px 4px;color:var(--muted);font-weight:700;border-bottom:2px solid var(--line2);position:sticky;top:0;background:#fff}
+.gantt thead th.wk{width:42px}
+.gantt .ph-label{font-weight:700;color:var(--navy-dark);white-space:nowrap;padding:9px 14px;border-bottom:1px solid var(--line);position:sticky;left:0;background:#fff;z-index:2}
+.gantt td.cell{border-bottom:1px solid var(--line);border-left:1px solid rgba(31,78,121,.05);height:34px;position:relative}
+.gantt .bar-seg{position:absolute;left:2px;right:2px;top:7px;bottom:7px;border-radius:5px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.66rem;font-weight:700}
+.seg-1{background:var(--gold)}.seg-2{background:var(--teal)}.seg-3{background:var(--navy2)}.seg-4{background:var(--navy-dark)}.seg-m{background:var(--red)}
+.gantt .today{position:absolute;top:0;bottom:0;width:2px;background:var(--red);z-index:3}
+.milestone{position:absolute;left:50%;top:50%;width:13px;height:13px;background:var(--red);transform:translate(-50%,-50%) rotate(45deg);border:2px solid #fff;border-radius:2px}
+.deliv{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.deliv:last-child{border:none}
+.deliv input[type=checkbox]{width:18px;height:18px;accent-color:var(--teal);flex-shrink:0;cursor:pointer}
+.deliv .dx{flex:1}
+.deliv .dn{font-weight:600;font-size:.86rem;color:var(--navy-dark)}
+.deliv.done .dn{text-decoration:line-through;color:var(--muted)}
+.deliv .dm{font-size:.74rem;color:var(--muted)}
+.risk-sev{width:10px;height:10px;border-radius:50%;display:inline-block}
+.heat{display:inline-block;width:34px;text-align:center;border-radius:6px;font-weight:700;font-size:.74rem;padding:3px 0;color:#fff}
+.alloc-bar{display:flex;height:26px;border-radius:7px;overflow:hidden;border:1px solid var(--line)}
+.alloc-seg{display:flex;align-items:center;justify-content:center;color:#fff;font-size:.68rem;font-weight:700}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:20px;flex-wrap:wrap}
+.tab{padding:10px 16px;font-size:.86rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:.15s}
+.tab.active{color:var(--navy);border-color:var(--teal)}
+.tabpane{display:none}.tabpane.active{display:block}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="brand-dot"></span><span class="brand-name">Sia<b>·</b>Cosumar</span><span class="brand-sub">Dashboard COPIL</span></div>
+  <nav class="topnav">
+    <a href="../index.html" class="home">← Hub</a>
+    <a href="dashboard-copil.html" class="active">COPIL</a>
+    <a href="dashboard-entretiens.html">Entretiens</a>
+    <a href="use-cases-ia.html">Use Cases</a>
+    <a href="roadmap-builder.html">Roadmap</a>
+    <a href="simulateur-coe.html">CoE</a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="eyebrow">⚙️ Transversal · Pilotage</div>
+    <h1 class="page-title">Dashboard de pilotage COPIL</h1>
+    <p class="page-sub">Vue de pilotage de la mission 18 semaines : planning Gantt, suivi des livrables, registre des risques, journal des décisions et allocation de l'équipe Sia.</p>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi navy"><div class="kpi-val" id="kpi-week">S7</div><div class="kpi-label">Semaine en cours</div><div class="kpi-foot">Phase 3 · Stratégie</div></div>
+    <div class="kpi teal"><div class="kpi-val" id="kpi-deliv">—</div><div class="kpi-label">Livrables complétés</div><div class="kpi-foot" id="kpi-deliv-foot"></div></div>
+    <div class="kpi gold"><div class="kpi-val" id="kpi-risk">—</div><div class="kpi-label">Risques actifs</div><div class="kpi-foot" id="kpi-risk-foot"></div></div>
+    <div class="kpi"><div class="kpi-val">6</div><div class="kpi-label">Consultants Sia</div><div class="kpi-foot">+ Advisory Board</div></div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="gantt">📅 Planning Gantt</div>
+    <div class="tab" data-tab="deliv">✅ Livrables</div>
+    <div class="tab" data-tab="risk">⚠️ Risques</div>
+    <div class="tab" data-tab="dec">📝 Décisions</div>
+    <div class="tab" data-tab="alloc">👥 Allocation</div>
+  </div>
+
+  <!-- GANTT -->
+  <div class="tabpane active" id="tab-gantt">
+    <div class="panel">
+      <div class="panel-head"><h3>Planning sur 18 semaines</h3><span class="ph-sub">◆ jalons clés · trait rouge = semaine courante (S7)</span></div>
+      <div class="panel-pad gantt" id="gantt"></div>
+    </div>
+  </div>
+
+  <!-- LIVRABLES -->
+  <div class="tabpane" id="tab-deliv">
+    <div class="grid-2">
+      <div class="panel"><div class="panel-head"><h3>Checklist des livrables</h3><span class="ph-sub" id="deliv-count"></span></div><div class="panel-pad" id="deliv-list"></div></div>
+      <div class="panel"><div class="panel-head"><h3>Avancement par phase</h3></div><div class="panel-pad" id="deliv-phase"></div></div>
+    </div>
+  </div>
+
+  <!-- RISQUES -->
+  <div class="tabpane" id="tab-risk">
+    <div class="panel"><div class="panel-head"><h3>Registre des risques</h3><span class="ph-sub">Probabilité × Impact (échelle 1–5)</span></div>
+      <div class="tbl-scroll"><table class="tbl"><thead><tr><th>#</th><th>Risque</th><th>Catégorie</th><th>Prob.</th><th>Impact</th><th>Score</th><th>Mitigation</th><th>Statut</th></tr></thead><tbody id="risk-body"></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- DECISIONS -->
+  <div class="tabpane" id="tab-dec">
+    <div class="panel"><div class="panel-head"><h3>Journal des décisions</h3><span class="ph-sub">Validées en COPIL</span></div>
+      <div class="tbl-scroll"><table class="tbl"><thead><tr><th>Date</th><th>Décision</th><th>Instance</th><th>Owner</th><th>Statut</th></tr></thead><tbody id="dec-body"></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- ALLOC -->
+  <div class="tabpane" id="tab-alloc">
+    <div class="panel"><div class="panel-head"><h3>Allocation de l'équipe par phase</h3><span class="ph-sub">% temps consultant</span></div><div class="panel-pad" id="alloc-list"></div></div>
+  </div>
+</div>
+
+<footer class="sia-foot"><div><b>Sia × Cosumar</b> · Dashboard COPIL</div><div>Confidentiel · 2026</div></footer>
+<div id="toast"></div>
+<script src="../assets/sia.js"></script>
+<script>
+const CURRENT_WEEK = 7;
+// ---- Gantt data: phases & tasks (start week, duration) ----
+const tasks = [
+  {p:1, name:"Séminaire C-Level", s:1, d:2, seg:1},
+  {p:1, name:"Formation 50 Champions (3 cohortes)", s:2, d:3, seg:1},
+  {p:1, name:"Sessions 1-to-1 experts", s:2, d:2, seg:1},
+  {p:2, name:"42 entretiens · 8 directions", s:3, d:3, seg:2},
+  {p:2, name:"Audit SI (SAP, Salesforce, MES…)", s:3, d:2, seg:2},
+  {p:2, name:"Scoring maturité IA & Data", s:4, d:2, seg:2},
+  {p:2, name:"Benchmark 14 opérateurs sucriers", s:4, d:2, seg:2},
+  {p:3, name:"Ateliers co-identification UC", s:6, d:2, seg:3},
+  {p:3, name:"Funnel 3 filtres & qualification", s:7, d:2, seg:3},
+  {p:3, name:"Priorisation COPIL multicritère", s:9, d:1, seg:3},
+  {p:3, name:"Roadmap 3 vagues & budget", s:9, d:2, seg:3},
+  {p:4, name:"Design CoE hub-and-spoke", s:12, d:2, seg:4},
+  {p:4, name:"Gouvernance & Charte IA", s:13, d:2, seg:4},
+  {p:4, name:"Plan compétences & MLOps", s:14, d:2, seg:4},
+  {p:4, name:"Présentation CODIR", s:16, d:1, seg:4},
+];
+const milestones = {2:"Kickoff acculturation", 6:"Diagnostic validé", 11:"Roadmap validée COPIL", 16:"Restitution CODIR"};
+const WEEKS = 18;
+function buildGantt(){
+  let h = '<table><thead><tr><th style="position:sticky;left:0;background:#fff;text-align:left;padding-left:14px;min-width:230px">Chantier</th>';
+  for(let w=1;w<=WEEKS;w++) h+=`<th class="wk">S${w}</th>`;
+  h+='</tr></thead><tbody>';
+  let lastP=0;
+  tasks.forEach(t=>{
+    if(t.p!==lastP){ h+=`<tr><td class="ph-label" colspan="${WEEKS+1}">Phase ${t.p} — ${["","Acculturation","Diagnostic","Stratégie & Roadmap","Operating Model"][t.p]}</td></tr>`; lastP=t.p; }
+    h+='<tr><td style="position:sticky;left:0;background:#fff;font-weight:600;color:var(--navy-dark);padding:9px 14px;border-bottom:1px solid var(--line)">'+t.name+'</td>';
+    for(let w=1;w<=WEEKS;w++){
+      let inner='';
+      if(w===t.s) inner=`<div class="bar-seg seg-${t.seg}" style="right:${-(t.d-1)*100}%;width:calc(${t.d*100}% - 4px)">${t.d}s</div>`;
+      let ml = (milestones[w] && w>=t.s && w<t.s+t.d) ? '' : '';
+      let todayLine = w===CURRENT_WEEK?'<div class="today"></div>':'';
+      h+=`<td class="cell">${inner}${todayLine}</td>`;
+    }
+    h+='</tr>';
+  });
+  // milestone row
+  h+='<tr><td class="ph-label">◆ Jalons</td>';
+  for(let w=1;w<=WEEKS;w++){ h+=`<td class="cell">${milestones[w]?`<div class="milestone" title="${milestones[w]}"></div>`:''}${w===CURRENT_WEEK?'<div class="today"></div>':''}</td>`; }
+  h+='</tr></tbody></table>';
+  document.getElementById('gantt').innerHTML=h;
+}
+buildGantt();
+
+// ---- Livrables ----
+const delivs = [
+  {p:1,n:"Programme de formation Champions IA",done:true},
+  {p:1,n:"Supports pédagogiques (6 modules)",done:true},
+  {p:1,n:"Matériel de communication interne",done:true},
+  {p:1,n:"Document d'ambition IA",done:true},
+  {p:2,n:"Rapport de diagnostic de l'existant",done:true},
+  {p:2,n:"Scorecards maturité IA & Data",done:true},
+  {p:2,n:"Benchmark sectoriel (14 opérateurs)",done:true},
+  {p:2,n:"Cartographie des opportunités",done:false},
+  {p:3,n:"Liste qualifiée de use cases",done:false},
+  {p:3,n:"Fiches projets & matrice de priorisation",done:false},
+  {p:3,n:"Roadmap 3 vagues + budget par vague",done:false},
+  {p:3,n:"Plan de conduite du changement & KPIs",done:false},
+  {p:4,n:"Modèle de gouvernance & design CoE",done:false},
+  {p:4,n:"Charte IA Cosumar (8 principes)",done:false},
+  {p:4,n:"Cadre de conformité & plan compétences",done:false},
+  {p:4,n:"Cadre ROI & présentation CODIR",done:false},
+];
+function renderDeliv(){
+  const saved = store.get('copil.deliv', null);
+  if(saved) delivs.forEach((d,i)=>{ if(saved[i]!=null) d.done=saved[i]; });
+  let h='';
+  delivs.forEach((d,i)=>{
+    h+=`<div class="deliv ${d.done?'done':''}"><input type="checkbox" ${d.done?'checked':''} onchange="toggleDeliv(${i},this.checked)"><div class="dx"><div class="dn">${d.n}</div><div class="dm">Phase ${d.p}</div></div></div>`;
+  });
+  document.getElementById('deliv-list').innerHTML=h;
+  const done=delivs.filter(d=>d.done).length;
+  document.getElementById('deliv-count').textContent=`${done} / ${delivs.length}`;
+  document.getElementById('kpi-deliv').textContent=`${done}/${delivs.length}`;
+  document.getElementById('kpi-deliv-foot').textContent=Math.round(done/delivs.length*100)+'% réalisé';
+  // by phase
+  let ph='';
+  for(let p=1;p<=4;p++){
+    const arr=delivs.filter(d=>d.p===p), dn=arr.filter(d=>d.done).length;
+    const pct=Math.round(dn/arr.length*100);
+    ph+=`<div class="mb"><div class="flex between" style="margin-bottom:6px"><span style="font-weight:600;font-size:.85rem;color:var(--navy-dark)">Phase ${p} — ${["","Acculturation","Diagnostic","Stratégie","Operating Model"][p]}</span><span class="muted" style="font-size:.8rem">${dn}/${arr.length}</span></div><div class="bar"><span style="width:${pct}%;background:${pct===100?'var(--green)':'var(--teal)'}"></span></div></div>`;
+  }
+  document.getElementById('deliv-phase').innerHTML=ph;
+}
+function toggleDeliv(i,v){ delivs[i].done=v; store.set('copil.deliv', delivs.map(d=>d.done)); renderDeliv(); }
+renderDeliv();
+
+// ---- Risques ----
+const risks = [
+  {n:"Disponibilité limitée des sponsors métiers pour les entretiens",cat:"Organisation",p:4,i:4,m:"Planning verrouillé en amont par les DA, créneaux de repli",st:"Actif"},
+  {n:"Qualité / accessibilité des données SI hétérogènes",cat:"Data",p:4,i:5,m:"Audit data anticipé, cadrage périmètre réaliste par UC",st:"Actif"},
+  {n:"Résistance au changement des équipes terrain",cat:"Conduite du changement",p:3,i:4,m:"Programme Champions IA, communication interne continue",st:"Surveillé"},
+  {n:"Conformité CNDP & souveraineté des données sensibles",cat:"Réglementaire",p:3,i:5,m:"Hébergement souverain marocain, DPO impliqué dès la conception",st:"Actif"},
+  {n:"Sur-ambition du portefeuille UC vs capacité IT",cat:"Faisabilité",p:3,i:4,m:"Funnel 3 filtres, séquencement en 3 vagues, quick wins d'abord",st:"Surveillé"},
+  {n:"Dépendance à un éditeur unique (lock-in Build/Buy)",cat:"Architecture",p:2,i:3,m:"Cadre Build/Buy/Borrow/Bot, clauses de réversibilité",st:"Surveillé"},
+  {n:"Glissement du planning Phase 2 sur Phase 3",cat:"Planning",p:3,i:3,m:"Chevauchement S3-S6 maîtrisé, jalons COPIL fermes",st:"Maîtrisé"},
+  {n:"Budget IA non sécurisé pour la vague 1",cat:"Finance",p:2,i:4,m:"Business case ROI par UC, validation COMEX avant lancement",st:"Surveillé"},
+];
+function heatColor(s){ if(s>=16)return'#E0544E'; if(s>=10)return'#E5A50A'; if(s>=6)return'#3FA796'; return'#27AE60'; }
+function renderRisk(){
+  risks.sort((a,b)=>b.p*b.i-a.p*a.i);
+  const stChip={Actif:'red',Surveillé:'amber',Maîtrisé:'green'};
+  let h='';
+  risks.forEach((r,i)=>{ const sc=r.p*r.i;
+    h+=`<tr><td>R${i+1}</td><td style="max-width:240px"><b style="color:var(--navy-dark)">${r.n}</b></td><td><span class="chip">${r.cat}</span></td><td>${r.p}</td><td>${r.i}</td><td><span class="heat" style="background:${heatColor(sc)}">${sc}</span></td><td style="max-width:260px;color:var(--muted);font-size:.8rem">${r.m}</td><td><span class="chip ${stChip[r.st]}">${r.st}</span></td></tr>`;
+  });
+  document.getElementById('risk-body').innerHTML=h;
+  const active=risks.filter(r=>r.st==='Actif').length;
+  document.getElementById('kpi-risk').textContent=active;
+  document.getElementById('kpi-risk-foot').textContent=risks.length+' au registre';
+}
+renderRisk();
+
+// ---- Décisions ----
+const decisions = [
+  {date:"S1",d:"Validation du cadrage & du planning 18 semaines",ins:"COPIL",o:"A. Zriouil",st:"Validée"},
+  {date:"S2",d:"Périmètre des 8 directions à auditer",ins:"COPIL",o:"D. Martineau",st:"Validée"},
+  {date:"S4",d:"Référentiel maturité : 8 dim. IA / 9 dim. Data retenu",ins:"Comité opé.",o:"P. Leplatois",st:"Validée"},
+  {date:"S6",d:"Diagnostic validé — passage en Phase 3",ins:"COPIL",o:"D. Martineau",st:"Validée"},
+  {date:"S7",d:"Pondération scoring : valeur 30% / faisabilité 25% / impact 20%",ins:"Comité opé.",o:"L. Houngavou",st:"Validée"},
+  {date:"S9",d:"Présélection des 10 UC pour qualification ROI",ins:"Atelier",o:"I. El Allam",st:"En cours"},
+  {date:"S11",d:"Arbitrage roadmap 3 vagues & budget",ins:"COPIL",o:"J. Bordron",st:"À venir"},
+];
+function renderDec(){
+  const stChip={"Validée":'green',"En cours":'amber',"À venir":'navy'};
+  let h='';
+  decisions.forEach(x=>{ h+=`<tr><td><b>${x.date}</b></td><td style="max-width:320px;color:var(--navy-dark)">${x.d}</td><td><span class="chip navy">${x.ins}</span></td><td>${x.o}</td><td><span class="chip ${stChip[x.st]}">${x.st}</span></td></tr>`; });
+  document.getElementById('dec-body').innerHTML=h;
+}
+renderDec();
+
+// ---- Allocation ----
+const team=[
+  {n:"Adil Zriouil",r:"SM · Lead",a:[40,35,45,40]},
+  {n:"Louis Houngavou",r:"Data & IA",a:[20,60,55,50]},
+  {n:"Imane El Allam",r:"Consultant Sr",a:[50,70,65,40]},
+  {n:"Bertrand Boulin",r:"Data & IA",a:[15,55,50,45]},
+  {n:"Arsène Bonkoungou",r:"Consultant",a:[40,65,60,55]},
+  {n:"Romain Bignotti",r:"Formateur",a:[90,10,0,0]},
+];
+const phC=['var(--gold)','var(--teal)','var(--navy2)','var(--navy-dark)'];
+function renderAlloc(){
+  let h='';
+  team.forEach(m=>{
+    const tot=m.a.reduce((x,y)=>x+y,0);
+    h+=`<div class="mb"><div class="flex between center" style="margin-bottom:7px"><div><b style="color:var(--navy-dark)">${m.n}</b> <span class="muted" style="font-size:.78rem">· ${m.r}</span></div><span class="muted" style="font-size:.78rem">charge cumulée ${tot}%</span></div><div class="alloc-bar">`;
+    m.a.forEach((v,p)=>{ if(v>0) h+=`<div class="alloc-seg" style="width:${v/tot*100}%;background:${phC[p]}" title="Phase ${p+1}: ${v}%">P${p+1}</div>`; });
+    h+='</div></div>';
+  });
+  h+='<div class="flex gap wrap-f mt" style="font-size:.74rem;color:var(--muted)">';
+  ['Phase 1','Phase 2','Phase 3','Phase 4'].forEach((l,i)=>h+=`<span class="flex center gap"><span class="dot" style="background:${phC[i]}"></span>${l}</span>`);
+  h+='</div>';
+  document.getElementById('alloc-list').innerHTML=h;
+}
+renderAlloc();
+
+// ---- tabs ----
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  document.getElementById('tab-'+t.dataset.tab).classList.add('active');
+}));
+</script>
+</body>
+</html>
