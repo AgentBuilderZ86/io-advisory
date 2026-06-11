@@ -19,6 +19,7 @@ tools/
   jumeau-usine.html               ← Premium : jumeau visuel de la sucrerie, UC cartographiés sur les équipements
   monte-carlo.html                ← Premium : simulation probabiliste du portefeuille (P10/P50/P90)
   acculturation.html              ← Phase 1 : séminaire C-Level, 50 Champions (3 cohortes × 6 modules), 1-to-1, com
+  adoption-gamifiee.html          ← Phase 1 : leaderboard gamifié des 50 Champions (points, niveaux, badges, défis)
   dashboard-copil.html            ← Pilotage : Gantt 18 sem., livrables, risques, décisions, allocation
   dashboard-entretiens.html       ← Phase 2 : suivi des 42 entretiens, 8 directions, pain points
   use-cases-ia.html               ← Phase 3 : 10 UC, prérequis, ROI, risques, funnel 3 filtres, Go/No-Go
@@ -108,6 +109,11 @@ d'évaluation des risques (probabilité × gravité, risque initial → résidue
   pour le CODIR : 10 slides (mandat, diagnostic, potentiel, funnel, roadmap, ROI, CoE,
   conformité, vision) avec animations, navigation clavier/tactile, lecture auto, plein écran
   et **export du deck en PDF** (impression navigateur).
+- **Adoption gamifiée** (`tools/adoption-gamifiee.html`) — leaderboard des **50 Champions IA**
+  pour ancrer l'adoption : points (modules, idées, déploiements, mentorat, assiduité),
+  **5 niveaux** (Novice → Ambassadeur), **6 badges**, podium top 3, **défis collectifs**
+  (certification, idéation, quick wins), filtres par cohorte et recherche. Bouton « Simuler la
+  semaine » pour animer le classement (état persisté).
 - **CorpGPT** (`tools/corpgpt.html`) — l'assistant conversationnel de la mission, **embarqué
   dans le portail** (« vendre l'IA avec de l'IA »). Moteur de **RAG local** : recherche par
   mots-clés sur une base de ~25 entrées (mission, phases, 10 use cases, roadmap & budgets, ROI,
