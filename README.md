@@ -14,6 +14,8 @@ sur GitHub Pages. Les outils sont 100 % statiques (HTML/CSS/JS, aucune dépendan
 ```
 index.html                        ← Hub de la mission (+ sauvegarde/restauration JSON)
 tools/
+  executive-story.html            ← Premium : narration plein écran CODIR (10 slides) + export deck PDF
+  monte-carlo.html                ← Premium : simulation probabiliste du portefeuille (P10/P50/P90)
   acculturation.html              ← Phase 1 : séminaire C-Level, 50 Champions (3 cohortes × 6 modules), 1-to-1, com
   dashboard-copil.html            ← Pilotage : Gantt 18 sem., livrables, risques, décisions, allocation
   dashboard-entretiens.html       ← Phase 2 : suivi des 42 entretiens, 8 directions, pain points
@@ -88,6 +90,18 @@ Le module **`tools/conformite.html`** centralise les aspects de conformité, tra
 
 > Hébergement **souverain marocain** obligatoire pour les données critiques (RH, secrets
 > industriels) ; éthique IA : équité, transparence, explicabilité, human-in-the-loop.
+
+## ✨ Modules premium
+
+- **Executive Story** (`tools/executive-story.html`) — narration plein écran cinématique
+  pour le CODIR : 10 slides (mandat, diagnostic, potentiel, funnel, roadmap, ROI, CoE,
+  conformité, vision) avec animations, navigation clavier/tactile, lecture auto, plein écran
+  et **export du deck en PDF** (impression navigateur).
+- **Simulateur Monte-Carlo** (`tools/monte-carlo.html`) — au lieu d'un ROI unique, une
+  **distribution probabiliste** de la VAN du portefeuille : tirages triangulaires (coûts,
+  bénéfices) + probabilité de succès par use case, propagés sur 2 000 à 20 000 scénarios.
+  Sorties : **P10 / P50 / P90**, proba VAN > 0, proba d'atteinte d'objectif, histogramme et
+  profil risque/rendement par use case. Export CSV. *(Valeurs illustratives, paramétrables.)*
 
 ## 💾 Sauvegarde de la mission
 
