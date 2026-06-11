@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compliance Copilot — AIPD/DPIA · Sia × Cosumar</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/sia.css">
+<style>
+.cc-layout{display:grid;grid-template-columns:330px 1fr;gap:22px;align-items:start}
+.uc-pick{display:flex;flex-direction:column;gap:7px;max-height:62vh;overflow:auto}
+.uc-opt{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-left:4px solid var(--navy2);border-radius:10px;cursor:pointer;background:#fff;transition:.15s}
+.uc-opt:hover{transform:translateX(2px)}
+.uc-opt.active{border-left-color:var(--teal);background:rgba(0,168,150,.05)}
+.uc-opt .un{font-weight:600;font-size:.82rem;color:var(--navy-dark);flex:1;line-height:1.2}
+.rk{font-size:.64rem;font-weight:700;padding:2px 7px;border-radius:11px;color:#fff;white-space:nowrap}
+.rk.high{background:var(--red)}.rk.limited{background:var(--gold)}.rk.minimal{background:var(--green)}
+.doc{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.doc-head{padding:22px 26px;color:#fff;background:linear-gradient(135deg,var(--navy-dark),var(--navy))}
+.doc-head .dt{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem}
+.doc-head .dsub{font-size:.82rem;color:rgba(255,255,255,.7);margin-top:4px}
+.doc-head .badges{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.doc-head .b{font-size:.68rem;font-weight:700;padding:4px 10px;border-radius:14px;background:rgba(255,255,255,.14)}
+.doc-body{padding:26px}
+.sec{margin-bottom:24px}
+.sec h4{font-family:'Syne',sans-serif;font-size:1rem;color:var(--navy-dark);padding-bottom:7px;border-bottom:2px solid var(--line);margin-bottom:12px;display:flex;align-items:center;gap:9px}
+.sec h4 .num{width:24px;height:24px;border-radius:7px;background:var(--navy);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.78rem;flex-shrink:0}
+.kv{display:grid;grid-template-columns:200px 1fr;gap:6px 16px;font-size:.86rem}
+.kv .k{color:var(--muted);font-weight:600}
+.kv .v{color:var(--text)}
+.lst{font-size:.86rem;line-height:1.7;padding-left:18px}
+.risk-tbl{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:6px}
+.risk-tbl th{text-align:left;font-size:.68rem;text-transform:uppercase;letter-spacing:.5px;color:var(--navy-dark);padding:8px;border-bottom:2px solid var(--line2)}
+.risk-tbl td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.lvl{display:inline-block;padding:2px 9px;border-radius:12px;font-weight:700;font-size:.72rem;color:#fff}
+.verdict{padding:16px 18px;border-radius:12px;display:flex;gap:14px;align-items:flex-start}
+.verdict.ok{background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.3)}
+.verdict.cond{background:rgba(229,165,10,.12);border:1px solid rgba(229,165,10,.35)}
+.verdict .vi{font-size:1.6rem}
+.verdict .vt{font-family:'Syne',sans-serif;font-weight:800;color:var(--navy-dark)}
+.verdict .vd{font-size:.84rem;color:var(--muted);margin-top:3px}
+.gauge-c{display:flex;align-items:center;gap:14px}
+@media(max-width:980px){.cc-layout{grid-template-columns:1fr}}
+@media print{
+  .topbar,.cc-layout > div:first-child,.page-head .flex > .flex,footer,.no-print{display:none!important}
+  .cc-layout{display:block}.wrap{padding:0}
+  .doc{box-shadow:none;border:none}
+  .doc-head{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="brand-dot"></span><span class="brand-name">Sia<b>·</b>Cosumar</span><span class="brand-sub">Compliance Copilot</span></div>
+  <nav class="topnav">
+    <a href="../index.html" class="home">← Hub</a>
+    <a href="conformite.html">Conformité</a>
+    <a href="compliance-copilot.html" class="active">Copilot AIPD</a>
+    <a href="use-cases-ia.html">Use Cases</a>
+    <a href="corpgpt.html">🤖 CorpGPT</a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="flex between center wrap-f">
+      <div><div class="eyebrow">🛡️ Transversal · IA Responsable</div>
+      <h1 class="page-title">Compliance Copilot — AIPD / DPIA</h1></div>
+      <div class="flex gap no-print"><button class="btn ghost sm" onclick="copyDoc()">📋 Copier</button><button class="btn ghost sm" onclick="downloadDoc()">⬇ .md</button><button class="btn teal" onclick="window.print()">🖨 PDF</button></div>
+    </div>
+    <p class="page-sub">Génération automatique de l'<b>Analyse d'Impact relative à la Protection des Données</b> (AIPD/DPIA) pré-remplie par use case — conforme CNDP (loi 09-08), RGPD (art. 35) et EU AI Act. Sélectionnez un use case ; ajustez l'organisation et le DPO.</p>
+  </div>
+
+  <div class="cc-layout">
+    <div>
+      <div class="panel panel-pad mb">
+        <h3 style="color:var(--navy-dark);margin-bottom:12px;font-size:1rem">Paramètres</h3>
+        <div class="field"><label>Responsable de traitement</label><input id="p-org" value="Cosumar S.A." oninput="render()"></div>
+        <div class="field"><label>Délégué à la protection des données (DPO)</label><input id="p-dpo" value="DPO Cosumar" oninput="render()"></div>
+        <div class="field" style="margin:0"><label>Référence dossier</label><input id="p-ref" value="AIPD-2026-001" oninput="render()"></div>
+      </div>
+      <div class="panel panel-pad">
+        <h3 style="color:var(--navy-dark);margin-bottom:10px;font-size:1rem">Use case à évaluer</h3>
+        <div class="uc-pick" id="uc-pick"></div>
+      </div>
+    </div>
+    <div class="doc" id="doc"></div>
+  </div>
+</div>
+
+<footer class="sia-foot"><div><b>Sia × Cosumar</b> · Compliance Copilot</div><div>CNDP · RGPD · EU AI Act · Confidentiel</div></footer>
+<div id="toast"></div>
+<script src="../assets/sia.js"></script>
+<script>
+// ---- Profils de conformité par use case ----
+const UC=[
+ {id:1,name:"Maintenance prédictive turbines",dir:"Industrielle",euRisk:"minimal",perso:false,
+  fin:"Anticiper les défaillances des turbines à partir de signaux capteurs pour optimiser la maintenance.",
+  data:["Données de capteurs (vibration, température)","Données d'exploitation des équipements"],subjects:["Aucune personne physique concernée"],
+  base:"Intérêt légitime du responsable de traitement (efficacité industrielle).",residency:"Maroc (données industrielles sensibles)",retention:"Durée de vie de l'équipement + 2 ans",recipients:["Direction Industrielle","Mainteneurs","CoE IA"],
+  risks:[{r:"Faible — pas de données personnelles",l:1,s:1,m:"Cloisonnement des données techniques"}]},
+ {id:2,name:"Optimisation process sucrier",dir:"Industrielle",euRisk:"minimal",perso:false,
+  fin:"Optimiser en continu les paramètres du procédé sucrier (température, débit, pH).",
+  data:["Paramètres de procédé","Données MES (Qubes)"],subjects:["Aucune personne physique concernée"],
+  base:"Intérêt légitime (performance industrielle).",residency:"Maroc",retention:"5 ans (historique procédé)",recipients:["Direction Industrielle","CoE IA"],
+  risks:[{r:"Faible — données de procédé uniquement",l:1,s:1,m:"Accès restreint aux équipes process"}]},
+ {id:3,name:"Prévision récolte satellite",dir:"Amont Agricole",euRisk:"minimal",perso:true,
+  fin:"Estimer les rendements agricoles par télédétection pour planifier l'approvisionnement.",
+  data:["Imagerie satellite & indices agronomiques","Données parcellaires","Coordonnées des exploitants (contact)"],subjects:["Agriculteurs / coopératives partenaires"],
+  base:"Exécution du contrat d'approvisionnement.",residency:"Maroc (souverain) · imagerie via fournisseur sous clauses",retention:"Durée du contrat + 3 ans",recipients:["Direction Amont Agricole","Fournisseur imagerie (sous-traitant)"],
+  risks:[{r:"Données de contact des exploitants",l:2,s:1,m:"Minimisation, contrat de sous-traitance conforme"},{r:"Dépendance fournisseur d'imagerie",l:2,s:2,m:"Clause de réversibilité & localisation des données"}]},
+ {id:4,name:"Demand forecasting sucre",dir:"Supply Chain",euRisk:"minimal",perso:false,
+  fin:"Prévoir la demande de sucre pour réduire ruptures et surstocks (intégration SAP IBP).",
+  data:["Historiques de ventes agrégés","Données de marché & saisonnalité"],subjects:["Aucune personne physique (données agrégées)"],
+  base:"Intérêt légitime (planification).",residency:"Maroc / UE avec garanties",retention:"5 ans",recipients:["Supply Chain","Finance","CoE IA"],
+  risks:[{r:"Faible — données agrégées",l:1,s:1,m:"Agrégation, pas d'identification individuelle"}]},
+ {id:5,name:"OCR factures fournisseurs",dir:"Financière",euRisk:"limited",perso:true,
+  fin:"Extraire automatiquement les données de factures et les rapprocher dans SAP MM/FI.",
+  data:["Données d'identification des fournisseurs (contacts)","Montants & coordonnées bancaires","Documents comptables"],subjects:["Fournisseurs (personnes morales & contacts physiques)"],
+  base:"Obligation légale (comptabilité) & exécution du contrat.",residency:"Maroc (souverain)",retention:"10 ans (obligation légale d'archivage)",recipients:["Direction Financière","Comptabilité","Commissaires aux comptes"],
+  risks:[{r:"Coordonnées bancaires & contacts",l:2,s:2,m:"Chiffrement, habilitations, coffre-fort numérique"},{r:"Erreur d'extraction OCR",l:2,s:2,m:"Validation human-in-the-loop systématique"}]},
+ {id:6,name:"Chatbot RH CorpGPT",dir:"RH",euRisk:"limited",perso:true,dpiaReq:true,
+  fin:"Répondre aux questions RH des collaborateurs via un assistant conversationnel (RAG).",
+  data:["Questions des collaborateurs","Identifiant interne","Référentiel des politiques RH"],subjects:["Collaborateurs de Cosumar"],
+  base:"Intérêt légitime (service RH) & consentement pour l'historisation.",residency:"Maroc (souverain, environnement privé)",retention:"Conversations : 12 mois ; logs : 6 mois",recipients:["Direction RH","CoE IA (anonymisé)"],
+  risks:[{r:"Données personnelles dans les échanges",l:2,s:2,m:"Anonymisation, hébergement souverain, filtres DLP"},{r:"Hallucination / réponse erronée",l:2,s:2,m:"RAG sur base validée, garde-fous, mention « IA »"},{r:"Transparence (obligation EU AI Act)",l:2,s:1,m:"Information explicite : interaction avec une IA"}]},
+ {id:7,name:"Détection anomalies énergie",dir:"Industrielle",euRisk:"minimal",perso:false,
+  fin:"Détecter les dérives de consommation énergétique (vapeur, électricité).",
+  data:["Données de comptage énergétique","Données de production"],subjects:["Aucune personne physique concernée"],
+  base:"Intérêt légitime (sobriété énergétique).",residency:"Maroc",retention:"5 ans",recipients:["Direction Industrielle","Énergie/Utilities","CoE IA"],
+  risks:[{r:"Faible — données techniques",l:1,s:1,m:"Cloisonnement des données"}]},
+ {id:8,name:"Analyse contrats NLP",dir:"Juridique",euRisk:"limited",perso:true,
+  fin:"Extraire clauses, échéances et risques des contrats fournisseurs/clients.",
+  data:["Contenu des contrats (confidentiel)","Identités des signataires","Données financières contractuelles"],subjects:["Signataires & parties contractantes"],
+  base:"Intérêt légitime (gestion contractuelle).",residency:"Maroc (souverain, accès restreint)",retention:"Durée du contrat + 5 ans",recipients:["Direction Juridique","Juristes habilités"],
+  risks:[{r:"Confidentialité des contrats",l:2,s:3,m:"Environnement souverain isolé, accès strictement restreint"},{r:"Exactitude de l'analyse juridique",l:2,s:2,m:"Validation juriste obligatoire"}]},
+ {id:9,name:"People analytics & turnover",dir:"RH",euRisk:"high",perso:true,dpiaReq:true,
+  fin:"Identifier les facteurs et risques de départ des collaborateurs (prédiction de turnover).",
+  data:["Données RH (ancienneté, rémunération, évaluations)","Données d'absentéisme","Indicateurs de carrière"],subjects:["Collaborateurs de Cosumar"],
+  base:"Intérêt légitime, sous réserve d'un test de proportionnalité strict & information.",residency:"Maroc (souverain, obligatoire — données critiques)",retention:"24 mois maximum",recipients:["Direction RH (agrégé)","CoE IA (pseudonymisé)"],
+  risks:[{r:"Système à RISQUE ÉLEVÉ (EU AI Act, emploi)",l:3,s:3,m:"Documentation renforcée, évaluation de conformité, supervision humaine"},{r:"Biais & discrimination",l:2,s:3,m:"Audit de biais, exclusion des variables sensibles, équité"},{r:"Acceptabilité sociale",l:2,s:3,m:"Dialogue social, transparence, opt-in, human-in-the-loop"},{r:"Décision individuelle automatisée",l:2,s:3,m:"Interdiction de décision RH automatisée (RGPD art. 22)"}]},
+ {id:10,name:"Route optimization livraisons",dir:"Supply Chain",euRisk:"limited",perso:true,
+  fin:"Optimiser les tournées de livraison pour réduire coûts et empreinte carbone.",
+  data:["Adresses & coordonnées clients","Données de géolocalisation des tournées","Données chauffeurs"],subjects:["Clients & chauffeurs"],
+  base:"Exécution du contrat & intérêt légitime (efficacité logistique).",residency:"Maroc",retention:"Tournées : 12 mois",recipients:["Supply Chain","Logistique","Prestataires transport (sous-traitants)"],
+  risks:[{r:"Géolocalisation des chauffeurs",l:2,s:2,m:"Finalité limitée, information des salariés, pas de surveillance"},{r:"Données clients",l:2,s:1,m:"Minimisation, contrat de sous-traitance"}]},
+];
+const riskMeta={high:{l:"Élevé",c:"high"},limited:{l:"Limité",c:"limited"},minimal:{l:"Minimal",c:"minimal"}};
+let sel=0;
+function dpiaRequired(u){ return !!u.dpiaReq || u.euRisk==="high"; }
+function lvlColor(v){ return v>=7?'#E0544E':v>=4?'#E5A50A':'#27AE60'; }
+function lvlLabel(v){ return v>=7?'Élevé':v>=4?'Modéré':'Faible'; }
+
+function renderPick(){
+  document.getElementById('uc-pick').innerHTML=UC.map((u,i)=>`<div class="uc-opt ${i===sel?'active':''}" onclick="select(${i})"><div class="un">${u.id}. ${u.name}</div><span class="rk ${riskMeta[u.euRisk].c}">${riskMeta[u.euRisk].l}</span></div>`).join('');
+}
+function select(i){ sel=i; renderPick(); render(); }
+
+function render(){
+  const u=UC[sel];
+  const org=document.getElementById('p-org').value||"Cosumar";
+  const dpo=document.getElementById('p-dpo').value||"DPO";
+  const ref=document.getElementById('p-ref').value||"AIPD-2026";
+  const req=dpiaRequired(u);
+  const today=new Date().toLocaleDateString('fr-FR',{year:'numeric',month:'long',day:'numeric'});
+  // risk table
+  let maxRes=0;
+  const rows=u.risks.map(rk=>{ const init=rk.l*rk.s; const res=Math.max(1,Math.round(init*0.45)); maxRes=Math.max(maxRes,res);
+    return `<tr><td><b>${rk.r}</b></td><td><span class="lvl" style="background:${lvlColor(init)}">${lvlLabel(init)} (${init})</span></td><td>${rk.m}</td><td><span class="lvl" style="background:${lvlColor(res)}">${lvlLabel(res)} (${res})</span></td></tr>`;
+  }).join('');
+  const verdict = u.euRisk==="high" ? {cls:'cond',i:'⚠️',t:'Avis favorable SOUS CONDITIONS',d:'Système à risque élevé : la mise en œuvre est subordonnée aux mesures renforcées (audit de biais, supervision humaine, documentation EU AI Act) et au suivi du risque résiduel.'}
+    : maxRes>=4 ? {cls:'cond',i:'⚠️',t:'Avis favorable sous réserve',d:'Le traitement peut être mis en œuvre sous réserve de l\'application effective des mesures de mitigation listées.'}
+    : {cls:'ok',i:'✅',t:'Avis favorable',d:'Le risque résiduel pour les droits et libertés des personnes est maîtrisé. Le traitement peut être mis en œuvre.'};
+  const obligations = u.euRisk==="high" ? ["Système d'IA à <b>haut risque</b> (Annexe III — emploi)","Documentation technique (art. 11)","Système de gestion des risques (art. 9)","Supervision humaine (art. 14)","Évaluation de conformité avant mise en service","Enregistrement & journalisation"]
+    : u.euRisk==="limited" ? ["Risque <b>limité</b> — obligations de transparence","Information des personnes de l'usage de l'IA","Traçabilité & supervision"]
+    : ["Risque <b>minimal</b> — codes de bonne conduite recommandés","Pas d'obligation spécifique EU AI Act"];
+
+  const doc=`<div class="doc-head">
+    <div class="dt">AIPD / DPIA — Analyse d'Impact</div>
+    <div class="dsub">${u.id}. ${u.name} · ${org}</div>
+    <div class="badges"><span class="b">Réf. ${ref}</span><span class="b">EU AI Act : ${riskMeta[u.euRisk].l}</span><span class="b">${req?'AIPD obligatoire':'AIPD non requise (allégée)'}</span><span class="b">${today}</span></div>
+  </div>
+  <div class="doc-body">
+    ${req?'':'<div class="verdict ok" style="margin-bottom:22px"><div class="vi">ℹ️</div><div><div class="vt">AIPD complète non obligatoire</div><div class="vd">Ce traitement ne présente pas de risque élevé au sens de la CNDP/RGPD. Une analyse allégée est documentée ci-dessous par précaution.</div></div></div>'}
+
+    <div class="sec"><h4><span class="num">1</span>Identification du traitement</h4>
+      <div class="kv">
+        <span class="k">Responsable de traitement</span><span class="v">${org}</span>
+        <span class="k">DPO</span><span class="v">${dpo}</span>
+        <span class="k">Direction métier</span><span class="v">${u.dir}</span>
+        <span class="k">Référence du dossier</span><span class="v">${ref}</span>
+        <span class="k">Date d'évaluation</span><span class="v">${today}</span>
+      </div>
+    </div>
+
+    <div class="sec"><h4><span class="num">2</span>Description & finalités</h4>
+      <p style="font-size:.88rem;line-height:1.6">${u.fin}</p>
+    </div>
+
+    <div class="sec"><h4><span class="num">3</span>Nécessité & proportionnalité</h4>
+      <div class="kv">
+        <span class="k">Base légale</span><span class="v">${u.base}</span>
+        <span class="k">Minimisation</span><span class="v">Seules les données strictement nécessaires à la finalité sont traitées.</span>
+        <span class="k">Données personnelles</span><span class="v">${u.perso?'Oui':'Non — aucune donnée à caractère personnel'}</span>
+      </div>
+    </div>
+
+    <div class="sec"><h4><span class="num">4</span>Catégories de données & personnes concernées</h4>
+      <div class="grid-2" style="gap:18px">
+        <div><div class="k" style="color:var(--muted);font-weight:600;font-size:.78rem;margin-bottom:5px">CATÉGORIES DE DONNÉES</div><ul class="lst">${u.data.map(d=>`<li>${d}</li>`).join('')}</ul></div>
+        <div><div class="k" style="color:var(--muted);font-weight:600;font-size:.78rem;margin-bottom:5px">PERSONNES CONCERNÉES</div><ul class="lst">${u.subjects.map(d=>`<li>${d}</li>`).join('')}</ul></div>
+      </div>
+    </div>
+
+    <div class="sec"><h4><span class="num">5</span>Flux, résidence & conservation</h4>
+      <div class="kv">
+        <span class="k">Hébergement / résidence</span><span class="v">🇲🇦 ${u.residency}</span>
+        <span class="k">Destinataires</span><span class="v">${u.recipients.join(' · ')}</span>
+        <span class="k">Durée de conservation</span><span class="v">${u.retention}</span>
+      </div>
+    </div>
+
+    <div class="sec"><h4><span class="num">6</span>Mesures de sécurité</h4>
+      <ul class="lst">
+        <li>Chiffrement des données au repos et en transit (aligné ISO/IEC 27001)</li>
+        <li>Gestion des habilitations au moindre privilège & journalisation des accès</li>
+        <li>Cloisonnement et pseudonymisation lorsque applicable</li>
+        <li>Conformité DGSSI / loi 05-20 (cybersécurité)</li>
+        ${u.perso?'<li>Procédure d\'exercice des droits (accès, rectification, opposition)</li>':''}
+      </ul>
+    </div>
+
+    <div class="sec"><h4><span class="num">7</span>Classification & obligations EU AI Act</h4>
+      <p style="font-size:.86rem;margin-bottom:8px">Niveau de risque : <span class="lvl" style="background:${u.euRisk==='high'?'#E0544E':u.euRisk==='limited'?'#C9972B':'#27AE60'}">${riskMeta[u.euRisk].l}</span></p>
+      <ul class="lst">${obligations.map(o=>`<li>${o}</li>`).join('')}</ul>
+    </div>
+
+    <div class="sec"><h4><span class="num">8</span>Évaluation des risques pour les droits & libertés</h4>
+      <table class="risk-tbl"><thead><tr><th>Risque identifié</th><th>Risque initial</th><th>Mesure de mitigation</th><th>Risque résiduel</th></tr></thead><tbody>${rows}</tbody></table>
+      <p class="muted" style="font-size:.74rem;margin-top:8px">Échelle : Probabilité (1–3) × Gravité (1–3). Risque résiduel après application des mesures.</p>
+    </div>
+
+    <div class="sec" style="margin-bottom:0"><h4><span class="num">9</span>Avis du DPO & décision</h4>
+      <div class="verdict ${verdict.cls}"><div class="vi">${verdict.i}</div><div><div class="vt">${verdict.t}</div><div class="vd">${verdict.d}</div><div style="margin-top:10px;font-size:.82rem;color:var(--navy-dark)"><b>DPO :</b> ${dpo} &nbsp;·&nbsp; <b>Date :</b> ${today} &nbsp;·&nbsp; <b>Revue :</b> à 12 mois ou à toute évolution substantielle.</div></div></div>
+    </div>
+  </div>`;
+  document.getElementById('doc').innerHTML=doc;
+  window.__docText=toMarkdown(u,org,dpo,ref,today,req);
+}
+function toMarkdown(u,org,dpo,ref,today,req){
+  let m=`# AIPD / DPIA — ${u.id}. ${u.name}\n\n`;
+  m+=`**Responsable :** ${org}  \n**DPO :** ${dpo}  \n**Référence :** ${ref}  \n**Date :** ${today}  \n**EU AI Act :** ${riskMeta[u.euRisk].l}  \n**AIPD obligatoire :** ${req?'Oui':'Non (analyse allégée)'}\n\n`;
+  m+=`## 1. Finalités\n${u.fin}\n\n## 2. Base légale\n${u.base}\n\n`;
+  m+=`## 3. Données (${u.perso?'avec':'sans'} données personnelles)\n- `+u.data.join('\n- ')+`\n\n**Personnes concernées :** ${u.subjects.join(', ')}\n\n`;
+  m+=`## 4. Résidence & conservation\n- Hébergement : ${u.residency}\n- Destinataires : ${u.recipients.join(', ')}\n- Conservation : ${u.retention}\n\n`;
+  m+=`## 5. Risques & mitigations\n`;
+  u.risks.forEach(rk=>{ const init=rk.l*rk.s, res=Math.max(1,Math.round(init*0.45)); m+=`- **${rk.r}** — initial ${lvlLabel(init)} (${init}) → ${rk.m} → résiduel ${lvlLabel(res)} (${res})\n`; });
+  m+=`\n## 6. Avis DPO\n${u.euRisk==='high'?'Favorable sous conditions (risque élevé EU AI Act).':'Favorable, sous réserve des mesures de mitigation.'}\n\nDPO : ${dpo} — ${today} — revue à 12 mois.\n`;
+  return m;
+}
+function copyDoc(){ navigator.clipboard.writeText(window.__docText||'').then(()=>toast('AIPD copiée (Markdown)')); }
+function downloadDoc(){ const u=UC[sel]; const blob=new Blob([window.__docText],{type:'text/markdown'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='AIPD_'+u.name.replace(/[^a-z0-9]+/gi,'_')+'.md'; a.click(); toast('AIPD téléchargée'); }
+renderPick();render();
+</script>
+</body>
+</html>
