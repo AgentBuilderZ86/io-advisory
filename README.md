@@ -12,11 +12,13 @@ Ouvrez **`index.html`** dans un navigateur (hub de la mission), ou déployez le 
 sur GitHub Pages. Les outils sont 100 % statiques (HTML/CSS/JS, aucune dépendance serveur).
 
 ```
-index.html                        ← Hub de la mission
+index.html                        ← Hub de la mission (+ sauvegarde/restauration JSON)
 tools/
+  acculturation.html              ← Phase 1 : séminaire C-Level, 50 Champions (3 cohortes × 6 modules), 1-to-1, com
   dashboard-copil.html            ← Pilotage : Gantt 18 sem., livrables, risques, décisions, allocation
   dashboard-entretiens.html       ← Phase 2 : suivi des 42 entretiens, 8 directions, pain points
   use-cases-ia.html               ← Phase 3 : 10 UC, prérequis, ROI, risques, funnel 3 filtres, Go/No-Go
+  roi-business-case.html          ← Phase 3 : ROI Build vs Buy, TCO, VAN/NPV, payback, cash-flow cumulé
   roadmap-builder.html            ← Phase 3 : roadmap 3 vagues (drag & drop), budgets, export CSV
   simulateur-coe.html             ← Phase 4 : staffing/budget CoE, RACI, Charte IA, plan compétences
   conformite.html                 ← Transversal : référentiels locaux/intl, EU AI Act, AIPD/DPIA, souveraineté
@@ -86,6 +88,16 @@ Le module **`tools/conformite.html`** centralise les aspects de conformité, tra
 
 > Hébergement **souverain marocain** obligatoire pour les données critiques (RH, secrets
 > industriels) ; éthique IA : équité, transparence, explicabilité, human-in-the-loop.
+
+## 💾 Sauvegarde de la mission
+
+Toutes les saisies (avancement formation, livrables, checklists conformité, scénarios ROI,
+roadmap…) sont persistées localement (`localStorage`, préfixe `cosumar.*`). Depuis le **hub**,
+trois actions :
+
+- **Exporter (JSON)** — télécharge un instantané complet de l'état de la mission.
+- **Importer** — restaure un instantané (utile pour changer de poste ou partager l'avancement).
+- **Réinitialiser** — efface l'état local.
 
 ---
 
