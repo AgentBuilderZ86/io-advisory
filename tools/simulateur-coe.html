@@ -28,6 +28,36 @@
 .skill-track{display:grid;grid-template-columns:120px repeat(4,1fr);gap:8px;align-items:center;font-size:.78rem;margin-bottom:8px}
 .skill-track .sname{font-weight:600;color:var(--navy-dark)}
 .skill-q{height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.72rem}
+/* hub & spoke */
+#hs-diagram svg{width:100%;height:auto}
+.hs-spoke-node{cursor:default;transition:.2s}
+.hs-spoke-node:hover circle{filter:drop-shadow(0 0 7px rgba(0,168,150,.6))}
+.split-row{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:11px;overflow:hidden;margin-bottom:10px}
+.split-col{padding:12px 14px}
+.split-col.hub{background:linear-gradient(160deg,rgba(31,78,121,.07),#fff);border-right:1px solid var(--line)}
+.split-col.spk{background:linear-gradient(160deg,rgba(0,168,150,.06),#fff)}
+.split-col .sh{font-size:.68rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:7px}
+.split-col.hub .sh{color:var(--navy)}.split-col.spk .sh{color:var(--teal-dark)}
+.split-col ul{list-style:none;font-size:.79rem;color:var(--text);line-height:1.5}
+.split-col li{padding:3px 0 3px 15px;position:relative}
+.split-col li::before{content:'';position:absolute;left:0;top:9px;width:5px;height:5px;border-radius:50%}
+.split-col.hub li::before{background:var(--navy)}.split-col.spk li::before{background:var(--teal)}
+.relay-card{background:var(--cream);border:1px solid var(--line);border-radius:11px;padding:14px}
+.relay-card .rt{font-weight:700;color:var(--navy-dark);font-size:.88rem;display:flex;align-items:center;gap:8px}
+.relay-card .rl{font-size:.79rem;color:var(--muted);margin-top:6px;line-height:1.5}
+.flow-line{display:flex;gap:10px;align-items:stretch;overflow-x:auto;padding-bottom:6px}
+.flow-step{flex:1;min-width:150px;border-radius:12px;padding:14px;position:relative}
+.flow-step.hub{background:linear-gradient(160deg,rgba(31,78,121,.1),rgba(31,78,121,.03));border:1px solid rgba(31,78,121,.2)}
+.flow-step.spk{background:linear-gradient(160deg,rgba(0,168,150,.1),rgba(0,168,150,.03));border:1px solid rgba(0,168,150,.25)}
+.flow-step.both{background:linear-gradient(160deg,rgba(201,151,43,.12),rgba(201,151,43,.03));border:1px solid rgba(201,151,43,.3)}
+.flow-step .fn{font-size:.66rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+.flow-step .ft{font-weight:700;color:var(--navy-dark);font-size:.88rem;margin:4px 0}
+.flow-step .fd{font-size:.74rem;color:var(--muted);line-height:1.4}
+.flow-step .fown{display:inline-block;font-size:.64rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:8px}
+.fown.hub{background:rgba(31,78,121,.14);color:var(--navy)}.fown.spk{background:rgba(0,168,150,.16);color:var(--teal-dark)}.fown.both{background:rgba(201,151,43,.18);color:#9a7320}
+.traj-row{display:grid;grid-template-columns:130px 1fr 1fr;gap:10px;align-items:center;font-size:.8rem;margin-bottom:8px}
+.traj-bar{height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.72rem;background:var(--navy)}
+.traj-bar.spk{background:var(--teal)}
 </style>
 </head>
 <body>
@@ -48,18 +78,62 @@
   <div class="page-head">
     <div class="eyebrow">🏛️ Phase 4 · Operating Model</div>
     <h1 class="page-title">Simulateur du Centre d'Excellence IA</h1>
-    <p class="page-sub">Dimensionnez le CoE hub-and-spoke de Cosumar : staffing & budget, gouvernance & RACI, génération de la Charte IA et plan de montée en compétences sur 24 mois.</p>
+    <p class="page-sub">Concevez le Centre d'Excellence IA de Cosumar : <b>modèle hub-and-spoke détaillé</b>, staffing & budget, gouvernance & RACI, génération de la Charte IA et plan de montée en compétences sur 24 mois.</p>
   </div>
 
   <div class="tabs">
-    <div class="tab active" data-tab="staff">👥 Staffing & Budget</div>
+    <div class="tab active" data-tab="hubspoke">🕸️ Modèle Hub & Spoke</div>
+    <div class="tab" data-tab="staff">👥 Staffing & Budget</div>
     <div class="tab" data-tab="gov">🏛️ Gouvernance & RACI</div>
     <div class="tab" data-tab="charte">📜 Charte IA</div>
     <div class="tab" data-tab="skills">🎓 Plan compétences 24m</div>
   </div>
 
+  <!-- HUB & SPOKE -->
+  <div class="tabpane active" id="tab-hubspoke">
+    <div class="panel panel-pad mb">
+      <h3 style="color:var(--navy-dark);margin-bottom:6px">Le modèle hub-and-spoke en un coup d'œil</h3>
+      <p class="muted" style="font-size:.85rem;margin-bottom:6px">Un <b>hub central</b> (le CoE IA) qui mutualise l'expertise rare, les standards et la plateforme ; des <b>spokes</b> (relais IA embarqués dans chaque direction métier) qui portent le besoin terrain et l'adoption. Le meilleur des deux mondes : la <b>cohérence</b> du centralisé et la <b>proximité</b> du décentralisé.</p>
+    </div>
+    <div class="grid-2" style="grid-template-columns:1.15fr 1fr;align-items:start">
+      <div class="panel panel-pad">
+        <h3 style="color:var(--navy-dark);margin-bottom:4px;font-size:1rem">Schéma cible</h3>
+        <p class="muted" style="font-size:.78rem;margin-bottom:6px">Survolez un spoke pour voir son relais IA.</p>
+        <div id="hs-diagram"></div>
+      </div>
+      <div class="panel panel-pad">
+        <h3 style="color:var(--navy-dark);margin-bottom:12px;font-size:1rem">Qui fait quoi ?</h3>
+        <div id="hs-split"></div>
+      </div>
+    </div>
+
+    <div class="panel panel-pad mt">
+      <h3 style="color:var(--navy-dark);margin-bottom:4px;font-size:1rem">Le rôle du relais IA (« spoke ») dans chaque direction</h3>
+      <p class="muted" style="font-size:.82rem;margin-bottom:14px">Le spoke n'est pas une équipe data dédiée par métier : c'est un <b>référent</b> (souvent un Champion IA) qui fait le pont entre son métier et le hub.</p>
+      <div class="grid-3" id="hs-relay"></div>
+    </div>
+
+    <div class="panel panel-pad mt">
+      <h3 style="color:var(--navy-dark);margin-bottom:4px;font-size:1rem">Mécanique opérationnelle — du besoin au run</h3>
+      <p class="muted" style="font-size:.82rem;margin-bottom:16px">Flux type d'un use case, avec les passages de relais hub ⇄ spoke.</p>
+      <div id="hs-flow"></div>
+    </div>
+
+    <div class="panel panel-pad mt">
+      <h3 style="color:var(--navy-dark);margin-bottom:4px;font-size:1rem">Pourquoi hub-and-spoke pour Cosumar ?</h3>
+      <p class="muted" style="font-size:.82rem;margin-bottom:14px">Comparaison des 3 archétypes d'organisation IA.</p>
+      <div class="tbl-scroll"><table class="tbl"><thead><tr><th>Modèle</th><th>Principe</th><th>Forces</th><th>Limites</th><th>Verdict Cosumar</th></tr></thead><tbody id="hs-compare"></tbody></table></div>
+    </div>
+
+    <div class="panel panel-pad mt">
+      <h3 style="color:var(--navy-dark);margin-bottom:4px;font-size:1rem">Trajectoire de maturité du modèle</h3>
+      <p class="muted" style="font-size:.82rem;margin-bottom:16px">Le hub démarre fort (amorçage) puis transfère progressivement de l'autonomie aux spokes.</p>
+      <div id="hs-traj"></div>
+    </div>
+  </div>
+
   <!-- STAFFING -->
-  <div class="tabpane active" id="tab-staff">
+  <div class="tabpane" id="tab-staff">
     <div class="grid-2">
       <div class="panel panel-pad">
         <h3 style="color:var(--navy-dark);margin-bottom:16px">Paramètres du CoE</h3>
@@ -255,13 +329,99 @@ function renderSkills(){
   document.getElementById('skills-body').innerHTML=h;
 }
 
+// ---------- Hub & Spoke ----------
+const HS_SPOKES=[
+ {d:"Industrielle",relay:"Ingénieur procédé référent"},
+ {d:"Supply Chain",relay:"Responsable planification"},
+ {d:"Financière",relay:"Contrôleur de gestion"},
+ {d:"RH",relay:"Chargé SIRH / People"},
+ {d:"Amont Agricole",relay:"Agronome data"},
+ {d:"Commerciale",relay:"Analyste CRM"},
+ {d:"Juridique",relay:"Juriste référent"},
+ {d:"SI / Digital",relay:"Architecte SI"},
+];
+function renderHSDiagram(){
+  const W=440,H=440,cx=W/2,cy=H/2,R=160,nodeR=34;
+  const n=HS_SPOKES.length;
+  let spokes='',lines='';
+  HS_SPOKES.forEach((s,i)=>{
+    const ang=(-90+i*360/n)*Math.PI/180;
+    const x=cx+R*Math.cos(ang), y=cy+R*Math.sin(ang);
+    lines+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="url(#hsg)" stroke-width="2.5" stroke-dasharray="6 5"><animate attributeName="stroke-dashoffset" from="22" to="0" dur="1.5s" repeatCount="indefinite"/></line>`;
+    spokes+=`<g class="hs-spoke-node"><title>${s.d} — relais : ${s.relay}</title>
+      <circle cx="${x}" cy="${y}" r="${nodeR}" fill="#fff" stroke="var(--teal)" stroke-width="2"/>
+      <text x="${x}" y="${y-2}" text-anchor="middle" font-size="9.5" font-weight="700" fill="#0D2B45">${s.d.length>12?s.d.slice(0,11)+'…':s.d}</text>
+      <text x="${x}" y="${y+11}" text-anchor="middle" font-size="7.5" fill="#6B7A99">Relais IA</text></g>`;
+  });
+  document.getElementById('hs-diagram').innerHTML=`<svg viewBox="0 0 ${W} ${H}">
+    <defs><linearGradient id="hsg" x1="0" x2="1"><stop offset="0" stop-color="#1F4E79"/><stop offset="1" stop-color="#00A896"/></linearGradient>
+    <radialGradient id="hubg"><stop offset="0" stop-color="#2E75B6"/><stop offset="1" stop-color="#0D2B45"/></radialGradient></defs>
+    ${lines}${spokes}
+    <circle cx="${cx}" cy="${cy}" r="62" fill="url(#hubg)" stroke="#5fd6c6" stroke-width="2"/>
+    <text x="${cx}" y="${cy-12}" text-anchor="middle" font-size="13" font-weight="800" fill="#fff" font-family="Syne">CoE IA</text>
+    <text x="${cx}" y="${cy+3}" text-anchor="middle" font-size="8" fill="#9fd9d0">HUB CENTRAL</text>
+    <text x="${cx}" y="${cy+16}" text-anchor="middle" font-size="7" fill="rgba(255,255,255,.6)">Persuader · Informer</text>
+    <text x="${cx}" y="${cy+26}" text-anchor="middle" font-size="7" fill="rgba(255,255,255,.6)">Standardiser · Innover</text>
+  </svg>`;
+}
+function renderHSSplit(){
+  const data=[
+   {t:"Stratégie & vision IA",h:["Définit l'ambition & le portefeuille"],s:["Remontent les enjeux métiers"]},
+   {t:"Expertise & delivery",h:["Data scientists, ML/MLOps mutualisés"],s:["Co-construisent le besoin & testent"]},
+   {t:"Plateforme & standards",h:["Stack, MLOps, réutilisabilité, sécurité"],s:["Utilisent les standards du hub"]},
+   {t:"Gouvernance & conformité",h:["Charte, go/no-go, CNDP/EU AI Act"],s:["Appliquent les règles sur le terrain"]},
+   {t:"Adoption & valeur",h:["Outille, forme, mesure le ROI"],s:["Portent l'usage & l'adoption locale"]},
+  ];
+  document.getElementById('hs-split').innerHTML=data.map(d=>`<div class="split-row"><div class="split-col hub"><div class="sh">🏛️ Hub — ${d.t}</div><ul>${d.h.map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="split-col spk"><div class="sh">⚙️ Spoke</div><ul>${d.s.map(x=>`<li>${x}</li>`).join('')}</ul></div></div>`).join('');
+}
+function renderHSRelay(){
+  const cards=[
+   {i:"🎯",t:"Traducteur métier ↔ IA",l:"Transforme un irritant terrain en cas d'usage qualifiable par le hub (valeur, données, faisabilité)."},
+   {i:"📡",t:"Capteur de besoins",l:"Détecte et priorise les opportunités IA dans sa direction, alimente le funnel."},
+   {i:"🧪",t:"Référent de proximité",l:"Accompagne les tests, recette les modèles avec les utilisateurs, remonte les anomalies."},
+   {i:"📣",t:"Ambassadeur d'adoption",l:"Évangélise, forme les pairs, lève les résistances — souvent un Champion IA."},
+   {i:"🛡️",t:"Relais de conformité",l:"Veille au respect de la charte et des règles CNDP dans les usages locaux."},
+   {i:"📊",t:"Garant de la valeur",l:"Suit les KPIs d'usage et de ROI du use case une fois en production."},
+  ];
+  document.getElementById('hs-relay').innerHTML=cards.map(c=>`<div class="relay-card"><div class="rt">${c.i} ${c.t}</div><div class="rl">${c.l}</div></div>`).join('');
+}
+function renderHSFlow(){
+  const steps=[
+   {n:"① Émergence",t:"Besoin métier",d:"Le spoke détecte un irritant et le formule.",own:"spk"},
+   {n:"② Qualification",t:"Cadrage valeur/faisabilité",d:"Hub + spoke évaluent données, ROI, Build/Buy.",own:"both"},
+   {n:"③ Go/No-Go",t:"Arbitrage",d:"COPIL / comité opérationnel décide.",own:"hub"},
+   {n:"④ Delivery",t:"Développement & MLOps",d:"Le hub construit ; le spoke recette.",own:"hub"},
+   {n:"⑤ Adoption",t:"Mise en usage",d:"Le spoke porte l'adoption & la formation.",own:"spk"},
+   {n:"⑥ Run & valeur",t:"Exploitation & ROI",d:"Hub maintient ; spoke suit les KPIs.",own:"both"},
+  ];
+  const lbl={hub:"🏛️ Hub",spk:"⚙️ Spoke",both:"🤝 Hub + Spoke"};
+  document.getElementById('hs-flow').innerHTML=`<div class="flow-line">${steps.map((s,i)=>`<div class="flow-step ${s.own}"><div class="fn">${s.n}</div><div class="ft">${s.t}</div><div class="fd">${s.d}</div><span class="fown ${s.own}">${lbl[s.own]}</span></div>${i<steps.length-1?'<div style="display:flex;align-items:center;color:var(--muted);font-size:1.1rem">→</div>':''}`).join('')}</div>`;
+}
+function renderHSCompare(){
+  const rows=[
+   {m:"Centralisé",p:"Toute l'IA dans une seule équipe.",f:"Cohérence, expertise, standards forts.",l:"Loin du terrain, goulot d'étranglement, faible adoption.",v:"<span class='chip'>Trop rigide</span>"},
+   {m:"Hub-and-spoke",p:"Hub central + relais métiers.",f:"Équilibre cohérence / proximité, montée en autonomie progressive.",l:"Demande des relais identifiés & une gouvernance claire.",v:"<span class='chip green'>✓ Recommandé</span>"},
+   {m:"Décentralisé",p:"Chaque métier fait son IA.",f:"Proximité maximale, rapidité.",l:"Silos, doublons, risques conformité, pas d'échelle.",v:"<span class='chip'>Prématuré</span>"},
+  ];
+  document.getElementById('hs-compare').innerHTML=rows.map(r=>`<tr><td><b style="color:var(--navy-dark)">${r.m}</b></td><td style="font-size:.8rem">${r.p}</td><td style="font-size:.8rem;color:#1d7a44">${r.f}</td><td style="font-size:.8rem;color:#b13b36">${r.l}</td><td>${r.v}</td></tr>`).join('');
+}
+function renderHSTraj(){
+  const phases=[
+   {n:"Amorçage (0-12m)",hub:80,spk:20},
+   {n:"Déploiement (12-24m)",hub:60,spk:40},
+   {n:"Passage à l'échelle (24-36m)",hub:45,spk:55},
+  ];
+  document.getElementById('hs-traj').innerHTML=phases.map(p=>`<div class="traj-row"><span style="font-weight:600;color:var(--navy-dark)">${p.n}</span><div class="traj-bar" style="width:100%">🏛️ Hub ${p.hub}%</div><div class="traj-bar spk" style="width:100%">⚙️ Spokes ${p.spk}%</div></div>`).join('')+`<p class="muted" style="font-size:.74rem;margin-top:8px">Le centre de gravité se déplace du hub vers les spokes à mesure que les métiers gagnent en autonomie — sans jamais abandonner les standards communs.</p>`;
+}
+function renderHubSpoke(){ renderHSDiagram();renderHSSplit();renderHSRelay();renderHSFlow();renderHSCompare();renderHSTraj(); }
+
 // tabs
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('active'));
   t.classList.add('active'); document.getElementById('tab-'+t.dataset.tab).classList.add('active');
 }));
-calc();renderRaci();renderPicks();genCharter();renderSkills();
+calc();renderRaci();renderPicks();genCharter();renderSkills();renderHubSpoke();
 </script>
 </body>
 </html>
