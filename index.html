@@ -61,9 +61,10 @@
   </div>
   <nav class="topnav">
     <a href="index.html" class="active home">Hub</a>
+    <a href="tools/acculturation.html">Formation</a>
     <a href="tools/dashboard-copil.html">COPIL</a>
-    <a href="tools/dashboard-entretiens.html">Entretiens</a>
     <a href="tools/use-cases-ia.html">Use Cases</a>
+    <a href="tools/roi-business-case.html">ROI</a>
     <a href="tools/roadmap-builder.html">Roadmap</a>
     <a href="tools/simulateur-coe.html">CoE</a>
     <a href="tools/conformite.html">Conformité</a>
@@ -80,7 +81,7 @@
       <div><div class="n">4</div><div class="l">phases</div></div>
       <div><div class="n">42</div><div class="l">entretiens · 8 directions</div></div>
       <div><div class="n">10</div><div class="l">use cases IA identifiés</div></div>
-      <div><div class="n">10</div><div class="l">outils digitaux</div></div>
+      <div><div class="n">12</div><div class="l">outils digitaux</div></div>
     </div>
   </section>
 
@@ -104,14 +105,29 @@
     </div>
   </div>
 
-  <div class="sec-h"><h2>Outils digitaux interactifs</h2><span class="sh-sub">5 applications · ouvrir dans le navigateur</span></div>
+  <div class="sec-h"><h2>Outils digitaux interactifs</h2><span class="sh-sub">8 applications · ouvrir dans le navigateur</span></div>
   <div class="tools-grid">
+    <a class="tool" href="tools/acculturation.html" data-reveal><span class="arrow">→</span><div class="ti">🎓</div><h4>Acculturation & Formation</h4><div class="td">Séminaire C-Level, 50 Champions IA (3 cohortes × 6 modules), sessions 1-to-1, kits communication.</div><div class="tmeta"><span class="chip gold">Phase 1</span><span class="chip">Sensibilisation</span></div></a>
     <a class="tool" href="tools/dashboard-copil.html" data-reveal><span class="arrow">→</span><div class="ti">📊</div><h4>Dashboard COPIL</h4><div class="td">Gantt 18 semaines, checklist livrables, registre risques, log décisions, allocation équipe.</div><div class="tmeta"><span class="chip navy">Transversal</span><span class="chip teal">Pilotage</span></div></a>
     <a class="tool" href="tools/dashboard-entretiens.html" data-reveal><span class="arrow">→</span><div class="ti">🎙️</div><h4>Dashboard Entretiens</h4><div class="td">Suivi des 42 entretiens, 8 directions métiers, filtres, pain points, timeline.</div><div class="tmeta"><span class="chip gold">Phase 2</span><span class="chip">Diagnostic</span></div></a>
     <a class="tool" href="tools/use-cases-ia.html" data-reveal><span class="arrow">→</span><div class="ti">💡</div><h4>Use Cases IA</h4><div class="td">Prérequis, valeur/ROI, risques & de-risking, funnel 3 filtres, fiches projets, Go/No-Go. 10 UC pré-chargés.</div><div class="tmeta"><span class="chip teal">Phase 3</span><span class="chip">Qualification</span></div></a>
+    <a class="tool" href="tools/roi-business-case.html" data-reveal><span class="arrow">→</span><div class="ti">💰</div><h4>ROI & Business Case</h4><div class="td">Comparaison Build vs Buy par use case : TCO, VAN (NPV), payback, ROI, cash-flow cumulé, export CSV.</div><div class="tmeta"><span class="chip teal">Phase 3</span><span class="chip">Business Case</span></div></a>
     <a class="tool" href="tools/roadmap-builder.html" data-reveal><span class="arrow">→</span><div class="ti">🗺️</div><h4>Roadmap Builder</h4><div class="td">Timeline 3 vagues × 8 directions, cards, budget par vague & direction, export CSV.</div><div class="tmeta"><span class="chip teal">Phase 3</span><span class="chip">Roadmap</span></div></a>
     <a class="tool" href="tools/simulateur-coe.html" data-reveal><span class="arrow">→</span><div class="ti">🏛️</div><h4>Simulateur CoE</h4><div class="td">Staffing/budget CoE, gouvernance + RACI, générateur Charte IA, plan compétences 24 mois.</div><div class="tmeta"><span class="chip navy">Phase 4</span><span class="chip">Operating Model</span></div></a>
     <a class="tool" href="tools/conformite.html" data-reveal><span class="arrow">→</span><div class="ti">🛡️</div><h4>Conformité & Réglementation</h4><div class="td">Référentiels locaux & internationaux, classification EU AI Act, checklists AIPD/DPIA, souveraineté des données.</div><div class="tmeta"><span class="chip navy">Transversal</span><span class="chip teal">IA Responsable</span></div></a>
+  </div>
+
+  <div class="panel panel-pad mt" data-reveal style="display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap">
+    <div style="display:flex;gap:13px;align-items:center">
+      <div style="width:44px;height:44px;border-radius:11px;background:rgba(0,168,150,.12);display:flex;align-items:center;justify-content:center;font-size:1.3rem">💾</div>
+      <div><div style="font-weight:700;color:var(--navy-dark)">Sauvegarde de la mission</div><div class="muted" style="font-size:.82rem">Exportez ou restaurez l'état complet (saisies, avancement, scénarios) entre sessions ou postes.</div></div>
+    </div>
+    <div class="flex gap wrap-f">
+      <button class="btn teal" onclick="exportMissionState()">⬇ Exporter (JSON)</button>
+      <button class="btn ghost" onclick="document.getElementById('import-file').click()">⬆ Importer</button>
+      <button class="btn ghost" onclick="if(confirm('Réinitialiser tout l\'état de la mission ?')){resetMissionState();setTimeout(()=>location.reload(),600);}">↺ Réinitialiser</button>
+      <input type="file" id="import-file" accept="application/json,.json" style="display:none" onchange="if(this.files[0])importMissionState(this.files[0],()=>setTimeout(()=>location.reload(),700))">
+    </div>
   </div>
 
   <div class="sec-h"><h2>Classeurs Excel Sia</h2><span class="sh-sub">Générés via <code>excel/build_excels.py</code> · branding navy/teal</span></div>

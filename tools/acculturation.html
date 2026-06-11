@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acculturation & Formation — Sia × Cosumar</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/sia.css">
+<style>
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:22px;flex-wrap:wrap}
+.tab{padding:10px 16px;font-size:.86rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent}
+.tab.active{color:var(--navy);border-color:var(--teal)}
+.tabpane{display:none}.tabpane.active{display:block}
+.matrix{width:100%;border-collapse:collapse}
+.matrix th{font-size:.74rem;color:var(--navy-dark);font-weight:700;padding:10px;text-align:center;border-bottom:2px solid var(--line2)}
+.matrix th.mod{text-align:left;min-width:220px}
+.matrix td{padding:8px;text-align:center;border-bottom:1px solid var(--line)}
+.matrix td.modname{text-align:left}
+.matrix .mn{font-weight:700;color:var(--navy-dark);font-size:.85rem}
+.matrix .md{font-size:.74rem;color:var(--muted)}
+.cell-btn{width:40px;height:40px;border-radius:9px;border:1.5px solid var(--line2);background:#fff;cursor:pointer;font-size:1rem;transition:.15s}
+.cell-btn:hover{border-color:var(--teal)}
+.cell-btn.done{background:var(--green);border-color:var(--green);color:#fff}
+.cell-btn.prog{background:var(--gold);border-color:var(--gold);color:#fff}
+.mod-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow);border-left:4px solid var(--teal)}
+.mod-card .mt{font-family:'Syne',sans-serif;font-weight:800;color:var(--navy-dark);font-size:1rem}
+.mod-card .mnum{font-size:.72rem;font-weight:700;color:var(--teal-dark);letter-spacing:1px;text-transform:uppercase}
+.mod-card ul{margin:10px 0 0;padding-left:18px;font-size:.82rem;color:var(--muted);line-height:1.7}
+.cohort-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:var(--shadow)}
+.cohort-card .ch{font-family:'Syne',sans-serif;font-weight:800;color:var(--navy-dark)}
+.seminar-item{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+.seminar-item:last-child{border:none}
+.seminar-item input{width:18px;height:18px;accent-color:var(--teal);margin-top:1px;cursor:pointer}
+.seminar-item.done .si-t{text-decoration:line-through;color:var(--muted)}
+.seminar-item .si-t{font-weight:600;font-size:.86rem;color:var(--navy-dark)}
+.seminar-item .si-d{font-size:.76rem;color:var(--muted)}
+.kit{display:flex;gap:12px;align-items:flex-start;background:var(--cream);border:1px solid var(--line);border-radius:11px;padding:14px}
+.kit .ki{font-size:1.4rem}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="brand-dot"></span><span class="brand-name">Sia<b>·</b>Cosumar</span><span class="brand-sub">Acculturation & Formation</span></div>
+  <nav class="topnav">
+    <a href="../index.html" class="home">← Hub</a>
+    <a href="acculturation.html" class="active">Formation</a>
+    <a href="dashboard-copil.html">COPIL</a>
+    <a href="use-cases-ia.html">Use Cases</a>
+    <a href="simulateur-coe.html">CoE</a>
+    <a href="conformite.html">Conformité</a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="eyebrow">🎓 Phase 1 · Acculturation & Sensibilisation</div>
+    <h1 class="page-title">Programme de formation & sensibilisation IA</h1>
+    <p class="page-sub">Séminaire C-Level, formation des 50 Champions IA (3 cohortes × 6 modules), sessions 1-to-1 avec les experts et kits de communication interne. Suivi de l'avancement pédagogique.</p>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi navy"><div class="kpi-val">50</div><div class="kpi-label">Champions IA</div><div class="kpi-foot">3 cohortes</div></div>
+    <div class="kpi teal"><div class="kpi-val" id="k-prog">—</div><div class="kpi-label">Progression formation</div><div class="kpi-foot" id="k-prog-foot"></div></div>
+    <div class="kpi gold"><div class="kpi-val">6</div><div class="kpi-label">Modules / cohorte</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-sem">—</div><div class="kpi-label">Séminaire C-Level</div><div class="kpi-foot">~10 dirigeants</div></div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="prog">📈 Avancement Champions</div>
+    <div class="tab" data-tab="mod">📚 Catalogue des 6 modules</div>
+    <div class="tab" data-tab="sem">👔 Séminaire C-Level</div>
+    <div class="tab" data-tab="com">📣 1-to-1 & Communication</div>
+  </div>
+
+  <!-- AVANCEMENT -->
+  <div class="tabpane active" id="tab-prog">
+    <div class="panel">
+      <div class="panel-head"><h3>Matrice d'avancement — cohortes × modules</h3><span class="ph-sub">cliquez pour basculer : à faire ▸ en cours ▸ terminé</span></div>
+      <div class="panel-pad tbl-scroll" id="matrix"></div>
+    </div>
+    <div class="grid-3 mt" id="cohort-cards"></div>
+  </div>
+
+  <!-- MODULES -->
+  <div class="tabpane" id="tab-mod">
+    <div class="grid-2" id="mod-list"></div>
+  </div>
+
+  <!-- SEMINAIRE -->
+  <div class="tabpane" id="tab-sem">
+    <div class="grid-2">
+      <div class="panel panel-pad">
+        <h3 style="color:var(--navy-dark);margin-bottom:6px">Séminaire C-Level — ½ journée</h3>
+        <p class="muted" style="font-size:.84rem;margin-bottom:14px">~10 dirigeants · objectif : aligner le COMEX sur l'ambition IA et lever les freins.</p>
+        <div id="seminar-list"></div>
+      </div>
+      <div class="panel panel-pad">
+        <h3 style="color:var(--navy-dark);margin-bottom:12px">Déroulé type</h3>
+        <div class="mod-card" style="border-left-color:var(--gold);margin-bottom:10px"><div class="mnum">09h00 · 30 min</div><div class="mt">Vision & enjeux IA pour Cosumar</div></div>
+        <div class="mod-card" style="border-left-color:var(--gold);margin-bottom:10px"><div class="mnum">09h30 · 45 min</div><div class="mt">État de l'art IA & GenAI dans l'industrie sucrière</div></div>
+        <div class="mod-card" style="border-left-color:var(--gold);margin-bottom:10px"><div class="mnum">10h15 · 45 min</div><div class="mt">Atelier : ambition & cas d'usage prioritaires</div></div>
+        <div class="mod-card" style="border-left-color:var(--gold)"><div class="mnum">11h00 · 30 min</div><div class="mt">IA responsable, souveraineté & feuille de route</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMUNICATION -->
+  <div class="tabpane" id="tab-com">
+    <div class="grid-2">
+      <div class="panel panel-pad">
+        <h3 style="color:var(--navy-dark);margin-bottom:6px">Sessions 1-to-1 experts</h3>
+        <p class="muted" style="font-size:.84rem;margin-bottom:14px">Sessions individuelles avec les experts Data / AI / SI pour approfondir les besoins par direction.</p>
+        <div class="tbl-scroll"><table class="tbl"><thead><tr><th>Filière</th><th>Expert</th><th>Sessions</th><th>Statut</th></tr></thead><tbody id="oneone-body"></tbody></table></div>
+      </div>
+      <div class="panel panel-pad">
+        <h3 style="color:var(--navy-dark);margin-bottom:12px">Kits de communication interne</h3>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="kit"><div class="ki">📧</div><div><div style="font-weight:700;color:var(--navy-dark);font-size:.88rem">Newsletter IA</div><div class="muted" style="font-size:.78rem">Communication mensuelle sur l'avancement & les succès</div></div></div>
+          <div class="kit"><div class="ki">🖼️</div><div><div style="font-weight:700;color:var(--navy-dark);font-size:.88rem">Affiches & écrans</div><div class="muted" style="font-size:.78rem">Sensibilisation sur sites industriels & sièges</div></div></div>
+          <div class="kit"><div class="ki">📱</div><div><div style="font-weight:700;color:var(--navy-dark);font-size:.88rem">Espace intranet IA</div><div class="muted" style="font-size:.78rem">FAQ, ressources, charte IA, accès CorpGPT</div></div></div>
+          <div class="kit"><div class="ki">🎥</div><div><div style="font-weight:700;color:var(--navy-dark);font-size:.88rem">Vidéos & témoignages</div><div class="muted" style="font-size:.78rem">Champions IA, quick wins, retours d'expérience</div></div></div>
+          <div class="kit"><div class="ki">🏆</div><div><div style="font-weight:700;color:var(--navy-dark);font-size:.88rem">Challenge d'idéation</div><div class="muted" style="font-size:.78rem">Concours interne de cas d'usage IA</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="sia-foot"><div><b>Sia × Cosumar</b> · Acculturation & Formation</div><div>Phase 1 · 50 Champions IA</div></footer>
+<div id="toast"></div>
+<script src="../assets/sia.js"></script>
+<script>
+const cohorts=[{n:"Cohorte 1",size:17},{n:"Cohorte 2",size:17},{n:"Cohorte 3",size:16}];
+const modules=[
+ {t:"Fondamentaux de l'IA & GenAI",d:"Concepts clés, ML, LLM, opportunités & limites",pts:["Histoire & familles d'IA","ML vs GenAI","Démystification & idées reçues"]},
+ {t:"Données : le carburant de l'IA",d:"Qualité, gouvernance et valeur de la donnée",pts:["Cycle de vie de la donnée","Qualité & gouvernance","Data chez Cosumar (SAP, MES…)"]},
+ {t:"Cas d'usage métier & idéation",d:"Identifier et cadrer des opportunités IA",pts:["Méthode d'idéation","Valeur métier & faisabilité","Ateliers par direction"]},
+ {t:"IA responsable, éthique & conformité",d:"CNDP, souveraineté, biais, human-in-the-loop",pts:["Charte IA Cosumar","CNDP & RGPD","Biais & équité"]},
+ {t:"Outils & prompting (CorpGPT)",d:"Prise en main des outils GenAI au quotidien",pts:["Bonnes pratiques de prompting","CorpGPT & RAG","Sécurité & confidentialité"]},
+ {t:"Passage à l'échelle & changement",d:"Du POC à l'industrialisation, conduite du changement",pts:["MLOps & industrialisation","Conduite du changement","Rôle des Champions"]},
+];
+// state: progress[cohortIndex][moduleIndex] = 0 todo,1 prog,2 done
+let prog;
+function loadProg(){
+  prog=store.get('accult.prog',null);
+  if(!prog){ prog=cohorts.map((c,ci)=>modules.map((m,mi)=> ci===0? (mi<3?2:(mi===3?1:0)) : ci===1? (mi<2?2:0) : 0 )); }
+}
+const cycle=['','🕓','✓'];
+const cls=['', 'prog','done'];
+function renderMatrix(){
+  let h='<table class="matrix"><thead><tr><th class="mod">Module</th>';
+  cohorts.forEach(c=>h+=`<th>${c.n}<div class="md" style="font-weight:400">${c.size} pers.</div></th>`);
+  h+='<th>Taux</th></tr></thead><tbody>';
+  modules.forEach((m,mi)=>{
+    h+=`<tr><td class="modname"><div class="mn">M${mi+1} · ${m.t}</div><div class="md">${m.d}</div></td>`;
+    let done=0;
+    cohorts.forEach((c,ci)=>{ const v=prog[ci][mi]; if(v===2)done++;
+      h+=`<td><button class="cell-btn ${cls[v]}" onclick="cycleCell(${ci},${mi})" title="${['À faire','En cours','Terminé'][v]}">${cycle[v]}</button></td>`; });
+    h+=`<td><b style="color:var(--navy-dark)">${Math.round(done/cohorts.length*100)}%</b></td></tr>`;
+  });
+  h+='</tbody></table>';
+  document.getElementById('matrix').innerHTML=h;
+  renderCohorts(); updateKPI();
+}
+function cycleCell(ci,mi){ prog[ci][mi]=(prog[ci][mi]+1)%3; store.set('accult.prog',prog); renderMatrix(); }
+function renderCohorts(){
+  document.getElementById('cohort-cards').innerHTML=cohorts.map((c,ci)=>{
+    const done=prog[ci].filter(v=>v===2).length, pct=Math.round(done/modules.length*100);
+    return `<div class="cohort-card"><div class="flex between center"><div class="ch">${c.n}</div><span class="chip teal">${c.size} pers.</span></div><div class="flex between" style="margin:12px 0 6px"><span class="muted" style="font-size:.8rem">${done}/${modules.length} modules</span><b style="color:var(--navy-dark)">${pct}%</b></div><div class="bar"><span style="width:${pct}%;background:${pct===100?'var(--green)':'var(--teal)'}"></span></div></div>`;
+  }).join('');
+}
+function updateKPI(){
+  let tot=0,cnt=0; prog.forEach(c=>c.forEach(v=>{ tot+=v===2?1:v===1?0.5:0; cnt++; }));
+  const pct=Math.round(tot/cnt*100);
+  document.getElementById('k-prog').textContent=pct+'%';
+  document.getElementById('k-prog-foot').textContent='3 cohortes × 6 modules';
+}
+function renderMods(){
+  document.getElementById('mod-list').innerHTML=modules.map((m,i)=>`<div class="mod-card"><div class="mnum">Module ${i+1}</div><div class="mt">${m.t}</div><div class="muted" style="font-size:.82rem;margin-top:4px">${m.d}</div><ul>${m.pts.map(p=>`<li>${p}</li>`).join('')}</ul></div>`).join('');
+}
+// seminar
+const seminar=[
+ {t:"Cadrage & invitation du COMEX",d:"~10 dirigeants, agenda validé",done:true},
+ {t:"Supports & démonstrations préparés",d:"Slides, démos GenAI, cas sucriers",done:true},
+ {t:"Animation du séminaire",d:"½ journée en présentiel",done:false},
+ {t:"Synthèse & engagements",d:"Restitution & next steps COMEX",done:false},
+];
+function renderSeminar(){
+  const saved=store.get('accult.seminar',null); if(saved) seminar.forEach((s,i)=>s.done=saved[i]);
+  document.getElementById('seminar-list').innerHTML=seminar.map((s,i)=>`<div class="seminar-item ${s.done?'done':''}"><input type="checkbox" ${s.done?'checked':''} onchange="toggleSem(${i},this.checked)"><div><div class="si-t">${s.t}</div><div class="si-d">${s.d}</div></div></div>`).join('');
+  const done=seminar.filter(s=>s.done).length;
+  document.getElementById('k-sem').textContent=done+'/'+seminar.length;
+}
+function toggleSem(i,v){ seminar[i].done=v; store.set('accult.seminar',seminar.map(s=>s.done)); renderSeminar(); }
+// 1-to-1
+const oneone=[
+ {f:"Data",e:"L. Houngavou / B. Boulin",s:8,st:"En cours"},
+ {f:"AI / GenAI",e:"Équipe Sia Data&IA",s:6,st:"Planifié"},
+ {f:"SI / Architecture",e:"Référents DSI Cosumar",s:5,st:"Planifié"},
+];
+function renderOneone(){
+  const stc={"Réalisé":"green","En cours":"amber","Planifié":"navy"};
+  document.getElementById('oneone-body').innerHTML=oneone.map(o=>`<tr><td><b style="color:var(--navy-dark)">${o.f}</b></td><td class="muted">${o.e}</td><td>${o.s}</td><td><span class="chip ${stc[o.st]}">${o.st}</span></td></tr>`).join('');
+}
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); document.getElementById('tab-'+t.dataset.tab).classList.add('active');
+}));
+loadProg();renderMatrix();renderMods();renderSeminar();renderOneone();
+</script>
+</body>
+</html>
