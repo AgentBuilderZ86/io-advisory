@@ -141,6 +141,18 @@
           <div class="disclaimer">⚠️ Ordres de grandeur <b>indicatifs</b> (marché marocain, 2026) destinés au cadrage budgétaire — à confirmer par devis fournisseurs / ESN et chiffrage RH interne. Montants <b>hors taxes</b> (TVA 20 %).</div>
         </div>
       </div>
+
+      <div class="panel mt">
+        <div class="panel-head"><h3>Justification des bénéfices annuels — gisements de valeur 🇲🇦</h3><span class="ph-sub" id="ben-sub">leviers de gain & hypothèses de valorisation</span></div>
+        <div class="panel-pad">
+          <p class="muted" style="font-size:.82rem;margin-bottom:14px">Le bénéfice annuel n'est pas posé : il est <b>décomposé en leviers de valeur</b>, chacun valorisé à partir d'hypothèses ancrées dans le contexte Cosumar / marché marocain (salaires chargés locaux, coût d'un arrêt en campagne sucrière, coût de portage du stock…).</p>
+          <div class="bk-grid">
+            <div><h4 class="bk-h" style="color:var(--teal-dark)">💎 Leviers de valeur</h4><div id="ben-table"></div></div>
+            <div><h4 class="bk-h" style="color:var(--navy-dark)">📐 Hypothèses de valorisation</h4><ul class="hyp-list" id="ben-hyp"></ul></div>
+          </div>
+          <div class="disclaimer">⚠️ Gains <b>potentiels indicatifs</b> à confirmer par mesure terrain (baseline) et pilote. La montée en charge an 1 (paramètre « ramp-up ») reflète l'atteinte progressive de ces gains.</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -230,6 +242,7 @@ function calc(){
   document.getElementById('k-reco').textContent=buildWins?'Build':'Buy';
   drawChart(rb.disc,ry.disc,horizon);
   renderBreakdown(ins);
+  renderBenefits();
 }
 
 // ---------- Chiffrage détaillé — contexte marché marocain ----------
@@ -291,6 +304,48 @@ function renderMarketHyp(){
   ];
   document.getElementById('hyp-list').innerHTML=hyp.map(h=>`<li>${h}</li>`).join('');
 }
+
+// ---------- Justification des bénéfices (gisements de valeur, contexte Cosumar/Maroc) ----------
+const BENEFITS={
+ 1:[{l:"Réduction des arrêts non planifiés",h:"-30% d'arrêts ; coût d'arrêt turbine élevé en pleine campagne sucrière",v:250},
+    {l:"Baisse de la maintenance corrective",h:"Glissement curatif → préventif planifié (pièces, heures sup.)",v:100}],
+ 2:[{l:"Gain de rendement d'extraction",h:"+2 pts de rendement valorisés sur le tonnage transformé (prix du sucre)",v:450},
+    {l:"Réduction consommation vapeur",h:"Pilotage fin diffusion/cristallisation",v:150}],
+ 3:[{l:"Optimisation planning de broyage & appro",h:"Meilleure prévision tonnage → logistique amont lissée",v:180},
+    {l:"Réduction des pertes (saccharose)",h:"Récolte/transport mieux synchronisés",v:70}],
+ 4:[{l:"Réduction du coût de stock (BFR)",h:"-15% de stock × coût de portage (≈5%/an) sur l'encours sucre",v:250},
+    {l:"Réduction des ruptures / ventes perdues",h:"Meilleur taux de service B2B/B2C",v:150}],
+ 5:[{l:"Temps de saisie comptable évité",h:"≈1,5 ETP comptable libéré (salaire chargé Maroc ~150K/an)",v:130},
+    {l:"Escomptes & pénalités de retard évités",h:"Délais de traitement P2P raccourcis",v:50}],
+ 6:[{l:"Tickets RH N1 absorbés",h:"-40% de sollicitations → ≈1 ETP RH redéployé",v:120},
+    {l:"Temps collaborateurs gagné",h:"Réponses RH instantanées 24/7 (FR/AR)",v:100}],
+ 7:[{l:"Réduction de la facture énergétique",h:"-8% sur la facture vapeur+électricité de la sucrerie",v:300}],
+ 8:[{l:"Temps de revue juridique évité",h:"-50% du temps de revue → ≈0,8 ETP juriste",v:100},
+    {l:"Risques contractuels réduits",h:"Échéances/clauses sécurisées (pénalités évitées)",v:50}],
+ 9:[{l:"Coûts de remplacement évités",h:"-12% de turnover ciblé × coût recrutement+formation",v:150},
+    {l:"Réduction de l'absentéisme",h:"Détection précoce, actions RH ciblées",v:50}],
+ 10:[{l:"Réduction des coûts de transport",h:"-14% sur le poste transport (carburant, km, sous-traitance)",v:250},
+    {l:"Optimisation du taux de remplissage",h:"Tournées et chargements optimisés",v:100}],
+};
+function renderBenefits(){
+  const u=MODEL[sel]; const lines=BENEFITS[u.id]||[];
+  const tot=lines.reduce((a,l)=>a+l.v,0);
+  let h='<table class="bk-tbl"><thead><tr><th>Levier de valeur</th><th>Hypothèse (contexte)</th><th class="num">Gain/an</th></tr></thead><tbody>';
+  lines.forEach(l=>{ h+=`<tr><td class="pn">${l.l}</td><td class="pr" style="white-space:normal">${l.h}</td><td class="num">${l.v} K</td></tr>`; });
+  h+=`<tr class="tot"><td colspan="2">Gisement de valeur annuel</td><td class="num">${tot} K MAD/an</td></tr></tbody></table>`;
+  document.getElementById('ben-table').innerHTML=h;
+  const benIn=Math.round((+document.getElementById('b-ben').value + +document.getElementById('y-ben').value)/2);
+  document.getElementById('ben-sub').textContent=`total estimé ≈ ${tot} K MAD/an · bénéfice retenu ≈ ${benIn} K MAD/an`;
+}
+const BEN_HYP=[
+ "<b>Salaire chargé annuel (Maroc)</b> : employé qualifié ≈ 120-180K MAD, cadre ≈ 250-350K MAD — base des ETP économisés.",
+ "<b>Coût d'un arrêt industriel</b> en campagne sucrière : très élevé (production continue) — valorise la maintenance prédictive.",
+ "<b>Coût de portage du stock (BFR)</b> ≈ 4-6%/an — valorise la réduction des stocks (demand forecasting).",
+ "<b>Énergie</b> : la sucrerie est fortement consommatrice (vapeur, électricité) — un % de la facture représente des montants élevés.",
+ "<b>Prix du sucre & tonnage</b> : un point de rendement d'extraction se valorise fortement à l'échelle Cosumar.",
+ "Gains exprimés en <b>récurrent annuel</b> ; l'atteinte est progressive (ramp-up an 1).",
+];
+function renderBenHyp(){ document.getElementById('ben-hyp').innerHTML=BEN_HYP.map(x=>`<li>${x}</li>`).join(''); }
 function drawChart(b,y,horizon){
   const W=720,H=240,P=42;
   const all=b.concat(y); const min=Math.min(0,...all), max=Math.max(0,...all);
@@ -318,7 +373,7 @@ function exportBC(){
   });
   downloadCSV('Cosumar_Business_Case_ROI.csv',rows);
 }
-loadState();renderMarketHyp();renderList();fillInputs();calc();
+loadState();renderMarketHyp();renderBenHyp();renderList();fillInputs();calc();
 </script>
 </body>
 </html>
