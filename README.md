@@ -26,6 +26,7 @@ tools/
   roadmap-builder.html            ← Phase 3 : roadmap 3 vagues (drag & drop), budgets, export CSV
   simulateur-coe.html             ← Phase 4 : staffing/budget CoE, RACI, Charte IA, plan compétences
   conformite.html                 ← Transversal : référentiels locaux/intl, EU AI Act, AIPD/DPIA, souveraineté
+  compliance-copilot.html         ← Transversal : génération auto des AIPD/DPIA pré-remplies par UC + export
 assets/
   sia.css  sia.js                 ← Design system Sia (palette navy/teal, Syne + DM Sans)
 excel/
@@ -82,7 +83,15 @@ Le module **`tools/conformite.html`** centralise les aspects de conformité, tra
 - **UNESCO** — Recommandation sur l'éthique de l'IA · **OCDE** — Principes IA
 - **ISO/IEC 42001** (management de l'IA), **ISO/IEC 27001** (sécurité), **NIST AI RMF**
 
-**Fonctionnalités du module**
+**Compliance Copilot** (`tools/compliance-copilot.html`) — **génère automatiquement une
+AIPD/DPIA pré-remplie** par use case (profils de conformité des 10 UC) : identification du
+traitement, finalités, base légale, catégories de données & personnes concernées, résidence
+& conservation, mesures de sécurité, **classification & obligations EU AI Act**, table
+d'évaluation des risques (probabilité × gravité, risque initial → résiduel) et **avis du DPO**
+(favorable / sous conditions). Export **Markdown** et **PDF** (impression). Document éditable
+(organisation, DPO, référence).
+
+**Fonctionnalités du module Conformité**
 - Cartographie des 12 référentiels (local + international)
 - Classification des 10 use cases par niveau de risque EU AI Act (export CSV)
 - Checklist de conformité par use case (AIPD/DPIA, registre, human-in-the-loop…)
