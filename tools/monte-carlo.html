@@ -68,6 +68,12 @@
         <div class="field"><label>Nombre de simulations</label><select id="p-sims" onchange="run()"><option value="2000">2 000</option><option value="5000" selected>5 000</option><option value="10000">10 000</option><option value="20000">20 000</option></select></div>
         <div class="field"><div class="flex between"><label>Objectif de VAN (K MAD)</label><b id="v-thr">1 500</b></div><input type="range" id="p-thr" min="0" max="4000" step="100" value="1500" oninput="run()"></div>
       </div>
+      <div class="panel panel-pad mb">
+        <div class="flex between center" style="margin-bottom:4px"><h3 style="color:var(--navy-dark)">Hypothèses marché</h3><span class="chip teal" style="font-size:.66rem">↔ partagé ROI</span></div>
+        <p class="muted" style="font-size:.74rem;margin-bottom:10px">Les bénéfices simulés dérivent du <b>même modèle de valeur</b> que le calculateur ROI. Toute modification est synchronisée entre les deux outils.</p>
+        <div id="mc-params"></div>
+        <button class="btn ghost sm" style="margin-top:10px" onclick="resetParams()">↺ Hypothèses par défaut</button>
+      </div>
       <div class="panel panel-pad">
         <div class="flex between center" style="margin-bottom:10px"><h3 style="color:var(--navy-dark)">Use cases inclus</h3><span class="muted" style="font-size:.76rem" id="uc-count"></span></div>
         <div id="uc-list"></div>
@@ -112,6 +118,10 @@ const UC=[
 ];
 let included={};
 function loadInc(){ const s=store.get('mc.included',null); UC.forEach(u=>included[u.id]= s? (s[u.id]!==false):true); }
+// ---- Bénéfices dérivés du modèle de valeur PARTAGÉ avec le calculateur ROI ----
+let params={};
+function loadParams(){ params=COSUMAR_VALUE.loadParams(); }
+function benOf(u){ const mode=COSUMAR_VALUE.benefitTotal(params,u.id)||u.ben[1]; return [Math.round(mode*0.70),mode,Math.round(mode*1.25)]; }
 
 function tri(min,mode,max){ const u=Math.random(),c=(mode-min)/(max-min);
   return u<c ? min+Math.sqrt(u*(max-min)*(mode-min)) : max-Math.sqrt((1-u)*(max-min)*(max-mode)); }
@@ -120,11 +130,12 @@ function pctl(sorted,p){ const i=(sorted.length-1)*p, lo=Math.floor(i), hi=Math.
 function simUC(u,H,r,n){ // returns array of NPVs
   let out=new Float64Array(n);
   let discF=0; for(let y=1;y<=H;y++) discF+=1/Math.pow(1+r,y);
+  const bt=benOf(u);
   for(let k=0;k<n;k++){
     const capex=tri(u.cap[0],u.cap[1],u.cap[2]);
     const success=Math.random()<u.p;
     let npv=-capex;
-    if(success){ const ben=tri(u.ben[0],u.ben[1],u.ben[2]); const opex=capex*0.22; npv+=(ben-opex)*discF; }
+    if(success){ const ben=tri(bt[0],bt[1],bt[2]); const opex=capex*0.22; npv+=(ben-opex)*discF; }
     out[k]=npv;
   }
   return out;
@@ -193,9 +204,28 @@ function drawRR(perUC){
 function renderList(){
   const active=UC.filter(u=>included[u.id]).length;
   document.getElementById('uc-count').textContent=active+'/'+UC.length;
-  document.getElementById('uc-list').innerHTML=UC.map(u=>`<div class="uc-toggle ${included[u.id]?'':'off'}"><input type="checkbox" ${included[u.id]?'checked':''} onchange="toggle(${u.id},this.checked)"><div class="un">${u.name}<div class="up">${u.dir} · capex ${u.cap[1]}K · bénéf. ${u.ben[1]}K/an</div></div><span class="pbadge">p=${Math.round(u.p*100)}%</span></div>`).join('');
+  document.getElementById('uc-list').innerHTML=UC.map(u=>`<div class="uc-toggle ${included[u.id]?'':'off'}"><input type="checkbox" ${included[u.id]?'checked':''} onchange="toggle(${u.id},this.checked)"><div class="un">${u.name}<div class="up">${u.dir} · capex ${u.cap[1]}K · bénéf. ${benOf(u)[1]}K/an</div></div><span class="pbadge">p=${Math.round(u.p*100)}%</span></div>`).join('');
 }
 function toggle(id,v){ included[id]=v; store.set('mc.included',included); renderList(); run(); }
+// ---- Hypothèses partagées (formulaire) ----
+const PARAM_META=[
+ {k:"portage",l:"Coût de portage stock (%/an)",step:0.5,min:1,max:12},
+ {k:"salEmp",l:"Salaire chargé employé (K/an)",step:10,min:80,max:300},
+ {k:"salCadre",l:"Salaire chargé cadre (K/an)",step:20,min:150,max:600},
+ {k:"rendement",l:"Valoris. rendement (%)",step:5,min:40,max:200},
+ {k:"energie",l:"Valoris. énergie (%)",step:5,min:40,max:200},
+ {k:"arret",l:"Valoris. coût d'arrêt (%)",step:5,min:40,max:200},
+ {k:"transport",l:"Valoris. transport (%)",step:5,min:40,max:200},
+];
+function renderParamForm(){
+  document.getElementById('mc-params').innerHTML=PARAM_META.map(p=>`<div class="flex between center" style="gap:8px;margin-bottom:7px"><label style="margin:0;font-size:.78rem;flex:1">${p.l}</label><input type="number" style="width:84px;text-align:right" id="mp-${p.k}" value="${params[p.k]}" min="${p.min}" max="${p.max}" step="${p.step}" oninput="onParam()"></div>`).join('');
+}
+function onParam(){
+  PARAM_META.forEach(p=>{ const el=document.getElementById('mp-'+p.k); if(el) params[p.k]=+el.value||COSUMAR_VALUE.PARAM_DEF[p.k]; });
+  COSUMAR_VALUE.saveParams(params);
+  renderList(); run();
+}
+function resetParams(){ params=Object.assign({},COSUMAR_VALUE.PARAM_DEF); COSUMAR_VALUE.saveParams(params); renderParamForm(); renderList(); run(); toast('Hypothèses réinitialisées (synchronisé ROI)'); }
 function exportMC(){
   const m=window.__mc; if(!m)return;
   const rows=[["Indicateur portefeuille","Valeur K MAD"],
@@ -206,7 +236,7 @@ function exportMC(){
   m.perUC.forEach(p=>{ const s=Float64Array.from(p.arr).sort(); rows.push([p.u.name,p.u.dir,Math.round(p.arr.reduce((a,b)=>a+b,0)/p.arr.length),Math.round(pctl(s,.1)),Math.round(pctl(s,.9)),Math.round(p.u.p*100)]); });
   downloadCSV('Cosumar_MonteCarlo_Portefeuille.csv',rows);
 }
-loadInc();renderList();run();
+loadInc();loadParams();renderParamForm();renderList();run();
 </script>
 </body>
 </html>

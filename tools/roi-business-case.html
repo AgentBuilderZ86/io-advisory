@@ -307,29 +307,7 @@ function renderMarketHyp(){
 }
 
 // ---------- Justification des bénéfices (gisements de valeur, hypothèses éditables) ----------
-// cat : levier de valeur rattaché à une hypothèse éditable
-const BENEFITS={
- 1:[{l:"Réduction des arrêts non planifiés",h:"-30% d'arrêts ; coût d'arrêt turbine élevé en campagne",base:250,cat:"arret"},
-    {l:"Baisse de la maintenance corrective",h:"Curatif → préventif planifié",base:100,cat:"generic"}],
- 2:[{l:"Gain de rendement d'extraction",h:"+2 pts valorisés sur le tonnage (prix du sucre)",base:450,cat:"rendement"},
-    {l:"Réduction consommation vapeur",h:"Pilotage fin diffusion/cristallisation",base:150,cat:"energie"}],
- 3:[{l:"Optimisation planning de broyage & appro",h:"Prévision tonnage → logistique amont lissée",base:180,cat:"generic"},
-    {l:"Réduction des pertes (saccharose)",h:"Récolte/transport synchronisés",base:70,cat:"generic"}],
- 4:[{l:"Réduction du coût de stock (BFR)",h:"-15% de stock × coût de portage sur l'encours sucre",base:250,cat:"portage"},
-    {l:"Réduction des ruptures / ventes perdues",h:"Meilleur taux de service B2B/B2C",base:150,cat:"generic"}],
- 5:[{l:"Temps de saisie comptable évité",h:"≈1,5 ETP comptable libéré",base:130,cat:"etpEmp"},
-    {l:"Escomptes & pénalités de retard évités",h:"Délais P2P raccourcis",base:50,cat:"generic"}],
- 6:[{l:"Tickets RH N1 absorbés",h:"-40% → ≈1 ETP RH redéployé",base:120,cat:"etpEmp"},
-    {l:"Temps collaborateurs gagné",h:"Réponses RH instantanées 24/7",base:100,cat:"generic"}],
- 7:[{l:"Réduction de la facture énergétique",h:"-8% sur la facture vapeur+électricité",base:300,cat:"energie"}],
- 8:[{l:"Temps de revue juridique évité",h:"-50% → ≈0,8 ETP juriste (cadre)",base:100,cat:"etpCadre"},
-    {l:"Risques contractuels réduits",h:"Échéances/clauses sécurisées",base:50,cat:"generic"}],
- 9:[{l:"Coûts de remplacement évités",h:"-12% turnover × coût recrutement+formation",base:150,cat:"etpCadre"},
-    {l:"Réduction de l'absentéisme",h:"Détection précoce, actions ciblées",base:50,cat:"generic"}],
- 10:[{l:"Réduction des coûts de transport",h:"-14% sur le poste transport",base:250,cat:"transport"},
-    {l:"Optimisation du taux de remplissage",h:"Tournées & chargements optimisés",base:100,cat:"generic"}],
-};
-const PARAM_DEF={portage:5,salEmp:150,salCadre:300,energie:100,rendement:100,arret:100,transport:100};
+// cat : levier de valeur rattaché à une hypothèse éditable — modèle partagé dans sia.js
 const PARAM_META=[
  {k:"portage",l:"Coût de portage du stock (%/an)",ref:5,step:0.5,min:1,max:12},
  {k:"salEmp",l:"Salaire chargé — employé qualifié (K MAD/an)",ref:150,step:10,min:80,max:300},
@@ -339,21 +317,10 @@ const PARAM_META=[
  {k:"arret",l:"Valorisation coût d'arrêt (%)",ref:100,step:5,min:40,max:200},
  {k:"transport",l:"Valorisation coût transport (%)",ref:100,step:5,min:40,max:200},
 ];
+const PARAM_DEF=COSUMAR_VALUE.PARAM_DEF;
 let params={};
-function loadParams(){ params=Object.assign({},PARAM_DEF,store.get('roi.params',{})); }
-function scale(cat){
-  switch(cat){
-    case"portage":return params.portage/PARAM_DEF.portage;
-    case"etpEmp":return params.salEmp/PARAM_DEF.salEmp;
-    case"etpCadre":return params.salCadre/PARAM_DEF.salCadre;
-    case"rendement":return params.rendement/100;
-    case"energie":return params.energie/100;
-    case"arret":return params.arret/100;
-    case"transport":return params.transport/100;
-    default:return 1;
-  }
-}
-function benefitLines(){ return (BENEFITS[MODEL[sel].id]||[]).map(l=>({...l,v:Math.round(l.base*scale(l.cat))})); }
+function loadParams(){ params=COSUMAR_VALUE.loadParams(); }
+function benefitLines(){ return COSUMAR_VALUE.benefitLines(params,MODEL[sel].id); }
 function renderBenefits(){
   const lines=benefitLines();
   const tot=lines.reduce((a,l)=>a+l.v,0);
@@ -369,7 +336,7 @@ function renderBenefits(){
 function renderBenForm(){
   let h='<div style="display:grid;grid-template-columns:1fr;gap:9px">';
   PARAM_META.forEach(p=>{ h+=`<div class="in-row"><label style="flex:1">${p.l}</label><input type="number" style="width:92px;text-align:right" id="prm-${p.k}" value="${params[p.k]}" min="${p.min}" max="${p.max}" step="${p.step}" oninput="onParam()"></div>`; });
-  h+='</div><div class="hyp-note">Modifiez une hypothèse → les gisements concernés se recalculent. « Appliquer » reporte le total dans le bénéfice annuel et met à jour VAN / payback / ROI.</div>';
+  h+='</div><div class="hyp-note">Modifiez une hypothèse → les gisements concernés se recalculent. « Appliquer » reporte le total dans le bénéfice annuel et met à jour VAN / payback / ROI. <b>Hypothèses partagées avec le simulateur Monte-Carlo.</b></div>';
   document.getElementById('ben-hyp').innerHTML=h;
 }
 function onParam(){
