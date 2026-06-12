@@ -70,7 +70,48 @@
     loadParams(){ return Object.assign({},PARAM_DEF, window.store.get('roi.params',{})); },
     saveParams(p){ window.store.set('roi.params',p); },
     benefitLines(params,ucId){ return (BENEFITS[ucId]||[]).map(l=>({...l,v:Math.round(l.base*scale(params,l.cat))})); },
-    benefitTotal(params,ucId){ return this.benefitLines(params,ucId).reduce((a,l)=>a+l.v,0); }
+    benefitTotal(params,ucId){ return this.benefitLines(params,ucId).reduce((a,l)=>a+l.v,0); },
+    // ---- Modèle de coûts partagé : TJM marché marocain (MAD/jour, chargé) ----
+    TJM_DEF:{pm:5000,arch:6000,de:4200,ds:4800,integ:3800,change:3500,run:4500},
+    TJM_META:[
+      {k:"pm",l:"Chef de projet / Product Owner"},
+      {k:"arch",l:"Architecte IA / MLOps"},
+      {k:"ds",l:"Data Scientist / ML Engineer"},
+      {k:"de",l:"Data Engineer"},
+      {k:"integ",l:"Ingénieur d'intégration SI"},
+      {k:"change",l:"Consultant conduite du changement"},
+      {k:"run",l:"Run / MLOps (profil moyen)"},
+    ],
+    // décomposition des CAPEX/OPEX en postes (poids w) ; role = clé TJM (null = montant pur)
+    COST_MODEL:{
+      buildCapex:[
+        {p:"Cadrage & gestion de projet",pr:"Chef de projet / PO",w:.12,role:"pm"},
+        {p:"Architecture & MLOps",pr:"Architecte IA",w:.10,role:"arch"},
+        {p:"Data engineering (pipelines, qualité)",pr:"Data Engineer",w:.22,role:"de"},
+        {p:"Data science / modélisation",pr:"Data Scientist / ML",w:.34,role:"ds"},
+        {p:"Intégration SI (SAP, MES, CRM…)",pr:"Ingénieur intégration",w:.14,role:"integ"},
+        {p:"Infrastructure & licences (setup)",pr:"Cloud souverain · outils",w:.08,role:null},
+      ],
+      buildOpex:[
+        {p:"Hébergement souverain (cloud / on-prem)",pr:"OPEX récurrent",w:.35,role:null},
+        {p:"Run & MLOps (supervision modèles)",pr:"Data/ML Engineer",w:.30,role:"run"},
+        {p:"Licences & abonnements outils",pr:"OPEX récurrent",w:.20,role:null},
+        {p:"Support & maintenance évolutive",pr:"Data Scientist",w:.15,role:"ds"},
+      ],
+      buyCapex:[
+        {p:"Licence & frais de mise en service",pr:"Éditeur (souvent EUR/USD)",w:.35,role:null},
+        {p:"Intégration & paramétrage",pr:"Intégrateur local / ESN",w:.38,role:"integ"},
+        {p:"Migration & reprise de données",pr:"Data Engineer",w:.12,role:"de"},
+        {p:"Formation & conduite du changement",pr:"Consultant change",w:.15,role:"change"},
+      ],
+      buyOpex:[
+        {p:"Abonnement annuel (licences SaaS)",pr:"Éditeur (souvent EUR/USD)",w:.70,role:null},
+        {p:"Support & maintenance éditeur",pr:"OPEX récurrent",w:.20,role:null},
+        {p:"Hébergement / connecteur souverain",pr:"OPEX récurrent",w:.10,role:null},
+      ],
+    },
+    loadTJM(){ return Object.assign({},this.TJM_DEF, window.store.get('roi.tjm',{})); },
+    saveTJM(t){ window.store.set('roi.tjm',t); }
   };
   // ---- Global mission state: export / import all cosumar.* keys ----
   window.exportMissionState = function(){

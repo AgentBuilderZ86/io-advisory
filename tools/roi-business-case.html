@@ -131,7 +131,7 @@
           <h4 class="bk-h" style="color:var(--navy-dark)">📌 Hypothèses & contexte marché marocain</h4>
           <div class="grid-2" style="gap:18px;margin-top:10px">
             <div>
-              <div class="muted" style="font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">TJM indicatifs — profils data/IA (MAD/jour, chargé)</div>
+              <div class="muted" style="font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">TJM — profils data/IA (MAD/jour, chargé) · <span style="color:var(--teal-dark)">éditables</span></div>
               <div class="tbl-scroll"><table class="tbl" style="font-size:.8rem"><tbody id="tjm-body"></tbody></table></div>
             </div>
             <div>
@@ -247,54 +247,30 @@ function calc(){
 }
 
 // ---------- Chiffrage détaillé — contexte marché marocain ----------
-// TJM = taux journalier moyen (MAD/jour, chargé) — profils data/IA, ESN / CFC Maroc 2026 (indicatif)
-const TJM={pm:5000,arch:6000,de:4200,ds:4800,integ:3800,change:3500,run:4500};
-const BUILD_CAPEX=[
- {p:"Cadrage & gestion de projet",pr:"Chef de projet / PO",w:.12,tjm:TJM.pm},
- {p:"Architecture & MLOps",pr:"Architecte IA",w:.10,tjm:TJM.arch},
- {p:"Data engineering (pipelines, qualité)",pr:"Data Engineer",w:.22,tjm:TJM.de},
- {p:"Data science / modélisation",pr:"Data Scientist / ML",w:.34,tjm:TJM.ds},
- {p:"Intégration SI (SAP, MES, CRM…)",pr:"Ingénieur intégration",w:.14,tjm:TJM.integ},
- {p:"Infrastructure & licences (setup)",pr:"Cloud souverain · outils",w:.08,tjm:0},
-];
-const BUILD_OPEX=[
- {p:"Hébergement souverain (cloud / on-prem)",pr:"OPEX récurrent",w:.35,tjm:0},
- {p:"Run & MLOps (supervision modèles)",pr:"Data/ML Engineer",w:.30,tjm:TJM.run},
- {p:"Licences & abonnements outils",pr:"OPEX récurrent",w:.20,tjm:0},
- {p:"Support & maintenance évolutive",pr:"Data Scientist",w:.15,tjm:TJM.ds},
-];
-const BUY_CAPEX=[
- {p:"Licence & frais de mise en service",pr:"Éditeur (souvent EUR/USD)",w:.35,tjm:0},
- {p:"Intégration & paramétrage",pr:"Intégrateur local / ESN",w:.38,tjm:TJM.integ},
- {p:"Migration & reprise de données",pr:"Data Engineer",w:.12,tjm:TJM.de},
- {p:"Formation & conduite du changement",pr:"Consultant change",w:.15,tjm:TJM.change},
-];
-const BUY_OPEX=[
- {p:"Abonnement annuel (licences SaaS)",pr:"Éditeur (souvent EUR/USD)",w:.70,tjm:0},
- {p:"Support & maintenance éditeur",pr:"OPEX récurrent",w:.20,tjm:0},
- {p:"Hébergement / connecteur souverain",pr:"OPEX récurrent",w:.10,tjm:0},
-];
+// Modèle de coûts PARTAGÉ (sia.js) — TJM marché marocain éditables & persistés ('roi.tjm')
+const COST=COSUMAR_VALUE.COST_MODEL;
+let tjm=COSUMAR_VALUE.loadTJM();
 function bkTable(capexLines,capexTot,opexLines,opexTot){
-  const row=(l,amountK)=>{ const mad=amountK*1000; const jours=l.tjm?Math.round(mad/l.tjm*10)/10:null;
-    return `<tr><td><div class="pn">${l.p}</div><div class="pr">${l.pr}</div></td><td class="num">${jours!=null?jours.toLocaleString('fr-FR')+' j':'—'}</td><td class="num">${l.tjm?l.tjm.toLocaleString('fr-FR'):'—'}</td><td class="num">${Math.round(amountK)} K</td><td class="num">${Math.round(l.w*100)}%</td></tr>`; };
+  const row=(l,amountK)=>{ const mad=amountK*1000; const rate=l.role?tjm[l.role]:0; const jours=rate?Math.round(mad/rate*10)/10:null;
+    return `<tr><td><div class="pn">${l.p}</div><div class="pr">${l.pr}</div></td><td class="num">${jours!=null?jours.toLocaleString('fr-FR')+' j':'—'}</td><td class="num">${rate?rate.toLocaleString('fr-FR'):'—'}</td><td class="num">${Math.round(amountK)} K</td><td class="num">${Math.round(l.w*100)}%</td></tr>`; };
   let h=`<table class="bk-tbl"><thead><tr><th>Poste</th><th class="num">Jours-h</th><th class="num">TJM</th><th class="num">Montant</th><th class="num">%</th></tr></thead><tbody>`;
   h+=`<tr class="sub"><td colspan="5">CAPEX initial — ${Math.round(capexTot)} K MAD</td></tr>`;
   capexLines.forEach(l=>h+=row(l,l.w*capexTot));
   h+=`<tr class="sub"><td colspan="5">OPEX annuel — ${Math.round(opexTot)} K MAD/an</td></tr>`;
   opexLines.forEach(l=>h+=row(l,l.w*opexTot));
-  // total jours capex (effort)
-  const jh=capexLines.reduce((a,l)=>a+(l.tjm?(l.w*capexTot*1000)/l.tjm:0),0);
+  const jh=capexLines.reduce((a,l)=>{ const rate=l.role?tjm[l.role]:0; return a+(rate?(l.w*capexTot*1000)/rate:0); },0);
   h+=`<tr class="tot"><td>Effort projet (CAPEX)</td><td class="num">${Math.round(jh)} j</td><td></td><td class="num">${Math.round(capexTot)} K</td><td></td></tr>`;
   h+='</tbody></table>';
   return h;
 }
 function renderBreakdown(ins){
-  document.getElementById('bk-build').innerHTML=bkTable(BUILD_CAPEX,ins.build[0],BUILD_OPEX,ins.build[1]);
-  document.getElementById('bk-buy').innerHTML=bkTable(BUY_CAPEX,ins.buy[0],BUY_OPEX,ins.buy[1]);
+  document.getElementById('bk-build').innerHTML=bkTable(COST.buildCapex,ins.build[0],COST.buildOpex,ins.build[1]);
+  document.getElementById('bk-buy').innerHTML=bkTable(COST.buyCapex,ins.buy[0],COST.buyOpex,ins.buy[1]);
 }
 function renderMarketHyp(){
-  const tjm=[["Chef de projet / Product Owner",TJM.pm],["Architecte IA / MLOps",TJM.arch],["Data Scientist / ML Engineer",TJM.ds],["Data Engineer",TJM.de],["Ingénieur d'intégration SI",TJM.integ],["Consultant conduite du changement",TJM.change]];
-  document.getElementById('tjm-body').innerHTML=tjm.map(([n,v])=>`<tr><td class="pn" style="font-weight:600;color:var(--navy-dark)">${n}</td><td class="num" style="text-align:right;font-weight:700;color:var(--navy)">${v.toLocaleString('fr-FR')} MAD/j</td></tr>`).join('');
+  let t=COSUMAR_VALUE.TJM_META.map(m=>`<tr><td class="pn" style="font-weight:600;color:var(--navy-dark)">${m.l}</td><td class="num" style="text-align:right"><input type="number" id="tjm-${m.k}" value="${tjm[m.k]}" step="100" min="1500" max="12000" style="width:94px;text-align:right" oninput="onTJM()"></td></tr>`).join('');
+  t+=`<tr><td colspan="2" style="text-align:right;padding-top:8px"><button class="btn ghost sm" onclick="resetTJM()">↺ TJM par défaut</button></td></tr>`;
+  document.getElementById('tjm-body').innerHTML=t;
   const hyp=[
    "<b>Profils data/IA rares</b> au Maroc : TJM tirés vers le haut, recours fréquent aux ESN de Casablanca Finance City.",
    "<b>Build</b> = jours-homme internes/ESN × TJM ; pèse sur la masse salariale mais capitalise le savoir-faire et l'IP.",
@@ -305,6 +281,12 @@ function renderMarketHyp(){
   ];
   document.getElementById('hyp-list').innerHTML=hyp.map(h=>`<li>${h}</li>`).join('');
 }
+function onTJM(){
+  COSUMAR_VALUE.TJM_META.forEach(m=>{ const el=document.getElementById('tjm-'+m.k); if(el) tjm[m.k]=+el.value||COSUMAR_VALUE.TJM_DEF[m.k]; });
+  COSUMAR_VALUE.saveTJM(tjm);
+  renderBreakdown(readInputs());
+}
+function resetTJM(){ tjm=Object.assign({},COSUMAR_VALUE.TJM_DEF); COSUMAR_VALUE.saveTJM(tjm); renderMarketHyp(); renderBreakdown(readInputs()); toast('TJM réinitialisés'); }
 
 // ---------- Justification des bénéfices (gisements de valeur, hypothèses éditables) ----------
 // cat : levier de valeur rattaché à une hypothèse éditable — modèle partagé dans sia.js
