@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studio d'atelier de conception — Sia × Cosumar</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/sia.css">
+<style>
+/* ---- tabs ---- */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+.tab{font-size:.85rem;font-weight:700;padding:10px 18px;border-radius:10px;border:1.5px solid var(--line2);background:#fff;color:var(--muted);cursor:pointer;transition:.16s}
+.tab:hover{color:var(--navy)}
+.tab.on{background:var(--navy-dark);color:#fff;border-color:transparent}
+.pane{display:none}.pane.on{display:block}
+/* ---- minuteur ---- */
+.timer-card{background:linear-gradient(150deg,#0D2B45,#155e5a);border-radius:var(--radius);padding:26px 28px;color:#fff;box-shadow:var(--shadow-lg);display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.timer-display{font-family:'Syne',sans-serif;font-weight:800;font-size:4.2rem;line-height:1;letter-spacing:-2px;font-variant-numeric:tabular-nums}
+.timer-display.warn{color:#ffcf6b}.timer-display.over{color:#ff8a82;animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.45}}
+.timer-card .tlabel{font-size:.74rem;letter-spacing:1.4px;text-transform:uppercase;opacity:.7;margin-bottom:8px}
+.timer-ctrl{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.tbtn{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);color:#fff;font-weight:700;padding:11px 18px;border-radius:10px;cursor:pointer;font-size:.9rem;transition:.15s}
+.tbtn:hover{background:rgba(255,255,255,.26)}
+.tbtn.go{background:var(--teal);border-color:transparent}.tbtn.go:hover{background:var(--teal-dark)}
+.preset{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#fff;padding:7px 13px;border-radius:18px;cursor:pointer;font-size:.78rem;font-weight:600}
+.preset:hover{background:rgba(255,255,255,.22)}
+/* ---- agenda ---- */
+.agenda{margin-top:22px}
+.ag-row{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px 14px;margin-bottom:9px;box-shadow:var(--shadow)}
+.ag-row.done{opacity:.55;background:var(--cream)}
+.ag-n{width:26px;height:26px;border-radius:50%;background:rgba(0,168,150,.12);color:var(--teal-dark);font-weight:700;font-size:.82rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Syne',sans-serif}
+.ag-row input.ag-name{border:none;background:transparent;font-weight:600;color:var(--navy-dark);flex:1;padding:4px 0}
+.ag-row input.ag-name:focus{box-shadow:none;border-bottom:1.5px solid var(--teal)}
+.ag-min{width:62px!important;text-align:center;font-weight:700;color:var(--navy)}
+.ag-row .ag-x{cursor:pointer;color:var(--muted);opacity:.5;font-weight:700;padding:4px 8px}.ag-row .ag-x:hover{opacity:1;color:var(--red)}
+.ag-foot{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:.82rem;color:var(--muted)}
+/* ---- idéation board ---- */
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.col{background:var(--cream);border:1px solid var(--line);border-radius:var(--radius);padding:12px;min-height:140px}
+.col-head{display:flex;align-items:center;gap:8px;font-weight:700;font-size:.84rem;color:var(--navy-dark);margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid}
+.col-head .cn{margin-left:auto;font-size:.72rem;background:#fff;border-radius:11px;padding:1px 8px;color:var(--muted);font-weight:700}
+.note{background:#fff;border-radius:9px;padding:10px 11px;margin-bottom:9px;box-shadow:var(--shadow);border-left:3px solid var(--navy2);position:relative}
+.note textarea{border:none;background:transparent;font-size:.82rem;color:var(--navy-dark);resize:none;padding:0;width:100%;line-height:1.4;font-weight:500}
+.note textarea:focus{box-shadow:none}
+.note-foot{display:flex;align-items:center;gap:8px;margin-top:8px}
+.vote{display:inline-flex;align-items:center;gap:5px;background:var(--cream);border:none;border-radius:14px;padding:3px 9px;cursor:pointer;font-size:.74rem;font-weight:700;color:var(--teal-dark);transition:.15s}
+.vote:hover{background:rgba(0,168,150,.14)}
+.vote .vn{font-family:'Syne',sans-serif}
+.note .na{font-size:.68rem;color:var(--muted);margin-left:2px}
+.note-act{margin-left:auto;display:flex;gap:4px}
+.note-act button{background:transparent;border:none;cursor:pointer;font-size:.78rem;opacity:.45;padding:2px 4px;border-radius:5px}
+.note-act button:hover{opacity:1;background:var(--cream)}
+.add-note{width:100%;border:1.5px dashed var(--line2);background:transparent;color:var(--muted);border-radius:9px;padding:8px;cursor:pointer;font-size:.8rem;font-weight:600;transition:.15s}
+.add-note:hover{border-color:var(--teal);color:var(--teal-dark)}
+/* ---- canvas ---- */
+.canvas-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;align-items:center}
+.ctab{font-size:.8rem;font-weight:700;padding:8px 14px;border-radius:9px;border:1.5px solid var(--line2);background:#fff;color:var(--muted);cursor:pointer;max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ctab.on{background:var(--teal);color:#fff;border-color:transparent}
+.canvas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:14px}
+.cfield{background:#fff;border:1px solid var(--line);border-radius:11px;padding:13px 14px;box-shadow:var(--shadow)}
+.cfield.big{grid-column:span 2}
+@media(max-width:760px){.cfield.big{grid-column:span 1}}
+.cfield label{font-size:.7rem;letter-spacing:.6px;text-transform:uppercase;color:var(--teal-dark);font-weight:700;margin-bottom:7px}
+.cfield textarea{border:none;background:transparent;resize:vertical;min-height:54px;font-size:.86rem;line-height:1.5;padding:0}
+.cfield textarea:focus{box-shadow:none}
+.cmeta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);margin-bottom:16px}
+.cmeta .field{margin:0}
+.slider-val{font-family:'Syne',sans-serif;font-weight:800;color:var(--navy);font-size:1rem;min-width:20px;text-align:center}
+/* matrice impact/effort */
+.matrix-wrap{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.matrix svg{width:100%;height:auto}
+.q-lbl{font-size:11px;font-weight:700;fill:var(--muted)}
+.m-dot{cursor:pointer}
+.m-dot text{fill:#fff;font-size:11px;font-weight:700;text-anchor:middle}
+.empty-state{padding:50px 24px;text-align:center;color:var(--muted)}
+.empty-state .es-ic{font-size:2.4rem;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="brand-dot"></span><span class="brand-name">Sia<b>·</b>Cosumar</span><span class="brand-sub">Studio d'atelier</span></div>
+  <nav class="topnav">
+    <a href="../index.html" class="home">← Hub</a>
+    <a href="process-mapping.html">🗂️ Processus</a>
+    <a href="atelier-conception.html" class="active">🎨 Atelier</a>
+    <a href="use-cases-ia.html">Use Cases</a>
+    <a href="roadmap-builder.html">Roadmap</a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="flex between center wrap-f">
+      <div>
+        <div class="eyebrow">🎨 Phase 3 · Co-conception</div>
+        <h1 class="page-title">Studio d'atelier de conception</h1>
+      </div>
+      <div class="flex gap wrap-f">
+        <button class="btn ghost" onclick="exportAll()">⬇ Export CSV</button>
+      </div>
+    </div>
+    <p class="page-sub">Animez vos ateliers de co-design des use cases IA : un <b>déroulé minuté</b> pour cadencer la séance, un <b>board d'idéation</b> avec dot-voting pour faire diverger puis converger, et un <b>canvas</b> pour designer chaque use case et le positionner sur la matrice impact / effort. Tout est éditable et sauvegardé.</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" data-t="run" onclick="setTab('run')">⏱️ Déroulé & minuteur</button>
+    <button class="tab" data-t="ideate" onclick="setTab('ideate')">💡 Idéation & vote</button>
+    <button class="tab" data-t="canvas" onclick="setTab('canvas')">🎯 Canvas & matrice</button>
+  </div>
+
+  <!-- ============ DÉROULÉ ============ -->
+  <div class="pane on" id="pane-run">
+    <div class="timer-card">
+      <div>
+        <div class="tlabel" id="timer-label">Minuteur d'animation</div>
+        <div class="timer-display" id="timer-disp">00:00</div>
+      </div>
+      <div>
+        <div style="margin-bottom:12px">
+          <span class="preset" onclick="setTimer(5)">5 min</span>
+          <span class="preset" onclick="setTimer(10)">10 min</span>
+          <span class="preset" onclick="setTimer(15)">15 min</span>
+          <span class="preset" onclick="setTimer(20)">20 min</span>
+          <span class="preset" onclick="setTimer(30)">30 min</span>
+        </div>
+        <div class="timer-ctrl">
+          <button class="tbtn go" id="timer-toggle" onclick="toggleTimer()">▶ Démarrer</button>
+          <button class="tbtn" onclick="resetTimer()">↺ Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="agenda">
+      <div class="flex between center" style="margin-bottom:12px">
+        <div class="section-lbl" style="margin:0;font-size:.72rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)">Déroulé de l'atelier</div>
+        <button class="btn teal sm" onclick="addAgenda()">＋ Séquence</button>
+      </div>
+      <div id="agendaList"></div>
+      <div class="ag-foot">
+        <span>Total : <b id="ag-total" style="color:var(--navy-dark)">—</b></span>
+        <span id="ag-progress"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ IDÉATION ============ -->
+  <div class="pane" id="pane-ideate">
+    <div class="flex between center wrap-f" style="margin-bottom:16px">
+      <div class="muted" style="font-size:.86rem">Capturez les idées par catégorie, puis <b>votez</b> (un point par clic) pour prioriser collectivement.</div>
+      <button class="btn ghost sm" onclick="if(confirm('Vider tout le board d\'idéation ?')){ideas=[];saveIdeas();renderBoard()}">🧹 Vider le board</button>
+    </div>
+    <div class="board" id="board"></div>
+  </div>
+
+  <!-- ============ CANVAS ============ -->
+  <div class="pane" id="pane-canvas">
+    <div class="canvas-tabs" id="canvasTabs"></div>
+    <div id="canvasEditor"></div>
+
+    <div class="block" style="margin-top:26px">
+      <div class="section-lbl" style="font-size:.72rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Matrice de priorisation — Impact / Effort</div>
+      <div class="matrix-wrap"><div class="matrix" id="matrix"></div></div>
+    </div>
+  </div>
+</div>
+
+<footer class="sia-foot">
+  <div><b>Sia × Cosumar</b> · Studio d'atelier de conception</div>
+  <div>Phase 3 — Co-identification & design des use cases IA</div>
+</footer>
+<div id="toast"></div>
+<script src="../assets/sia.js"></script>
+<script>
+// ===================== TABS =====================
+function setTab(t){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.getElementById('pane-'+t).classList.add('on');
+  if(t==='canvas'){ renderCanvasTabs(); renderCanvas(); renderMatrix(); }
+  if(t==='ideate') renderBoard();
+}
+
+// ===================== MINUTEUR =====================
+let tRemain=0, tTotal=0, tInt=null, tRunning=false;
+function fmtT(s){ s=Math.max(0,Math.abs(s)); const m=Math.floor(s/60), ss=s%60; return (s<0?'-':'')+String(m).padStart(2,'0')+':'+String(ss).padStart(2,'0'); }
+function setTimer(min,label){ tRemain=min*60; tTotal=tRemain; if(label) document.getElementById('timer-label').textContent=label; pauseTimer(); drawTimer(); }
+function drawTimer(){
+  const d=document.getElementById('timer-disp');
+  d.textContent=(tRemain<0?'-':'')+fmtT(tRemain).replace('-','');
+  d.classList.toggle('warn',tRemain<=30&&tRemain>0);
+  d.classList.toggle('over',tRemain<0);
+}
+function tick(){ tRemain--; if(tRemain===0){ toast('⏰ Temps écoulé !'); try{beep()}catch(e){} } drawTimer(); }
+function toggleTimer(){ tRunning?pauseTimer():startTimer(); }
+function startTimer(){ if(tRemain===0&&tTotal===0){ setTimer(10); } tRunning=true; document.getElementById('timer-toggle').textContent='⏸ Pause'; clearInterval(tInt); tInt=setInterval(tick,1000); }
+function pauseTimer(){ tRunning=false; document.getElementById('timer-toggle').textContent='▶ Démarrer'; clearInterval(tInt); }
+function resetTimer(){ pauseTimer(); tRemain=tTotal; drawTimer(); }
+function beep(){ const ctx=new (window.AudioContext||window.webkitAudioContext)(); const o=ctx.createOscillator(),g=ctx.createGain(); o.connect(g);g.connect(ctx.destination); o.frequency.value=880;g.gain.value=.15;o.start(); setTimeout(()=>{o.stop();ctx.close()},500); }
+setTimer(10,'Minuteur d\'animation');
+
+// ===================== AGENDA =====================
+const AG_DEF=[
+ {p:'Cadrage & objectifs de l\'atelier',m:15,done:false},
+ {p:'Partage du diagnostic & points de douleur',m:20,done:false},
+ {p:'Divergence — idéation des cas d\'usage IA',m:30,done:false},
+ {p:'Convergence — dot voting & sélection',m:15,done:false},
+ {p:'Design — canvas des use cases retenus',m:40,done:false},
+ {p:'Évaluation valeur / faisabilité (impact-effort)',m:25,done:false},
+ {p:'Plan d\'action & arbitrage Go / No-Go',m:20,done:false}
+];
+let agenda = store.get('atelier.agenda', null) || JSON.parse(JSON.stringify(AG_DEF));
+function saveAg(){ store.set('atelier.agenda',agenda); }
+function renderAgenda(){
+  document.getElementById('agendaList').innerHTML = agenda.map((a,i)=>`
+    <div class="ag-row ${a.done?'done':''}">
+      <span class="ag-n">${i+1}</span>
+      <input type="checkbox" ${a.done?'checked':''} style="width:auto;flex:none" onchange="agDone(${i},this.checked)" title="Séquence terminée">
+      <input class="ag-name" value="${(a.p||'').replace(/"/g,'&quot;')}" onchange="agSet(${i},'p',this.value)">
+      <input class="ag-min" type="number" min="1" value="${a.m}" onchange="agSet(${i},'m',+this.value||0)"> <span class="muted" style="font-size:.78rem">min</span>
+      <button class="tbtn" style="background:rgba(0,168,150,.12);color:var(--teal-dark);border-color:transparent;padding:6px 12px;font-size:.8rem" onclick="setTimer(${a.m},'${(a.p||'').replace(/'/g,'').slice(0,40)}');setTab('run');toast('Minuteur réglé sur ${a.m} min')">▶</button>
+      <span class="ag-x" onclick="agDel(${i})">✕</span>
+    </div>`).join('');
+  const total=agenda.reduce((s,a)=>s+(+a.m||0),0);
+  const doneN=agenda.filter(a=>a.done).length;
+  document.getElementById('ag-total').textContent=Math.floor(total/60)+'h'+String(total%60).padStart(2,'0');
+  document.getElementById('ag-progress').textContent=doneN+'/'+agenda.length+' séquences terminées';
+}
+function agSet(i,k,v){ agenda[i][k]=v; saveAg(); if(k==='m')renderAgenda(); }
+function agDone(i,v){ agenda[i].done=v; saveAg(); renderAgenda(); }
+function agDel(i){ agenda.splice(i,1); saveAg(); renderAgenda(); }
+function addAgenda(){ agenda.push({p:'Nouvelle séquence',m:10,done:false}); saveAg(); renderAgenda(); }
+
+// ===================== IDÉATION =====================
+const CATS=[
+ {k:'pain',l:'Irritants / pains',c:'#E0544E',ic:'🔥'},
+ {k:'idea',l:'Idées IA',c:'#00A896',ic:'💡'},
+ {k:'data',l:'Données / sources',c:'#2E75B6',ic:'🗄️'},
+ {k:'quick',l:'Quick wins',c:'#C9972B',ic:'⚡'},
+ {k:'risk',l:'Risques / freins',c:'#E5A50A',ic:'⚠️'}
+];
+const catOf=k=>CATS.find(c=>c.k===k)||CATS[1];
+let ideas = store.get('atelier.ideas', []);
+let iSeq = ideas.reduce((m,x)=>Math.max(m,x.id),0)+1;
+function saveIdeas(){ store.set('atelier.ideas',ideas); }
+function renderBoard(){
+  document.getElementById('board').innerHTML = CATS.map(cat=>{
+    const list = ideas.filter(x=>x.cat===cat.k).sort((a,b)=>b.votes-a.votes);
+    return `<div class="col">
+      <div class="col-head" style="border-color:${cat.c}"><span>${cat.ic}</span> ${cat.l} <span class="cn">${list.length}</span></div>
+      ${list.map(x=>`
+        <div class="note" style="border-left-color:${cat.c}">
+          <textarea rows="2" oninput="autoGrow(this)" onchange="ideaSet(${x.id},'text',this.value)" placeholder="Idée…">${(x.text||'').replace(/</g,'&lt;')}</textarea>
+          <div class="note-foot">
+            <button class="vote" onclick="vote(${x.id},1)" title="Voter">▲ <span class="vn">${x.votes}</span></button>
+            <button class="vote" style="color:var(--muted)" onclick="vote(${x.id},-1)" title="Retirer un vote">▼</button>
+            <div class="note-act">
+              <button title="Designer en canvas" onclick="ideaToCanvas(${x.id})">🎯</button>
+              <button title="Supprimer" onclick="ideaDel(${x.id})">✕</button>
+            </div>
+          </div>
+        </div>`).join('')}
+      <button class="add-note" onclick="ideaAdd('${cat.k}')">＋ idée</button>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('#board textarea').forEach(autoGrow);
+}
+function autoGrow(el){ el.style.height='auto'; el.style.height=el.scrollHeight+'px'; }
+function ideaAdd(cat){ const x={id:iSeq++,cat,text:'',votes:0}; ideas.push(x); saveIdeas(); renderBoard(); }
+function ideaSet(id,k,v){ const x=ideas.find(i=>i.id===id); if(x){x[k]=v;saveIdeas();} }
+function ideaDel(id){ ideas=ideas.filter(i=>i.id!==id); saveIdeas(); renderBoard(); }
+function vote(id,d){ const x=ideas.find(i=>i.id===id); if(x){x.votes=Math.max(0,x.votes+d);saveIdeas();renderBoard();} }
+function ideaToCanvas(id){ const x=ideas.find(i=>i.id===id); if(!x)return; const c=newCanvas(); c.name=(x.text||'').slice(0,60)||c.name; if(x.cat==='pain'||x.cat==='quick') c.probleme=x.text; if(x.cat==='idea') c.solution=x.text; saveCanvas(); curCanvas=c.id; setTab('canvas'); toast('Canvas créé depuis l\'idée'); }
+
+// ===================== CANVAS =====================
+const CANVAS_FIELDS=[
+ {k:'probleme',l:'Problème / opportunité',ph:'Quel irritant ou opportunité métier adresse-t-on ?',big:1},
+ {k:'benef',l:'Bénéficiaires',ph:'Qui utilise / profite ? (direction, métier, personae)'},
+ {k:'parcours',l:'Parcours / processus impacté',ph:'Quel processus, à quelle étape ?'},
+ {k:'solution',l:'Solution IA proposée',ph:'Quelle approche ? (ML, GenAI, OCR, prescriptif…)',big:1},
+ {k:'data',l:'Données nécessaires',ph:'Sources, qualité, disponibilité, gouvernance'},
+ {k:'valeur',l:'Valeur attendue',ph:'Gains quantifiés (MAD, %, ETP) & qualitatifs'},
+ {k:'faisa',l:'Faisabilité & prérequis',ph:'Technique, intégration SI, compétences'},
+ {k:'risques',l:'Risques & conformité',ph:'CNDP, EU AI Act, éthique, dépendances'},
+ {k:'next',l:'Prochaines étapes',ph:'Actions, responsable, décision Go / No-Go'}
+];
+let canvases = store.get('atelier.canvas', []);
+let cSeq = canvases.reduce((m,x)=>Math.max(m,x.id),0)+1;
+let curCanvas = canvases[0] ? canvases[0].id : null;
+function saveCanvas(){ store.set('atelier.canvas',canvases); }
+function newCanvas(){ const c={id:cSeq++,name:'Nouveau use case',dir:'',vague:'',app:'',impact:3,effort:3}; CANVAS_FIELDS.forEach(f=>c[f.k]=''); canvases.push(c); curCanvas=c.id; saveCanvas(); return c; }
+function curC(){ return canvases.find(c=>c.id===curCanvas); }
+
+function renderCanvasTabs(){
+  let h = canvases.map(c=>`<button class="ctab ${c.id===curCanvas?'on':''}" onclick="curCanvas=${c.id};renderCanvasTabs();renderCanvas();renderMatrix()" title="${(c.name||'').replace(/"/g,'&quot;')}">${(c.name||'Sans titre').replace(/</g,'&lt;')||'Sans titre'}</button>`).join('');
+  h += `<button class="btn teal sm" onclick="newCanvas();renderCanvasTabs();renderCanvas();renderMatrix()">＋ Nouveau canvas</button>`;
+  document.getElementById('canvasTabs').innerHTML=h;
+}
+function renderCanvas(){
+  const c=curC(); const ed=document.getElementById('canvasEditor');
+  if(!c){ ed.innerHTML=`<div class="empty-state"><div class="es-ic">🎯</div><b style="color:var(--navy-dark)">Aucun canvas</b><div style="margin-top:8px;font-size:.88rem">Créez un canvas, ou partez d'une idée du board (bouton 🎯).</div></div>`; return; }
+  const sel=(k,opts,cur)=>`<select onchange="cSet('${k}',this.value)">${opts.map(o=>`<option value="${o[0]}" ${cur===o[0]?'selected':''}>${o[1]}</option>`).join('')}</select>`;
+  ed.innerHTML=`
+   <div class="cmeta">
+     <div class="field"><label>Nom du use case</label><input value="${(c.name||'').replace(/"/g,'&quot;')}" onchange="cSet('name',this.value);renderCanvasTabs();renderMatrix()"></div>
+     <div class="field"><label>Direction</label><input value="${(c.dir||'').replace(/"/g,'&quot;')}" placeholder="Ex. Direction Industrielle" onchange="cSet('dir',this.value)"></div>
+     <div class="field"><label>Vague pressentie</label>${sel('vague',[['','—'],['V1','V1 · Quick win'],['V2','V2 · Structurant'],['V3','V3 · Transformant']],c.vague)}</div>
+     <div class="field"><label>Approche</label>${sel('app',[['','—'],['Build','Build'],['Buy','Buy'],['Borrow','Borrow'],['Bot','Bot']],c.app)}</div>
+     <div class="field"><label>Impact métier <span class="slider-val" id="lab-impact">${c.impact}</span>/5</label><input type="range" min="1" max="5" value="${c.impact}" oninput="document.getElementById('lab-impact').textContent=this.value" onchange="cSet('impact',+this.value);renderMatrix()"></div>
+     <div class="field"><label>Effort / complexité <span class="slider-val" id="lab-effort">${c.effort}</span>/5</label><input type="range" min="1" max="5" value="${c.effort}" oninput="document.getElementById('lab-effort').textContent=this.value" onchange="cSet('effort',+this.value);renderMatrix()"></div>
+   </div>
+   <div class="canvas-grid">
+     ${CANVAS_FIELDS.map(f=>`<div class="cfield ${f.big?'big':''}"><label>${f.l}</label><textarea placeholder="${f.ph}" onchange="cSet('${f.k}',this.value)">${(c[f.k]||'').replace(/</g,'&lt;')}</textarea></div>`).join('')}
+   </div>
+   <div class="divider"></div>
+   <div class="flex gap wrap-f">
+     <button class="btn ghost sm" onclick="canvasMarkdown(${c.id})">⬇ Exporter la fiche (Markdown)</button>
+     <button class="btn ghost sm" style="color:var(--red);border-color:rgba(224,84,78,.4)" onclick="canvasDel(${c.id})">🗑 Supprimer ce canvas</button>
+   </div>`;
+}
+function cSet(k,v){ const c=curC(); if(c){c[k]=v;saveCanvas();} }
+function canvasDel(id){ if(!confirm('Supprimer ce canvas ?'))return; canvases=canvases.filter(c=>c.id!==id); if(curCanvas===id)curCanvas=canvases[0]?canvases[0].id:null; saveCanvas(); renderCanvasTabs(); renderCanvas(); renderMatrix(); }
+
+// ---- Matrice impact / effort ----
+function renderMatrix(){
+  const W=720,H=440,pad=46;
+  const x=e=>pad+ ((e-1)/4)*(W-2*pad);          // effort 1..5 → gauche..droite
+  const y=i=>H-pad- ((i-1)/4)*(H-2*pad);         // impact 1..5 → bas..haut
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Matrice impact effort">`;
+  s+=`<rect x="${pad}" y="${pad}" width="${W-2*pad}" height="${H-2*pad}" fill="none" stroke="var(--line2)" stroke-width="1.5" rx="8"/>`;
+  s+=`<line x1="${(W)/2}" y1="${pad}" x2="${(W)/2}" y2="${H-pad}" stroke="var(--line)" stroke-dasharray="4 5"/>`;
+  s+=`<line x1="${pad}" y1="${H/2}" x2="${W-pad}" y2="${H/2}" stroke="var(--line)" stroke-dasharray="4 5"/>`;
+  // quadrant labels
+  s+=`<text class="q-lbl" x="${pad+12}" y="${pad+22}" style="fill:var(--teal-dark)">⚡ QUICK WINS</text>`;
+  s+=`<text class="q-lbl" x="${W-pad-12}" y="${pad+22}" text-anchor="end" style="fill:var(--navy)">🎯 PROJETS STRATÉGIQUES</text>`;
+  s+=`<text class="q-lbl" x="${pad+12}" y="${H-pad-12}">OPTIONNELS</text>`;
+  s+=`<text class="q-lbl" x="${W-pad-12}" y="${H-pad-12}" text-anchor="end" style="fill:#b13b36">À QUESTIONNER</text>`;
+  // axes
+  s+=`<text x="${W/2}" y="${H-12}" text-anchor="middle" style="fill:var(--muted);font-size:12px;font-weight:700">EFFORT / COMPLEXITÉ →</text>`;
+  s+=`<text x="16" y="${H/2}" text-anchor="middle" transform="rotate(-90,16,${H/2})" style="fill:var(--muted);font-size:12px;font-weight:700">IMPACT MÉTIER →</text>`;
+  // dots (jitter léger pour éviter superposition exacte)
+  const groups={};
+  canvases.forEach(c=>{ const key=c.effort+'-'+c.impact; (groups[key]=groups[key]||[]).push(c); });
+  canvases.forEach(c=>{
+    const key=c.effort+'-'+c.impact; const arr=groups[key]; const idx=arr.indexOf(c); const off=(idx-(arr.length-1)/2)*16;
+    const cx=x(c.effort)+off, cy=y(c.impact);
+    const on=c.id===curCanvas;
+    s+=`<g class="m-dot" onclick="curCanvas=${c.id};renderCanvasTabs();renderCanvas();renderMatrix()">
+      <circle cx="${cx}" cy="${cy}" r="${on?15:12}" fill="${on?'var(--teal)':'var(--navy2)'}" stroke="#fff" stroke-width="2"/>
+      <text x="${cx}" y="${cy+4}">${c.id}</text>
+      <title>${(c.name||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')} — impact ${c.impact}/5, effort ${c.effort}/5</title>
+    </g>`;
+  });
+  s+=`</svg>`;
+  if(!canvases.length) s=`<div class="empty-state"><div class="es-ic">📊</div><div>Les canvas se positionnent ici selon leur impact & effort.</div></div>`;
+  document.getElementById('matrix').innerHTML=s;
+}
+
+// ---- Export Markdown d'une fiche ----
+function canvasMarkdown(id){
+  const c=canvases.find(x=>x.id===id); if(!c)return;
+  let m=`# ${c.name||'Use case'}\n\n`;
+  m+=`**Direction :** ${c.dir||'—'}  ·  **Vague :** ${c.vague||'—'}  ·  **Approche :** ${c.app||'—'}\n`;
+  m+=`**Impact :** ${c.impact}/5  ·  **Effort :** ${c.effort}/5\n\n`;
+  CANVAS_FIELDS.forEach(f=>{ m+=`## ${f.l}\n${c[f.k]||'_(à compléter)_'}\n\n`; });
+  m+=`\n---\n*Sia × Cosumar — Atelier de conception · Confidentiel*\n`;
+  const blob=new Blob([m],{type:'text/markdown;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='Canvas_'+(c.name||'usecase').replace(/[^a-z0-9]+/gi,'_').slice(0,40)+'.md'; a.click();
+  URL.revokeObjectURL(a.href); toast('Fiche Markdown exportée');
+}
+
+// ---- Export CSV global ----
+function exportAll(){
+  const rows=[['Type','Catégorie / Champ','Contenu','Votes / Valeur']];
+  rows.push(['—','DÉROULÉ','','']);
+  agenda.forEach((a,i)=>rows.push(['Séquence',i+1,a.p,a.m+' min'+(a.done?' (fait)':'')]));
+  rows.push(['—','IDÉATION','','']);
+  ideas.slice().sort((a,b)=>b.votes-a.votes).forEach(x=>rows.push(['Idée',catOf(x.cat).l,x.text,x.votes+' votes']));
+  rows.push(['—','CANVAS','','']);
+  canvases.forEach(c=>{
+    rows.push(['Canvas',c.name,'Direction: '+(c.dir||'—')+' | Vague: '+(c.vague||'—')+' | '+(c.app||'—'),'Impact '+c.impact+'/5 · Effort '+c.effort+'/5']);
+    CANVAS_FIELDS.forEach(f=>{ if(c[f.k]) rows.push(['  · '+c.name,f.l,c[f.k],'']); });
+  });
+  downloadCSV('Cosumar_Atelier_Conception.csv',rows);
+}
+
+// ===================== INIT =====================
+renderAgenda(); renderBoard(); renderCanvasTabs(); renderCanvas(); renderMatrix();
+</script>
+</body>
+</html>
