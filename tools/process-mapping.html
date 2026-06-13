@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartographie des parcours & processus — Sia × Cosumar</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/sia.css">
+<style>
+.map-layout{display:grid;grid-template-columns:330px 1fr;gap:22px;align-items:start}
+@media(max-width:980px){.map-layout{grid-template-columns:1fr}}
+/* ---- liste des processus ---- */
+.proc-list{display:flex;flex-direction:column;gap:9px;position:sticky;top:78px;max-height:calc(100vh - 100px);overflow:auto;padding-right:4px}
+.proc-card{background:#fff;border:1px solid var(--line);border-left:4px solid var(--navy2);border-radius:11px;padding:12px 14px;cursor:pointer;transition:.18s;box-shadow:var(--shadow)}
+.proc-card:hover{transform:translateX(2px);box-shadow:var(--shadow-lg)}
+.proc-card.sel{border-color:var(--teal);box-shadow:0 0 0 2px rgba(0,168,150,.18)}
+.proc-card .pc-dom{font-size:.66rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+.proc-card .pc-name{font-weight:700;font-size:.9rem;color:var(--navy-dark);margin:3px 0 6px;line-height:1.25}
+.proc-card .pc-meta{display:flex;gap:6px;flex-wrap:wrap}
+.mini{font-size:.66rem;font-weight:600;padding:2px 7px;border-radius:11px;background:var(--cream);color:var(--muted);border:1px solid var(--line)}
+.mini.pain{background:rgba(224,84,78,.12);color:#b13b36;border-color:transparent}
+.mini.uc{background:rgba(0,168,150,.12);color:var(--teal-dark);border-color:transparent}
+/* ---- détail ---- */
+.detail-panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.detail-head{padding:18px 22px;color:#fff;display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.detail-head .dh-l{flex:1;min-width:220px}
+.detail-head .dh-eye{font-size:.7rem;letter-spacing:1.4px;text-transform:uppercase;opacity:.85;font-weight:700}
+.detail-head input.title-in{font-family:'Syne',sans-serif;font-weight:800;font-size:1.25rem;color:#fff;background:transparent;border:none;border-bottom:1.5px dashed rgba(255,255,255,.3);border-radius:0;padding:4px 0;margin-top:6px}
+.detail-head input.title-in::placeholder{color:rgba(255,255,255,.6)}
+.detail-head input.title-in:focus{box-shadow:none;border-color:#fff}
+.dh-dir{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:.82rem;opacity:.92}
+.dh-dir input{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);color:#fff;font-size:.8rem;padding:5px 9px;max-width:260px}
+.dh-dir input::placeholder{color:rgba(255,255,255,.6)}
+.detail-body{padding:20px 22px}
+.section-lbl{font-size:.72rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.section-lbl .hint{font-size:.68rem;font-weight:500;letter-spacing:0;text-transform:none;color:var(--muted);opacity:.8}
+/* ---- parcours / swimlane ---- */
+.flow{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding:4px 2px 14px}
+.step{flex:0 0 168px;background:var(--cream);border:1.5px solid var(--line2);border-radius:11px;padding:10px 11px;display:flex;flex-direction:column;gap:7px;position:relative}
+.step.pain{border-color:var(--red);background:rgba(224,84,78,.05)}
+.step-top{display:flex;align-items:center;justify-content:space-between}
+.step-n{width:21px;height:21px;border-radius:50%;background:var(--navy);color:#fff;font-size:.72rem;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif}
+.step.pain .step-n{background:var(--red)}
+.step-actions{display:flex;gap:3px}
+.step-actions button{background:transparent;border:none;cursor:pointer;font-size:.82rem;padding:2px 4px;border-radius:5px;color:var(--muted);opacity:.55;transition:.15s}
+.step-actions button:hover{opacity:1;background:#fff}
+.step-actions button.on{opacity:1;color:var(--red)}
+.step input,.step select{font-size:.78rem;padding:6px 8px;border-radius:7px}
+.step .step-label{font-weight:600;color:var(--navy-dark)}
+.step .step-sys{color:var(--muted);font-size:.72rem}
+.step select{font-size:.7rem;color:var(--muted);cursor:pointer}
+.flow-arrow{flex:0 0 26px;display:flex;align-items:center;justify-content:center;color:var(--navy2);font-size:1.1rem;opacity:.7}
+.add-step{flex:0 0 60px;border:1.5px dashed var(--line2);border-radius:11px;background:transparent;color:var(--teal-dark);cursor:pointer;font-size:1.4rem;font-weight:300;transition:.15s}
+.add-step:hover{border-color:var(--teal);background:rgba(0,168,150,.05)}
+/* ---- systèmes / pains / uc ---- */
+.tag-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tag{display:inline-flex;align-items:center;gap:7px;font-size:.76rem;font-weight:600;padding:5px 10px;border-radius:18px;background:var(--cream);color:var(--navy-dark);border:1px solid var(--line)}
+.tag.pain{background:rgba(224,84,78,.1);color:#b13b36;border-color:transparent}
+.tag .x{cursor:pointer;opacity:.55;font-weight:700}.tag .x:hover{opacity:1}
+.tag-input{border:1.5px dashed var(--line2);background:transparent;width:auto;min-width:150px;font-size:.76rem;padding:5px 10px;border-radius:18px}
+.uc-chip{font-size:.74rem;font-weight:600;padding:6px 11px;border-radius:18px;border:1.5px solid var(--line2);background:#fff;color:var(--muted);cursor:pointer;transition:.15s}
+.uc-chip:hover{border-color:var(--teal)}
+.uc-chip.on{background:var(--teal);color:#fff;border-color:transparent}
+.block{margin-top:24px}
+.empty-state{padding:60px 30px;text-align:center;color:var(--muted)}
+.empty-state .es-ic{font-size:2.6rem;margin-bottom:12px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.74rem;color:var(--muted);margin-top:10px}
+.legend b{color:var(--navy-dark)}
+.dom-filter{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+.dom-btn{font-size:.76rem;font-weight:600;padding:6px 12px;border-radius:18px;border:1.5px solid var(--line2);background:#fff;color:var(--muted);cursor:pointer;transition:.15s}
+.dom-btn.on{color:#fff;border-color:transparent}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="brand-dot"></span><span class="brand-name">Sia<b>·</b>Cosumar</span><span class="brand-sub">Parcours & processus</span></div>
+  <nav class="topnav">
+    <a href="../index.html" class="home">← Hub</a>
+    <a href="jumeau-usine.html">🏭 Jumeau</a>
+    <a href="process-mapping.html" class="active">🗂️ Processus</a>
+    <a href="use-cases-ia.html">Use Cases</a>
+    <a href="dashboard-entretiens.html">Entretiens</a>
+    <a href="roadmap-builder.html">Roadmap</a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="flex between center wrap-f">
+      <div>
+        <div class="eyebrow">🗂️ Diagnostic · Cartographie organisationnelle</div>
+        <h1 class="page-title">Parcours & processus Cosumar</h1>
+      </div>
+      <div class="flex gap wrap-f">
+        <button class="btn ghost" onclick="exportCSV()">⬇ Export CSV</button>
+        <button class="btn teal" onclick="addProc()">＋ Nouveau processus</button>
+      </div>
+    </div>
+    <p class="page-sub">Cartographiez les macro-processus propres à Cosumar — de l'amont agricole à l'expédition, en passant par les fonctions support. Décrivez chaque <b>parcours</b> étape par étape, identifiez les systèmes, les <b>points de douleur</b> et rattachez les <b>use cases IA</b> qui y répondent. Tout est éditable et sauvegardé localement.</p>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi navy"><div class="kpi-val" id="k-proc">—</div><div class="kpi-label">Processus cartographiés</div></div>
+    <div class="kpi teal"><div class="kpi-val" id="k-steps">—</div><div class="kpi-label">Étapes de parcours</div></div>
+    <div class="kpi" style="--c:var(--red)"><div class="kpi-val" id="k-pains">—</div><div class="kpi-label">Points de douleur</div></div>
+    <div class="kpi gold"><div class="kpi-val" id="k-uc">—</div><div class="kpi-label">Processus couverts par l'IA</div></div>
+  </div>
+
+  <div class="dom-filter" id="domFilter"></div>
+
+  <div class="map-layout">
+    <div class="proc-list" id="procList"></div>
+    <div class="detail-panel" id="detail"></div>
+  </div>
+
+  <div class="panel panel-pad mt">
+    <div class="legend">
+      <span><b>Légende parcours :</b></span>
+      <span>🟦 <b>M</b> Manuel</span>
+      <span>🟩 <b>A</b> Automatisé</span>
+      <span>🟨 <b>X</b> Mixte</span>
+      <span><span style="color:var(--red)">⬤</span> Étape = point de douleur</span>
+      <span>🤖 Use case IA rattaché</span>
+    </div>
+  </div>
+</div>
+
+<footer class="sia-foot">
+  <div><b>Sia × Cosumar</b> · Cartographie des parcours & processus</div>
+  <div>Phase 2 — Diagnostic · contextualisation organisationnelle</div>
+</footer>
+<div id="toast"></div>
+<script src="../assets/sia.js"></script>
+<script>
+// ---- Référentiels ----
+const DOMAINS={
+  'Amont agricole':{c:'#3a9d4f',ic:'🌱'},
+  'Industriel':{c:'#00A896',ic:'🏭'},
+  'Supply Chain':{c:'#2E75B6',ic:'📦'},
+  'Commercial':{c:'#C9972B',ic:'🤝'},
+  'Finance':{c:'#1F4E79',ic:'💰'},
+  'RH':{c:'#8e44ad',ic:'👥'},
+  'Juridique':{c:'#b13b36',ic:'⚖️'}
+};
+const UC_CATALOG={1:'Maintenance prédictive turbines',2:'Optimisation process sucrier',3:'Prévision récolte satellite',4:'Demand forecasting sucre',5:'OCR factures fournisseurs',6:'Chatbot RH CorpGPT',7:'Détection anomalies énergie',8:'Analyse contrats NLP',9:'People analytics & turnover',10:'Route optimization livraisons'};
+const TYPE_LBL={M:'Manuel',A:'Automatisé',X:'Mixte'};
+
+// ---- Jeu de données par défaut : chaîne de valeur Cosumar ----
+function defaults(){
+ const S=(l,sys,t,pain)=>({l,sys,t:t||'M',pain:!!pain});
+ return [
+  {dom:'Amont agricole',dir:'Direction Agronomie & Amont',name:'Approvisionnement amont agricole (betterave / canne)',
+   sys:['SAP','SIG / Satellite','LIMS labo','Outil agronomie'],
+   steps:[S('Planification assolement','Agronomie','M'),S('Contractualisation agriculteurs','SAP','M'),S('Suivi agronomique des cultures','SIG/Satellite','X'),S('Programmation de la récolte','Agronomie','M',1),S('Réception & pesée (pont-bascule)','Balance','X',1),S('Analyse richesse saccharine','LIMS','M'),S('Paiement des planteurs','SAP','M')],
+   pains:['Prévision de tonnage imprécise','Planning de récolte non optimisé','Saisie manuelle à la réception'],uc:[3]},
+
+  {dom:'Industriel',dir:'Direction Industrielle',name:'Production sucrière (réception → conditionnement)',
+   sys:['MES','SCADA / DCS','SAP PP'],
+   steps:[S('Réception cossettes','MES','A'),S('Diffusion','SCADA','A',1),S('Épuration','SCADA','A'),S('Évaporation','SCADA','A',1),S('Cristallisation','SCADA','X',1),S('Centrifugation','SCADA','A'),S('Conditionnement','MES','X')],
+   pains:['Rendement d\'extraction variable','Surconsommation de vapeur','Réglages encore manuels'],uc:[2,7]},
+
+  {dom:'Industriel',dir:'Direction Énergie & Utilities',name:'Énergie & cogénération (vapeur / électricité)',
+   sys:['SCADA','GTC / GTB','SAP'],
+   steps:[S('Prévision des besoins vapeur','Excel','M',1),S('Conduite chaudière','SCADA','X'),S('Production turbines','SCADA','A'),S('Distribution vapeur & électricité','GTC','A'),S('Suivi des consommations','GTC','X',1)],
+   pains:['Dérives énergétiques détectées tardivement','Pas de pilotage prédictif'],uc:[7,1]},
+
+  {dom:'Industriel',dir:'Direction Maintenance',name:'Maintenance industrielle',
+   sys:['GMAO','SAP PM','Capteurs IoT'],
+   steps:[S('Détection / signalement','GMAO','M',1),S('Diagnostic','GMAO','M'),S('Planification de l\'intervention','SAP PM','M'),S('Exécution','Terrain','M'),S('Clôture & retour d\'expérience','GMAO','M')],
+   pains:['Maintenance majoritairement curative','Arrêts non planifiés en campagne'],uc:[1]},
+
+  {dom:'Industriel',dir:'Direction Qualité',name:'Qualité & sécurité alimentaire',
+   sys:['LIMS','SAP QM'],
+   steps:[S('Échantillonnage','Terrain','M'),S('Analyses laboratoire','LIMS','X'),S('Contrôle de conformité','LIMS','M'),S('Libération du lot','SAP QM','M'),S('Traçabilité & archivage','SAP QM','X',1)],
+   pains:['Ressaisies entre systèmes','Traçabilité partiellement manuelle'],uc:[]},
+
+  {dom:'Supply Chain',dir:'Direction Supply Chain',name:'Planification S&OP (PIC / PDP)',
+   sys:['SAP IBP / APO','Excel'],
+   steps:[S('Prévision de la demande','Excel','M',1),S('Plan industriel & commercial (PIC)','SAP IBP','X'),S('Plan directeur de production (PDP)','SAP','X'),S('Plan d\'approvisionnement','SAP','M'),S('Arbitrage des stocks','Excel','M',1)],
+   pains:['Prévision de demande peu fiable','Sur-stocks et ruptures alternés'],uc:[4]},
+
+  {dom:'Supply Chain',dir:'Direction Logistique',name:'Stockage & expédition',
+   sys:['WMS','SAP','Balances'],
+   steps:[S('Mise en stock (silos / entrepôts)','WMS','X'),S('Gestion des emplacements','WMS','X'),S('Préparation de commande','WMS','X'),S('Chargement','Balance','M',1),S('Expédition','SAP','X')],
+   pains:['Taux de service à améliorer','Optimisation des chargements'],uc:[4,10]},
+
+  {dom:'Supply Chain',dir:'Direction Logistique',name:'Distribution & transport',
+   sys:['TMS','SAP SD','GPS flotte'],
+   steps:[S('Réception des commandes transport','TMS','X'),S('Planification des tournées','TMS','M',1),S('Affectation de la flotte','TMS','M',1),S('Livraison client','GPS','X'),S('Preuve de livraison','TMS','M')],
+   pains:['Coûts de transport élevés','Taux de remplissage sous-optimal','Tournées non optimisées'],uc:[10]},
+
+  {dom:'Commercial',dir:'Direction Commerciale',name:'Prise de commande client (O2C amont)',
+   sys:['Salesforce CRM','SAP SD'],
+   steps:[S('Demande client','CRM','X'),S('Vérification de disponibilité (ATP)','SAP SD','M',1),S('Devis / confirmation','CRM','M'),S('Saisie de la commande','SAP SD','X'),S('Suivi de commande','CRM','X')],
+   pains:['ATP manuel','Délais de réponse au client'],uc:[4]},
+
+  {dom:'Finance',dir:'Direction Finance',name:'Order-to-Cash & facturation',
+   sys:['SAP FI / SD'],
+   steps:[S('Livraison','SAP SD','X'),S('Facturation','SAP FI','X'),S('Recouvrement','SAP FI','M',1),S('Encaissement','SAP FI','X'),S('Lettrage','SAP FI','M')],
+   pains:['Délais d\'encaissement','Litiges de facturation'],uc:[]},
+
+  {dom:'Finance',dir:'Direction Achats & Finance',name:'Procure-to-Pay (achats → paiement)',
+   sys:['SAP MM / FI','Plateforme achats'],
+   steps:[S('Expression du besoin','SAP MM','M'),S('Sourcing / appel d\'offres','Plateforme','M'),S('Commande','SAP MM','X'),S('Réception','SAP MM','X'),S('Réception facture','Papier / mail','M',1),S('Contrôle 3 voies','SAP FI','M',1),S('Paiement','SAP FI','X')],
+   pains:['Saisie manuelle des factures','Contrôle 3 voies chronophage'],uc:[5]},
+
+  {dom:'RH',dir:'Direction des Ressources Humaines',name:'Gestion des Ressources Humaines',
+   sys:['SIRH','SAP HCM'],
+   steps:[S('Recrutement','SIRH','X'),S('Onboarding','SIRH','M'),S('Paie','SAP HCM','X'),S('Formation & développement','SIRH','M'),S('Gestion des talents & mobilité','SIRH','M',1),S('Offboarding','SIRH','M')],
+   pains:['Tickets RH niveau 1 volumineux','Turnover & absentéisme à anticiper'],uc:[6,9]},
+
+  {dom:'Juridique',dir:'Direction Juridique',name:'Gestion des contrats',
+   sys:['GED / CLM'],
+   steps:[S('Demande','Mail','M',1),S('Rédaction / revue','GED','M',1),S('Négociation','Mail','M'),S('Signature','GED','X'),S('Archivage & suivi des échéances','GED','M',1)],
+   pains:['Revue contractuelle manuelle et longue','Suivi des échéances difficile'],uc:[8]}
+ ].map((p,i)=>({id:i+1,...p}));
+}
+
+// ---- État ----
+let state = store.get('process.map', null);
+if(!state || !Array.isArray(state) || !state.length){ state = defaults(); save(); }
+let sel = state[0] ? state[0].id : null;
+let domFilter = 'all';
+
+function save(){ store.set('process.map', state); }
+function byId(id){ return state.find(p=>p.id===id); }
+function nextId(){ return (state.reduce((m,p)=>Math.max(m,p.id),0)||0)+1; }
+function escAttr(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+// ---- KPIs ----
+function refreshKPIs(){
+  const steps = state.reduce((a,p)=>a+p.steps.length,0);
+  const pains = state.reduce((a,p)=>a + p.pains.length + p.steps.filter(s=>s.pain).length,0);
+  const covered = state.filter(p=>p.uc.length).length;
+  document.getElementById('k-proc').textContent = state.length;
+  document.getElementById('k-steps').textContent = steps;
+  document.getElementById('k-pains').textContent = pains;
+  document.getElementById('k-uc').textContent = covered;
+}
+
+// ---- Filtre domaines ----
+function renderDomFilter(){
+  const counts={}; state.forEach(p=>counts[p.dom]=(counts[p.dom]||0)+1);
+  let h=`<button class="dom-btn ${domFilter==='all'?'on':''}" style="${domFilter==='all'?'background:var(--navy-dark)':''}" onclick="setDom('all')">Tous · ${state.length}</button>`;
+  Object.keys(DOMAINS).forEach(d=>{
+    if(!counts[d]) return;
+    const on=domFilter===d;
+    h+=`<button class="dom-btn ${on?'on':''}" style="${on?'background:'+DOMAINS[d].c:''}" onclick="setDom('${d}')">${DOMAINS[d].ic} ${d} · ${counts[d]}</button>`;
+  });
+  document.getElementById('domFilter').innerHTML=h;
+}
+function setDom(d){ domFilter=d; renderDomFilter(); renderList(); }
+
+// ---- Liste ----
+function renderList(){
+  const list = state.filter(p=>domFilter==='all'||p.dom===domFilter);
+  if(!list.length){ document.getElementById('procList').innerHTML='<div class="muted" style="padding:20px;text-align:center">Aucun processus.</div>'; return; }
+  document.getElementById('procList').innerHTML = list.map(p=>{
+    const dm=DOMAINS[p.dom]||{c:'var(--navy2)',ic:'•'};
+    const painN = p.pains.length + p.steps.filter(s=>s.pain).length;
+    return `<div class="proc-card ${p.id===sel?'sel':''}" style="border-left-color:${dm.c}" onclick="selectProc(${p.id})">
+      <div class="pc-dom">${dm.ic} ${escAttr(p.dom)}</div>
+      <div class="pc-name">${escAttr(p.name)}</div>
+      <div class="pc-meta">
+        <span class="mini">${p.steps.length} étapes</span>
+        ${painN?`<span class="mini pain">${painN} douleur${painN>1?'s':''}</span>`:''}
+        ${p.uc.length?`<span class="mini uc">🤖 ${p.uc.length} UC</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ---- Détail ----
+function selectProc(id){ sel=id; renderList(); renderDetail(); }
+function renderDetail(){
+  const p = byId(sel);
+  const d = document.getElementById('detail');
+  if(!p){ d.innerHTML=`<div class="empty-state"><div class="es-ic">🗂️</div><b style="color:var(--navy-dark)">Sélectionnez un processus</b><div style="margin-top:8px;font-size:.88rem">ou créez-en un nouveau pour commencer la cartographie.</div></div>`; return; }
+  const dm=DOMAINS[p.dom]||{c:'var(--navy2)',ic:'•'};
+  // parcours
+  let flow='';
+  p.steps.forEach((s,i)=>{
+    if(i>0) flow+=`<div class="flow-arrow">▸</div>`;
+    flow+=`<div class="step ${s.pain?'pain':''}">
+      <div class="step-top">
+        <span class="step-n">${i+1}</span>
+        <div class="step-actions">
+          <button class="${s.pain?'on':''}" title="Marquer comme point de douleur" onclick="toggleStepPain(${p.id},${i})">⚠</button>
+          <button title="Supprimer l'étape" onclick="delStep(${p.id},${i})">✕</button>
+        </div>
+      </div>
+      <input class="step-label" value="${escAttr(s.l)}" placeholder="Étape…" onchange="setStep(${p.id},${i},'l',this.value)">
+      <input class="step-sys" value="${escAttr(s.sys)}" placeholder="Système…" onchange="setStep(${p.id},${i},'sys',this.value)">
+      <select onchange="setStep(${p.id},${i},'t',this.value)">
+        ${Object.keys(TYPE_LBL).map(t=>`<option value="${t}" ${s.t===t?'selected':''}>${TYPE_LBL[t]}</option>`).join('')}
+      </select>
+    </div>`;
+  });
+  flow+=`<div class="flow-arrow">▸</div><button class="add-step" title="Ajouter une étape" onclick="addStep(${p.id})">＋</button>`;
+  // systèmes
+  const sysTags = p.sys.map((s,i)=>`<span class="tag">${escAttr(s)} <span class="x" onclick="delTag(${p.id},'sys',${i})">✕</span></span>`).join('');
+  // pains
+  const painTags = p.pains.map((s,i)=>`<span class="tag pain">${escAttr(s)} <span class="x" onclick="delTag(${p.id},'pains',${i})">✕</span></span>`).join('');
+  // uc
+  const ucChips = Object.keys(UC_CATALOG).map(id=>{
+    const on=p.uc.includes(+id);
+    return `<span class="uc-chip ${on?'on':''}" onclick="toggleUC(${p.id},${id})">${on?'🤖 ':''}${id}. ${UC_CATALOG[id]}</span>`;
+  }).join('');
+
+  d.innerHTML=`
+   <div class="detail-head" style="background:linear-gradient(135deg,${dm.c},var(--navy-dark))">
+     <div class="dh-l">
+       <div class="dh-eye">${dm.ic} ${escAttr(p.dom)}</div>
+       <input class="title-in" value="${escAttr(p.name)}" placeholder="Nom du processus…" onchange="setField(${p.id},'name',this.value)">
+       <div class="dh-dir">🏛️ <input value="${escAttr(p.dir)}" placeholder="Direction propriétaire…" onchange="setField(${p.id},'dir',this.value)"></div>
+     </div>
+     <div>
+       <select onchange="setField(${p.id},'dom',this.value);renderDetail();renderList();renderDomFilter()" style="background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:.78rem;max-width:170px">
+         ${Object.keys(DOMAINS).map(dd=>`<option value="${dd}" ${p.dom===dd?'selected':''}>${DOMAINS[dd].ic} ${dd}</option>`).join('')}
+       </select>
+     </div>
+   </div>
+   <div class="detail-body">
+     <div class="section-lbl">Parcours <span class="hint">— étapes du processus, système & niveau d'automatisation</span></div>
+     <div class="flow">${flow}</div>
+
+     <div class="block">
+       <div class="section-lbl">Systèmes & applications</div>
+       <div class="tag-row">${sysTags}
+         <input class="tag-input" placeholder="＋ ajouter un système… (Entrée)" onkeydown="if(event.key==='Enter'){addTag(${p.id},'sys',this.value);this.value=''}">
+       </div>
+     </div>
+
+     <div class="block">
+       <div class="section-lbl">Points de douleur <span class="hint">— irritants & inefficiences relevés</span></div>
+       <div class="tag-row">${painTags}
+         <input class="tag-input" placeholder="＋ ajouter un point de douleur… (Entrée)" onkeydown="if(event.key==='Enter'){addTag(${p.id},'pains',this.value);this.value=''}">
+       </div>
+     </div>
+
+     <div class="block">
+       <div class="section-lbl">Use cases IA rattachés <span class="hint">— leviers de la roadmap qui adressent ce processus</span></div>
+       <div class="tag-row">${ucChips}</div>
+     </div>
+
+     <div class="divider"></div>
+     <div class="flex gap wrap-f">
+       <button class="btn ghost sm" onclick="mermaidCopy(${p.id})">📋 Copier en Mermaid</button>
+       <button class="btn ghost sm" onclick="dupProc(${p.id})">⧉ Dupliquer</button>
+       <button class="btn ghost sm" style="color:var(--red);border-color:rgba(224,84,78,.4)" onclick="delProc(${p.id})">🗑 Supprimer le processus</button>
+     </div>
+   </div>`;
+}
+
+// ---- Mutations ----
+function setField(id,k,v){ const p=byId(id); if(!p)return; p[k]=v; save(); refreshKPIs(); renderList(); }
+function setStep(id,i,k,v){ const p=byId(id); if(!p||!p.steps[i])return; p.steps[i][k]=v; save(); }
+function toggleStepPain(id,i){ const p=byId(id); if(!p||!p.steps[i])return; p.steps[i].pain=!p.steps[i].pain; save(); renderDetail(); renderList(); refreshKPIs(); }
+function addStep(id){ const p=byId(id); if(!p)return; p.steps.push({l:'Nouvelle étape',sys:'',t:'M',pain:false}); save(); renderDetail(); renderList(); refreshKPIs(); }
+function delStep(id,i){ const p=byId(id); if(!p)return; p.steps.splice(i,1); save(); renderDetail(); renderList(); refreshKPIs(); }
+function addTag(id,key,v){ v=(v||'').trim(); if(!v)return; const p=byId(id); if(!p)return; p[key].push(v); save(); renderDetail(); renderList(); refreshKPIs(); }
+function delTag(id,key,i){ const p=byId(id); if(!p)return; p[key].splice(i,1); save(); renderDetail(); renderList(); refreshKPIs(); }
+function toggleUC(id,uc){ uc=+uc; const p=byId(id); if(!p)return; const k=p.uc.indexOf(uc); if(k<0)p.uc.push(uc); else p.uc.splice(k,1); save(); renderDetail(); renderList(); refreshKPIs(); }
+
+function addProc(){
+  const p={id:nextId(),dom:'Industriel',dir:'',name:'Nouveau processus',sys:[],steps:[{l:'Première étape',sys:'',t:'M',pain:false}],pains:[],uc:[]};
+  state.push(p); save(); sel=p.id; domFilter='all';
+  renderDomFilter(); renderList(); renderDetail(); refreshKPIs();
+  toast('Processus créé');
+}
+function dupProc(id){
+  const p=byId(id); if(!p)return;
+  const c=JSON.parse(JSON.stringify(p)); c.id=nextId(); c.name=p.name+' (copie)';
+  state.push(c); save(); sel=c.id;
+  renderDomFilter(); renderList(); renderDetail(); refreshKPIs();
+  toast('Processus dupliqué');
+}
+function delProc(id){
+  if(!confirm('Supprimer ce processus ?'))return;
+  const i=state.findIndex(p=>p.id===id); if(i<0)return;
+  state.splice(i,1); save();
+  sel = state[0]?state[0].id:null;
+  renderDomFilter(); renderList(); renderDetail(); refreshKPIs();
+  toast('Processus supprimé');
+}
+
+// ---- Export Mermaid (presse-papiers) ----
+function mermaidCopy(id){
+  const p=byId(id); if(!p)return;
+  const safe=s=>String(s).replace(/[\"\[\]\(\)]/g,'').slice(0,48);
+  let m='flowchart LR\n';
+  p.steps.forEach((s,i)=>{
+    m+=`  S${i}["${safe(s.l)}${s.sys?'<br/><i>'+safe(s.sys)+'</i>':''}"]\n`;
+    if(s.pain) m+=`  style S${i} stroke:#E0544E,stroke-width:2px\n`;
+  });
+  for(let i=0;i<p.steps.length-1;i++) m+=`  S${i} --> S${i+1}\n`;
+  navigator.clipboard?.writeText(m).then(
+    ()=>toast('Diagramme Mermaid copié — collez-le dans Mermaid Chart / Notion'),
+    ()=>toast('Copie impossible')
+  );
+}
+
+// ---- Export CSV ----
+function exportCSV(){
+  const rows=[['Processus','Domaine','Direction','Systèmes','Étape #','Étape','Système','Type','Point de douleur','Points de douleur (processus)','Use cases IA']];
+  state.forEach(p=>{
+    const painsTxt=p.pains.join(' | ');
+    const ucTxt=p.uc.map(u=>u+'. '+UC_CATALOG[u]).join(' | ');
+    if(!p.steps.length){ rows.push([p.name,p.dom,p.dir,p.sys.join(' | '),'','','','','',painsTxt,ucTxt]); }
+    p.steps.forEach((s,i)=>{
+      rows.push([p.name,p.dom,p.dir,p.sys.join(' | '),i+1,s.l,s.sys,TYPE_LBL[s.t]||s.t,s.pain?'Oui':'',i===0?painsTxt:'',i===0?ucTxt:'']);
+    });
+  });
+  downloadCSV('Cosumar_Parcours_Processus.csv',rows);
+}
+
+// ---- Init ----
+renderDomFilter(); renderList(); renderDetail(); refreshKPIs();
+</script>
+</body>
+</html>

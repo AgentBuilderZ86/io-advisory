@@ -17,6 +17,7 @@ tools/
   executive-story.html            ← Premium : narration plein écran CODIR (10 slides) + export deck PDF
   corpgpt.html                    ← Premium : assistant IA conversationnel (RAG local sur la base mission)
   jumeau-usine.html               ← Premium : jumeau visuel de la sucrerie, UC cartographiés sur les équipements
+  process-mapping.html            ← Phase 2 : cartographie des parcours & processus Cosumar (étapes, systèmes, douleurs, UC IA), éditable + export CSV/Mermaid
   monte-carlo.html                ← Premium : simulation probabiliste du portefeuille (P10/P50/P90)
   acculturation.html              ← Phase 1 : séminaire C-Level, 50 Champions (3 cohortes × 6 modules), 1-to-1, com
   adoption-gamifiee.html          ← Phase 1 : leaderboard gamifié des 50 Champions (points, niveaux, badges, défis)
