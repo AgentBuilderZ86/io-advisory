@@ -36,6 +36,16 @@
 .legend2 b{color:var(--navy-dark)}
 .legend2 .ld{display:inline-flex;align-items:center;gap:6px}
 .swatch{width:13px;height:13px;border-radius:3px;display:inline-block}
+.uc-chip{font-size:.7rem;font-weight:600;padding:2px 8px;border-radius:11px;background:rgba(0,168,150,.12);color:var(--teal-dark);border:1px solid transparent;cursor:pointer}
+.uc-chip.on{background:var(--teal);color:#fff}
+.oacts{margin-left:auto;display:flex;gap:3px}
+.oacts button{background:transparent;border:1px solid var(--line2);border-radius:6px;cursor:pointer;font-size:.74rem;width:24px;height:24px;color:var(--muted);transition:.15s}
+.oacts button:hover{border-color:var(--teal);color:var(--teal-dark);background:var(--cream)}
+.obox.editing{flex-direction:column;border:1.5px solid var(--teal);box-shadow:0 0 0 3px rgba(0,168,150,.12)}
+.efields{width:100%}
+.efields label{margin-top:9px}
+.efields .erow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:600px){.efields .erow{grid-template-columns:1fr}}
 @media(max-width:700px){.okids{margin-left:12px;padding-left:12px}}
 </style>
 </head>
@@ -54,7 +64,7 @@
       </div>
       <button class="btn ghost" onclick="exportCSV()">⬇ Export CSV</button>
     </div>
-    <p class="page-sub">Organigrammes interactifs des directions Cosumar, reconstitués à partir des organigrammes fournis. Repliez/dépliez les branches, recherchez une personne ou un poste, et visualisez effectifs, postes vacants, ETP additionnels et prestations. <b>Base de contextualisation</b> pour adapter les parcours, processus et use cases à l'organisation réelle.</p>
+    <p class="page-sub">Organigrammes interactifs des directions Cosumar, reconstitués à partir des organigrammes fournis. Repliez/dépliez les branches, recherchez une personne ou un poste, et visualisez effectifs, postes vacants, ETP additionnels et prestations. <b>Base de contextualisation</b> pour adapter les parcours, processus et use cases à l'organisation réelle. Postes <b>éditables</b> (mode édition) et <b>reliés aux use cases IA</b> (🤖).</p>
   </div>
 
   <div class="kpi-row" id="kpis"></div>
@@ -65,6 +75,8 @@
     <input class="search" id="search" placeholder="🔍 Rechercher un nom ou un poste…" oninput="onSearch(this.value)">
     <button class="btn ghost sm" onclick="expandAll()">⊞ Tout déplier</button>
     <button class="btn ghost sm" onclick="collapseAll()">⊟ Replier</button>
+    <button class="btn ghost sm" id="editBtn" onclick="toggleEdit()">✏️ Mode édition</button>
+    <button class="btn ghost sm" id="resetBtn" style="display:none;color:var(--red);border-color:rgba(224,84,78,.4)" onclick="resetData()">↺ Source</button>
     <span class="legend2" style="margin-left:auto" id="legend"></span>
   </div>
 
@@ -423,10 +435,44 @@ const DATA={
  }
 };
 
+// ---- Catalogue use cases IA (partagé avec la roadmap) ----
+const UC_CATALOG={1:'Maintenance prédictive turbines',2:'Optimisation process sucrier',3:'Prévision récolte satellite',4:'Demand forecasting sucre',5:'OCR factures fournisseurs',6:'Chatbot RH CorpGPT',7:'Détection anomalies énergie',8:'Analyse contrats NLP',9:'People analytics & turnover',10:'Route optimization livraisons'};
+// Pré-câblage org ↔ UC (heuristique sur les intitulés de poste)
+function seedUC(){
+  const rules=[
+    [/innovation digitale et ia/i,[1,2,3,4,5,6,7,8,9,10]],
+    [/bi & data|data scientist/i,[4,9]],
+    [/centre de comp.tences sap|p2p & crm/i,[5]],
+    [/responsable maintenance$|chef d.atelier m.canique/i,[1]],
+    [/chaufferie|centrale .lectrique|.nergie/i,[7,1]],
+    [/comptabilit. fournisseur|contr.le des factures/i,[5]],
+    [/transport|coordinateur logistique|projets logistiques/i,[10]],
+    [/planification/i,[4]],
+    [/qhse|laboratoire/i,[]],
+    [/juriste|comptabilit. g.n.rale.*fiscalit.|actes sociaux/i,[8]]
+  ];
+  Object.keys(DATA).forEach(dk=>walk(DATA[dk].root,n=>{
+    if(n.uc) return;
+    for(const [re,ids] of rules){ if(ids.length && re.test(n.r||'')){ n.uc=ids.slice(); break; } }
+  }));
+}
+
 // ============================ ÉTAT & RENDU ============================
-let curDir='sc', query='';
+let curDir='sc', query='', editMode=false, editingPath=null;
 let collapsed = new Set(store.get('org.collapsed', []));
 const ckey=(d,path)=>d+':'+path;
+
+// ---- Persistance des données (édition) ----
+function saveData(){ const o={}; Object.keys(DATA).forEach(k=>o[k]=DATA[k].root); store.set('org.data',o); }
+(function loadData(){
+  const saved=store.get('org.data',null);
+  if(saved){ Object.keys(saved).forEach(k=>{ if(DATA[k]) DATA[k].root=saved[k]; }); }
+  else seedUC();
+})();
+
+// ---- Résolution de nœud par chemin ('0', '0.1', '0.1.2'…) ----
+function resolve(path){ const parts=path.split('.').slice(1).map(Number); let n=DATA[curDir].root; for(const i of parts) n=n.k[i]; return n; }
+function resolveParent(path){ const parts=path.split('.').slice(1).map(Number); if(!parts.length) return null; let n=DATA[curDir].root; for(let i=0;i<parts.length-1;i++) n=n.k[parts[i]]; return {parent:n,idx:parts[parts.length-1]}; }
 
 function num(v){ const m=(''+(v==null?'':v)).match(/([\d.,]+)/); return m?parseFloat(m[1].replace(',','.')):0; }
 function effOf(n){ return n.e!=null?num(n.e):(n.p?n.p.length:0); }
@@ -475,11 +521,42 @@ function nodeMatches(n){
 }
 function subtreeHas(n){ return nodeMatches(n) || (n.k||[]).some(subtreeHas); }
 
+function ucChips(n,interactive){
+  if(!n.uc||!n.uc.length) return '';
+  return `<div class="opeople">`+n.uc.map(id=>interactive
+    ? `<a class="uc-chip" href="use-cases-ia.html" title="${UC_CATALOG[id]||''}">🤖 ${id}. ${UC_CATALOG[id]||''}</a>`
+    : `<span class="uc-chip">🤖 ${id}. ${UC_CATALOG[id]||''}</span>`).join('')+`</div>`;
+}
+function editForm(n,path){
+  const opt=(v,l,cur)=>`<option value="${v}" ${cur===v?'selected':''}>${l}</option>`;
+  const ppl=(n.p||[]).map(p=>p.n+(p.vac?' (vacant)':'')).join('\n');
+  const ucBtns=Object.keys(UC_CATALOG).map(id=>`<span class="uc-chip ${(n.uc||[]).includes(+id)?'on':''}" onclick="toggleUC('${path}',${id})">${id}. ${UC_CATALOG[id]}</span>`).join('');
+  return `<div class="obox editing" style="border-left-color:var(--teal)">
+    <div class="efields">
+      <label>Rôle / intitulé</label><input id="ef-r" value="${(n.r||'').replace(/"/g,'&quot;')}">
+      <div class="erow">
+        <div><label>Effectif / ETP</label><input id="ef-e" value="${(n.e==null?'':n.e).toString().replace(/"/g,'&quot;')}" placeholder="ex. 3 ou 3 ETP"></div>
+        <div><label>Statut</label><select id="ef-st">${opt('','— Existant','')}${Object.keys(STATUS).map(s=>opt(s,STATUS[s].l,n.st||'')).join('')}</select></div>
+        <div><label>Marqueur</label><select id="ef-m">${opt('','—',n.m||'')}${opt('r','🔴 Critique',n.m||'')}${opt('y','🟡 Sensible',n.m||'')}</select></div>
+      </div>
+      <label>Personnes (une par ligne · suffixe « (vacant) » si à pourvoir)</label><textarea id="ef-p" rows="2">${ppl.replace(/</g,'&lt;')}</textarea>
+      <label>Note</label><input id="ef-no" value="${(n.no||'').replace(/"/g,'&quot;')}">
+      <label>Use cases IA rattachés</label><div class="tag-row" style="display:flex;gap:6px;flex-wrap:wrap">${ucBtns}</div>
+      <div class="flex gap" style="margin-top:12px">
+        <button class="btn teal sm" onclick="saveEdit('${path}')">✓ Enregistrer</button>
+        <button class="btn ghost sm" onclick="editingPath=null;renderTree()">Annuler</button>
+      </div>
+    </div>
+  </div>`;
+}
 function nodeHTML(n,path){
   if(query && !subtreeHas(n)) return '';
   const kids=(n.k||[]).map((c,i)=>nodeHTML(c,path+'.'+i)).join('');
   const hasKids=!!(n.k&&n.k.length);
   const isColl=!query && collapsed.has(ckey(curDir,path));
+  if(editMode && editingPath===path){
+    return `<div class="onode"><div>${editForm(n,path)}</div><div class="okids">${kids}</div></div>`;
+  }
   const st=n.st?STATUS[n.st]:null;
   const border=st?st.c:(n.m?MARKS[n.m].c:'var(--navy)');
   const eff=n.e!=null?`<span class="oeff" style="${st?'background:'+st.c:''}">${n.e}</span>`:'';
@@ -489,11 +566,16 @@ function nodeHTML(n,path){
   const note=n.no?`<div class="onote">↳ ${hl(n.no)}</div>`:'';
   const dim=query&&!nodeMatches(n)?'dim':'';
   const toggle=hasKids?`<button class="otoggle" onclick="toggle('${path}')">${isColl?'+':'–'}</button>`:'';
+  const acts=editMode?`<div class="oacts">
+      <button title="Éditer" onclick="startEdit('${path}')">✎</button>
+      <button title="Ajouter un sous-poste" onclick="addChild('${path}')">＋</button>
+      ${path!=='0'?`<button title="Supprimer" onclick="delNode('${path}')">✕</button>`:''}
+    </div>`:'';
   return `<div class="onode ${isColl?'collapsed':''}">
     <div class="obox ${dim}" style="border-left-color:${border}">
       ${toggle}
-      <div class="otop"><span class="orole">${hl(n.r)}</span>${eff}${mark}${stChip}</div>
-      ${people}${note}
+      <div class="otop"><span class="orole">${hl(n.r)}</span>${eff}${mark}${stChip}${acts}</div>
+      ${people}${ucChips(n,!editMode)}${note}
     </div>
     <div class="okids">${kids}</div>
   </div>`;
@@ -516,6 +598,37 @@ function collapseAll(){
 }
 function onSearch(v){ query=v.trim(); renderTree(); }
 
+// ---- Édition ----
+function toggleEdit(){ editMode=!editMode; editingPath=null; query=''; document.getElementById('search').value='';
+  document.getElementById('editBtn').classList.toggle('teal',editMode);
+  document.getElementById('editBtn').textContent=editMode?'✓ Terminer l\'édition':'✏️ Mode édition';
+  document.getElementById('resetBtn').style.display=editMode?'':'none';
+  renderTree();
+}
+function startEdit(path){ editingPath=path; renderTree();
+  const el=document.getElementById('ef-r'); if(el){ el.focus(); }
+}
+function saveEdit(path){
+  const n=resolve(path);
+  n.r=document.getElementById('ef-r').value.trim();
+  const e=document.getElementById('ef-e').value.trim(); n.e=e||undefined;
+  const st=document.getElementById('ef-st').value; n.st=st||undefined;
+  const m=document.getElementById('ef-m').value; n.m=m||undefined;
+  n.no=document.getElementById('ef-no').value.trim()||undefined;
+  const lines=document.getElementById('ef-p').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  n.p=lines.map(s=>{ const vac=/\(vacant\)/i.test(s); return {n:s.replace(/\s*\(vacant\)/i,'').trim()||'(Vacant)',vac}; });
+  if(!n.p.length) delete n.p;
+  editingPath=null; saveData(); renderKPIs(); renderTree(); toast('Poste mis à jour');
+}
+function toggleUC(path,id){ const n=resolve(path); n.uc=n.uc||[]; const i=n.uc.indexOf(+id); i<0?n.uc.push(+id):n.uc.splice(i,1);
+  // re-render seulement les boutons UC du formulaire
+  const box=document.querySelectorAll('.editing .uc-chip'); if(box.length){ box.forEach(b=>{ const cid=+b.textContent.split('.')[0]; b.classList.toggle('on',(n.uc||[]).includes(cid)); }); }
+  saveData();
+}
+function addChild(path){ const n=resolve(path); n.k=n.k||[]; n.k.push({r:'Nouveau poste',e:'1'}); collapsed.delete(ckey(curDir,path)); saveData(); editingPath=path+'.'+(n.k.length-1); renderKPIs(); renderTree(); }
+function delNode(path){ if(!confirm('Supprimer ce poste et ses sous-postes ?'))return; const pr=resolveParent(path); if(!pr)return; pr.parent.k.splice(pr.idx,1); if(!pr.parent.k.length) delete pr.parent.k; editingPath=null; saveData(); renderKPIs(); renderTree(); }
+function resetData(){ if(!confirm('Réinitialiser les organigrammes aux données source (perdre les modifications) ?'))return; store.set('org.data',null); location.reload(); }
+
 function renderLegend(){
   document.getElementById('legend').innerHTML=
     Object.values(STATUS).map(s=>`<span class="ld"><span class="swatch" style="background:${s.c}"></span>${s.l}</span>`).join('')+
@@ -525,12 +638,13 @@ function renderLegend(){
 
 // ---- Export CSV ----
 function exportCSV(){
-  const rows=[['Direction','Niveau','Rôle','Effectif / ETP','Personnes','Statut','Note']];
+  const rows=[['Direction','Niveau','Rôle','Effectif / ETP','Personnes','Statut','Use cases IA','Note']];
   Object.keys(DATA).forEach(dk=>{
     const dl=DATA[dk].label;
     (function rec(n,lvl){
       const people=(n.p||[]).map(p=>p.n+(p.vac?' (vacant)':'')).join(' ; ');
-      rows.push([dl,lvl,n.r,n.e||'',people,n.st?STATUS[n.st].l:'',n.no||'']);
+      const uc=(n.uc||[]).map(id=>id+'. '+(UC_CATALOG[id]||'')).join(' | ');
+      rows.push([dl,lvl,n.r,n.e||'',people,n.st?STATUS[n.st].l:'',uc,n.no||'']);
       (n.k||[]).forEach(c=>rec(c,lvl+1));
     })(DATA[dk].root,0);
   });

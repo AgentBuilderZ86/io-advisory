@@ -87,28 +87,66 @@
 <script>
 const directions=["Industrielle","Amont Agricole","Supply Chain","Financière","RH","Commerciale & Marketing","SI / Digital","Juridique & Conformité"];
 const dirPlanned={"Industrielle":8,"Amont Agricole":5,"Supply Chain":6,"Financière":5,"RH":5,"Commerciale & Marketing":5,"SI / Digital":5,"Juridique & Conformité":3};
-const roles=["Directeur","Responsable","Chef de service","Manager","Expert métier","Coordinateur"];
-const firstN=["Youssef","Salma","Karim","Nadia","Omar","Hind","Rachid","Leila","Mehdi","Sanaa","Anas","Imane","Tarik","Fatima","Hamza","Khadija","Yassine","Soukaina","Reda","Meryem","Aymane","Asmae","Bilal","Loubna","Ayoub","Wafa","Zakaria","Hajar","Ilyas","Nawal","Othmane","Siham","Marouane","Dounia","Adil","Rim","Hicham","Najwa","Saad","Lina","Driss","Amina"];
-const lastN=["El Amrani","Benani","Tazi","Berrada","Cherkaoui","Idrissi","Fassi","Alaoui","Bennani","Sebti","Lahlou","Kabbaj","Naciri","Sqalli","Bouzoubaa","Mernissi"];
-const painsPool=["Données silotées","Reporting manuel","Maintenance réactive","Prévisions imprécises","Process papier","Manque de visibilité temps réel","Saisie redondante","Outils legacy","Compétences data limitées","Décisions tardives","Suivi qualité manuel","Coûts énergie non optimisés"];
+// Roster réel issu des organigrammes Cosumar (directeurs / responsables interviewés)
+const ROSTER=[
+  // Industrielle
+  {dir:"Industrielle",name:"Abdelmotalib EL ABBADI",role:"Directeur Industriel du Groupe",status:"Réalisé"},
+  {dir:"Industrielle",name:"Abdelilah EL YOUNOUSSI",role:"Directeur de la Raffinerie Casablanca",status:"Réalisé"},
+  {dir:"Industrielle",name:"Issam GHILALI",role:"Responsable Bilan & Gestion Industrielle",status:"Réalisé"},
+  {dir:"Industrielle",name:"Khalid OMARI",role:"Chef de Division Exploitation Centrale Chaufferie",status:"Réalisé"},
+  {dir:"Industrielle",name:"Youssef DAANOUNE",role:"Cadre Chargé d'Exploitation Centrale Chaufferie",status:"En cours"},
+  // Supply Chain
+  {dir:"Supply Chain",name:"Mohammed OKAIL",role:"Manager Transport Groupe (Amont)",status:"Réalisé"},
+  {dir:"Supply Chain",name:"Mounir LAMHAMDI",role:"Manager Entreposage (Aval)",status:"Réalisé"},
+  {dir:"Supply Chain",name:"Ayoub MAHMOUD",role:"Manager Planification & Pilotage des Flux",status:"Réalisé"},
+  {dir:"Supply Chain",name:"Brahim MOUH",role:"Responsable Transport Produits Finis",status:"Réalisé"},
+  {dir:"Supply Chain",name:"Amal EL YAQINE",role:"Chargé Performance Supply Chain & Suivi Budgétaire",status:"En cours"},
+  {dir:"Supply Chain",name:"Ibtissam LACHIBI",role:"Chargé de la Planification",status:"Réalisé"},
+  // Financière
+  {dir:"Financière",name:"Jaafar EL AMRANI JOUTEY",role:"DGA Finances & Contrôle de Gestion Groupe",status:"Réalisé"},
+  {dir:"Financière",name:"Abdelaziz ECHBEL",role:"Directeur Adjoint Trésorerie & Financement",status:"Réalisé"},
+  {dir:"Financière",name:"Rachid ABOULFADL",role:"Directeur Contrôle de Gestion Groupe",status:"Réalisé"},
+  {dir:"Financière",name:"Brahim CHAKIR",role:"Chef de Service Comptabilité Générale",status:"Réalisé"},
+  {dir:"Financière",name:"Karim BENMIRA",role:"Chef de Service Comptabilité Tiers & Fournisseur",status:"En cours"},
+  // SI / Digital
+  {dir:"SI / Digital",name:"Amine LAHBICHI",role:"Directeur SI & Transformation Digitale",status:"Réalisé"},
+  {dir:"SI / Digital",name:"Rachid FATHALLAH",role:"Responsable Infrastructures SI",status:"Réalisé"},
+  {dir:"SI / Digital",name:"Soukaina BOUKIR",role:"Responsable BI & Data",status:"Réalisé"},
+  {dir:"SI / Digital",name:"Anouar EL KHALFI",role:"Responsable Projets IT & Transformation",status:"Réalisé"},
+  {dir:"SI / Digital",name:"Mohamed MAALAININE",role:"Responsable Innovation Digitale et IA",status:"Réalisé"},
+  // RH
+  {dir:"RH",name:"Khadija BOUREZGI",role:"Responsable Actes Sociaux",status:"Réalisé"},
+  // Juridique & Conformité
+  {dir:"Juridique & Conformité",name:"Fatima Zahraa ZIYATI",role:"Juriste",status:"Réalisé"}
+];
+const DIR_PAINS={
+  "Industrielle":["Maintenance réactive","Coûts énergie non optimisés","Suivi qualité manuel","Réglages manuels process"],
+  "Supply Chain":["Prévisions imprécises","Manque de visibilité temps réel","Données silotées","Optimisation transport"],
+  "Financière":["Saisie redondante","Reporting manuel","Process papier","Contrôle factures chronophage"],
+  "SI / Digital":["Outils legacy","Données silotées","Compétences data limitées","Postes critiques / vacants"],
+  "RH":["Process papier","Saisie redondante","Tickets RH N1 volumineux"],
+  "Commerciale & Marketing":["Manque de visibilité temps réel","Prévisions imprécises","Données silotées"],
+  "Amont Agricole":["Prévisions imprécises","Process papier","Manque de visibilité temps réel"],
+  "Juridique & Conformité":["Process papier","Décisions tardives","Suivi des échéances manuel"]
+};
+const fillerRoles=["Responsable","Chef de service","Manager","Expert métier","Coordinateur"];
 let entretiens=[];
 function build(){
-  let id=1; const statusByDir={};
+  let id=1, di=0;
   directions.forEach(d=>{
-    const n=dirPlanned[d];
-    for(let i=0;i<n;i++){
-      // S7 currently: ~70% done
-      const r=Math.random();
-      let st = r<0.72?"Réalisé": r<0.9?"En cours":"Planifié";
-      const fn=firstN[(id-1)%firstN.length], ln=lastN[id%lastN.length];
-      const date = "S"+(3+Math.floor(Math.random()*4));
-      const pains = st==="Réalisé" ? shuffle(painsPool).slice(0,2+Math.floor(Math.random()*2)) : [];
-      entretiens.push({id,name:fn+" "+ln,dir:d,role:roles[Math.floor(Math.random()*roles.length)],date,status:st,pains});
-      id++;
+    const real=ROSTER.filter(r=>r.dir===d);
+    const pains=DIR_PAINS[d]||[];
+    real.forEach((r,i)=>{
+      const st=r.status;
+      entretiens.push({id:id++,name:r.name,dir:d,role:r.role,date:"S"+(3+(i%4)),status:st,
+        pains:(st==="Réalisé"||st==="En cours")?pains.slice(i%2,(i%2)+2+(i%2)):[]});
+    });
+    for(let i=real.length;i<dirPlanned[d];i++){
+      entretiens.push({id:id++,name:"À programmer",dir:d,role:fillerRoles[i%fillerRoles.length],date:"S"+(5+(i%2)),status:"Planifié",pains:[]});
     }
+    di++;
   });
 }
-function shuffle(a){return a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);}
 build();
 
 function renderKPIs(){

@@ -149,57 +149,57 @@ const TYPE_LBL={M:'Manuel',A:'Automatisé',X:'Mixte'};
 function defaults(){
  const S=(l,sys,t,pain)=>({l,sys,t:t||'M',pain:!!pain});
  return [
-  {dom:'Amont agricole',dir:'Direction Agronomie & Amont',name:'Approvisionnement amont agricole (betterave / canne)',
+  {dom:'Amont agricole',dir:'Direction Amont — Transport Groupe (M. OKAIL)',name:'Approvisionnement amont agricole (betterave / canne)',
    sys:['SAP','SIG / Satellite','LIMS labo','Outil agronomie'],
    steps:[S('Planification assolement','Agronomie','M'),S('Contractualisation agriculteurs','SAP','M'),S('Suivi agronomique des cultures','SIG/Satellite','X'),S('Programmation de la récolte','Agronomie','M',1),S('Réception & pesée (pont-bascule)','Balance','X',1),S('Analyse richesse saccharine','LIMS','M'),S('Paiement des planteurs','SAP','M')],
    pains:['Prévision de tonnage imprécise','Planning de récolte non optimisé','Saisie manuelle à la réception'],uc:[3]},
 
-  {dom:'Industriel',dir:'Direction Industrielle',name:'Production sucrière (réception → conditionnement)',
+  {dom:'Industriel',dir:'Direction Industrielle (A. EL ABBADI)',name:'Production sucrière (réception → conditionnement)',
    sys:['MES','SCADA / DCS','SAP PP'],
    steps:[S('Réception cossettes','MES','A'),S('Diffusion','SCADA','A',1),S('Épuration','SCADA','A'),S('Évaporation','SCADA','A',1),S('Cristallisation','SCADA','X',1),S('Centrifugation','SCADA','A'),S('Conditionnement','MES','X')],
    pains:['Rendement d\'extraction variable','Surconsommation de vapeur','Réglages encore manuels'],uc:[2,7]},
 
-  {dom:'Industriel',dir:'Direction Énergie & Utilities',name:'Énergie & cogénération (vapeur / électricité)',
+  {dom:'Industriel',dir:'Direction Industrielle — Chaufferie & Centrale (K. OMARI)',name:'Énergie & cogénération (vapeur / électricité)',
    sys:['SCADA','GTC / GTB','SAP'],
    steps:[S('Prévision des besoins vapeur','Excel','M',1),S('Conduite chaudière','SCADA','X'),S('Production turbines','SCADA','A'),S('Distribution vapeur & électricité','GTC','A'),S('Suivi des consommations','GTC','X',1)],
    pains:['Dérives énergétiques détectées tardivement','Pas de pilotage prédictif'],uc:[7,1]},
 
-  {dom:'Industriel',dir:'Direction Maintenance',name:'Maintenance industrielle',
+  {dom:'Industriel',dir:'Direction Industrielle — Maintenance',name:'Maintenance industrielle',
    sys:['GMAO','SAP PM','Capteurs IoT'],
    steps:[S('Détection / signalement','GMAO','M',1),S('Diagnostic','GMAO','M'),S('Planification de l\'intervention','SAP PM','M'),S('Exécution','Terrain','M'),S('Clôture & retour d\'expérience','GMAO','M')],
    pains:['Maintenance majoritairement curative','Arrêts non planifiés en campagne'],uc:[1]},
 
-  {dom:'Industriel',dir:'Direction Qualité',name:'Qualité & sécurité alimentaire',
+  {dom:'Industriel',dir:'Direction Industrielle — QHSE & Laboratoires',name:'Qualité & sécurité alimentaire',
    sys:['LIMS','SAP QM'],
    steps:[S('Échantillonnage','Terrain','M'),S('Analyses laboratoire','LIMS','X'),S('Contrôle de conformité','LIMS','M'),S('Libération du lot','SAP QM','M'),S('Traçabilité & archivage','SAP QM','X',1)],
    pains:['Ressaisies entre systèmes','Traçabilité partiellement manuelle'],uc:[]},
 
-  {dom:'Supply Chain',dir:'Direction Supply Chain',name:'Planification S&OP (PIC / PDP)',
+  {dom:'Supply Chain',dir:'Supply Chain — Planification & Pilotage des Flux (A. MAHMOUD)',name:'Planification S&OP (PIC / PDP)',
    sys:['SAP IBP / APO','Excel'],
    steps:[S('Prévision de la demande','Excel','M',1),S('Plan industriel & commercial (PIC)','SAP IBP','X'),S('Plan directeur de production (PDP)','SAP','X'),S('Plan d\'approvisionnement','SAP','M'),S('Arbitrage des stocks','Excel','M',1)],
    pains:['Prévision de demande peu fiable','Sur-stocks et ruptures alternés'],uc:[4]},
 
-  {dom:'Supply Chain',dir:'Direction Logistique',name:'Stockage & expédition',
+  {dom:'Supply Chain',dir:'Direction Logistique — Aval / Entreposage (M. LAMHAMDI)',name:'Stockage & expédition',
    sys:['WMS','SAP','Balances'],
    steps:[S('Mise en stock (silos / entrepôts)','WMS','X'),S('Gestion des emplacements','WMS','X'),S('Préparation de commande','WMS','X'),S('Chargement','Balance','M',1),S('Expédition','SAP','X')],
    pains:['Taux de service à améliorer','Optimisation des chargements'],uc:[4,10]},
 
-  {dom:'Supply Chain',dir:'Direction Logistique',name:'Distribution & transport',
+  {dom:'Supply Chain',dir:'Direction Logistique — Transport Produits Finis (B. MOUH)',name:'Distribution & transport',
    sys:['TMS','SAP SD','GPS flotte'],
    steps:[S('Réception des commandes transport','TMS','X'),S('Planification des tournées','TMS','M',1),S('Affectation de la flotte','TMS','M',1),S('Livraison client','GPS','X'),S('Preuve de livraison','TMS','M')],
    pains:['Coûts de transport élevés','Taux de remplissage sous-optimal','Tournées non optimisées'],uc:[10]},
 
-  {dom:'Commercial',dir:'Direction Commerciale',name:'Prise de commande client (O2C amont)',
+  {dom:'Commercial',dir:'Direction Supply Chain & Commercial',name:'Prise de commande client (O2C amont)',
    sys:['Salesforce CRM','SAP SD'],
    steps:[S('Demande client','CRM','X'),S('Vérification de disponibilité (ATP)','SAP SD','M',1),S('Devis / confirmation','CRM','M'),S('Saisie de la commande','SAP SD','X'),S('Suivi de commande','CRM','X')],
    pains:['ATP manuel','Délais de réponse au client'],uc:[4]},
 
-  {dom:'Finance',dir:'Direction Finance',name:'Order-to-Cash & facturation',
+  {dom:'Finance',dir:'Finance & CG — Comptabilité Tiers & Clients (K. BENMIRA)',name:'Order-to-Cash & facturation',
    sys:['SAP FI / SD'],
    steps:[S('Livraison','SAP SD','X'),S('Facturation','SAP FI','X'),S('Recouvrement','SAP FI','M',1),S('Encaissement','SAP FI','X'),S('Lettrage','SAP FI','M')],
    pains:['Délais d\'encaissement','Litiges de facturation'],uc:[]},
 
-  {dom:'Finance',dir:'Direction Achats & Finance',name:'Procure-to-Pay (achats → paiement)',
+  {dom:'Finance',dir:'Finance & CG — Comptabilité Fournisseur (A. ZRHARI)',name:'Procure-to-Pay (achats → paiement)',
    sys:['SAP MM / FI','Plateforme achats'],
    steps:[S('Expression du besoin','SAP MM','M'),S('Sourcing / appel d\'offres','Plateforme','M'),S('Commande','SAP MM','X'),S('Réception','SAP MM','X'),S('Réception facture','Papier / mail','M',1),S('Contrôle 3 voies','SAP FI','M',1),S('Paiement','SAP FI','X')],
    pains:['Saisie manuelle des factures','Contrôle 3 voies chronophage'],uc:[5]},
@@ -209,7 +209,7 @@ function defaults(){
    steps:[S('Recrutement','SIRH','X'),S('Onboarding','SIRH','M'),S('Paie','SAP HCM','X'),S('Formation & développement','SIRH','M'),S('Gestion des talents & mobilité','SIRH','M',1),S('Offboarding','SIRH','M')],
    pains:['Tickets RH niveau 1 volumineux','Turnover & absentéisme à anticiper'],uc:[6,9]},
 
-  {dom:'Juridique',dir:'Direction Juridique',name:'Gestion des contrats',
+  {dom:'Juridique',dir:'Direction Juridique (F.Z. ZIYATI)',name:'Gestion des contrats',
    sys:['GED / CLM'],
    steps:[S('Demande','Mail','M',1),S('Rédaction / revue','GED','M',1),S('Négociation','Mail','M'),S('Signature','GED','X'),S('Archivage & suivi des échéances','GED','M',1)],
    pains:['Revue contractuelle manuelle et longue','Suivi des échéances difficile'],uc:[8]}
