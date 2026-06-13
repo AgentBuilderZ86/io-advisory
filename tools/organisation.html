@@ -435,6 +435,128 @@ const DATA={
  }
 };
 
+// ---- Directions complémentaires (Amont Agricole, Commercial & Ventes, Marketing & Sucrunion) ----
+Object.assign(DATA,{
+ aa:{label:'Amont Agricole (COSUMAGRI)',icon:'🌱',
+  root:{r:"Amont Agricole — Cosumar / COSUMAGRI",
+   k:[
+    {r:"Directrice du Développement de l'Amont Agricole Groupe",e:"1",p:P("Khadija KHALLOUF"),k:[
+      {r:"Directeur de la Coordination Amont Agricole / Directeur des Opérations GREEN TECH",e:"1",p:P("Zouhair MOUILEH"),k:[
+        {r:"Assistante Administrative",e:"1",p:P("Rabab RACHIDI")},
+        {r:"Cadre Chargé de la Coordination des Études, Projets et Prestations AA",e:"1",p:P("Boutayna NAKHILI")},
+        {r:"Cadre Chargé de la Coordination de la R&D AA",e:"1",p:[VAC],st:"vacant"},
+        {r:"Manager Veille, Analyse et Pilotage des données AA",e:"1",p:P("Chaimae KHOULALI"),uc:[3,4],k:[
+          {r:"Data Scientist AA",e:"1",p:[VAC],st:"vacant",uc:[3]}
+        ]}
+      ]}
+    ]},
+    {r:"Directeur Amont Agricole Canne et Betterave Gharb et Loukkos / Directeur des Opérations COSUMAGRI",e:"1",p:P("Issam BENKHAY"),k:[
+      {r:"Assistante de direction",e:"1",p:P("Aziza ARREM")},
+      {r:"Cadre chargé de la Gestion des Prestations AA",e:"1",p:[VAC],st:"vacant",k:[
+        {r:"Agent Administratif AA",e:"1",p:P("Ali BELLAFKIH")}
+      ]},
+      {r:"Chargé ATTAISSIR et Analyse des Données Agronomiques",e:"1",p:[VAC],st:"vacant",uc:[3],k:[
+        {r:"Agent Salle de Contrôle",e:"3",p:P("Abdelmounaim GAMRA","Youssef ZINE-EDDINE","Hicham LAGNAOUI")}
+      ]},
+      {r:"Ingénieur Recherche et Développement Agricole",e:"1",p:[VAC],st:"vacant",k:[
+        {r:"Agent R&D Agricole",e:"1",p:[VAC],st:"vacant"}
+      ]},
+      {r:"Chef de Service Encadrement et Production AA (Gharb & Loukkos)",e:"1",p:P("Imane EN NOUHI"),k:[
+        {r:"Ingénieur Encadrement et Production AA — Gharb",e:"1",p:P("Imane BACHRA"),k:[
+          {r:"Chef de Zone — Dar El Gueddari",e:"1",k:[
+            {r:"Conseiller Agricole",e:"3",p:[{n:"Abdelaziz HANI"},{n:"Abdelghani FIKRI"},{n:"Zakaria RADI"}],no:"2 postes vacants"}
+          ]},
+          {r:"Chef de Zone — SK Larbaa",e:"1",k:[
+            {r:"Conseiller Agricole",e:"2",p:[{n:"Yahya ELBOSS"},{n:"Driss EZZARG"}],no:"2 postes vacants"}
+          ]}
+        ]},
+        {r:"Ingénieur Encadrement et Production AA — Loukkos",e:"1",p:[VAC],st:"vacant",k:[
+          {r:"Chef de Zone — Loukkos",e:"1",p:[VAC],st:"vacant",k:[
+            {r:"Conseiller Agricole",e:"2",p:[{n:"Adnane MAMOUNI"},{n:"Mohamed OUKOUAID"}],no:"2 postes vacants"}
+          ]}
+        ]}
+      ]}
+    ]}
+   ]}
+ },
+ com:{label:'Commercial & Ventes',icon:'🤝',
+  root:{r:"Directeur Adjoint GMS et Industriels",e:"1",p:P("Abderrahim FAKHAR"),
+   k:[
+    {r:"Ventes Directes",k:[
+      {r:"GMS",k:[
+        {r:"Key Account Manager GMS",e:"1",p:P("Brahim NAIMI"),uc:[4]}
+      ]},
+      {r:"Traditionnel — Responsable Circuit Traditionnel",e:"1",p:[VAC],st:"vacant",no:"Encadrement des zones",k:[
+        {r:"Chef de Zone Nord",e:"1",p:P("Saad EL OUALI"),k:[
+          {r:"Chef d'Agence Tanger",e:"1",p:P("Khalid BENSOUDA MOURRI"),k:[{r:"Agent ADV",e:"1",p:[VAC],st:"vacant"}]},
+          {r:"Chef d'Agence Fès",e:"1",p:P("Saad EL OUALI"),no:"Fusion",k:[{r:"Agent ADV",e:"1",p:P("Hamza ASRI AIDI")}]},
+          {r:"Chef d'Agence Meknès",e:"1",p:P("Mohammed Ali HMAMOUCHE"),k:[{r:"Agent ADV",e:"1",p:[VAC],st:"vacant"}]},
+          {r:"Agence Oujda",e:"1",p:P("Taoufik EL HAMDI"),no:"Sort en zone Oujda + Zaïo",k:[{r:"Agent ADV",e:"1",p:[VAC],st:"vacant"}]}
+        ]},
+        {r:"Chef de Zone Centre",e:"1",p:P("Abdessamad OUARDIGHI"),no:"+ Sidi Bennour"},
+        {r:"Chef de Zone Sud",e:"1",p:P("Abdelhakim OUHMIDI"),no:"+1 ETP",k:[
+          {r:"Chef d'Agence Oulad Ayad",e:"1",p:P("Ismail AASSEM"),k:[
+            {r:"Agent ADV",e:"1",p:P("Ayyoub SELLAMI")},
+            {r:"Agent ADV",e:"1",p:P("Abdellatif BOUTARBOUCH")}
+          ]},
+          {r:"Chef d'Agence Marrakech",e:"1",p:P("Abdelhakim OUHMIDI"),k:[
+            {r:"Agent ADV",e:"1",p:P("Issam BOUIHAT")}
+          ]},
+          {r:"Chef d'Agence Agadir",e:"1",p:P("Issam HAMDAOUI"),k:[
+            {r:"Agent ADV",e:"1",p:[VAC],st:"vacant"}
+          ]}
+        ]}
+      ]}
+    ]},
+    {r:"Ventes Indirectes",k:[
+      {r:"Industriel",k:[
+        {r:"Key Account Manager Industriel",e:"1",p:P("Salim EL BARAKA"),no:"Recruter un junior en back-up pour gérer les coproduits à terme"}
+      ]},
+      {r:"Administration",k:[
+        {r:"Chargée des Comptes Administration",e:"1",p:P("Bouchra CHAKIRI"),no:"+ Coproduits"}
+      ]}
+    ]},
+    {r:"ADV & Recouvrement — Responsable ADV et Recouvrement",e:"1",p:P("Radouane BAKIR"),k:[
+      {r:"Administration des Ventes",k:[
+        {r:"Chargé d'Administration des Ventes",e:"1",p:P("Zakaria EL ASSAOUS")}
+      ]},
+      {r:"Recouvrement",k:[
+        {r:"Chargé de Recouvrement",e:"1",p:P("Salma SAROUJI"),no:"Mutation à remplacer"}
+      ]},
+      {r:"SMQ",k:[
+        {r:"Cadre Chargé du SMQ",e:"1",p:P("Fatima Zahra BOUDOUMA")}
+      ]}
+    ]}
+   ]}
+ },
+ mkt:{label:'Marketing & Sucrunion',icon:'📣',
+  root:{r:"Directeur Marketing et Sucrunion",e:"1",p:P("Hanane LYOUBI IDRISSI"),
+   k:[
+    {r:"Sucrunion",k:[
+      {r:"Responsable QHSE",e:"1",p:P("Mounia CHAHMI"),k:[
+        {r:"Contrôleur de Gestion",e:"1",p:[VAC],st:"vacant"},
+        {r:"Acheteur",e:"1",p:P("Nisrine JILAL"),no:"+1 ETP · pressentie responsable conditionnement"}
+      ]},
+      {r:"Gestionnaire de Stocks et Flux",e:"1",p:P("Hanane KERBALI"),k:[
+        {r:"Cariste",e:"1",p:P("Abdelkarim MAADI")}
+      ]},
+      {r:"Responsable Commercial",e:"1",p:P("Oussama MOUNIRI"),k:[
+        {r:"Agent Commercial",e:"2",p:[{n:"Hicham … (nom partiel)"},{n:"Abder. KH. … (nom partiel)"}],no:"+1 ETP Oriental · noms partiels sur la source"},
+        {r:"Agent Administratif des Ventes",e:"1",p:P("Amina ZEOUADI")}
+      ]},
+      {r:"Responsable Conditionnement et Maintenance",e:"1",p:[VAC],st:"vacant",no:"Nisrine JILAL pressentie responsable conditionnement",k:[
+        {r:"Chef de Poste Conditionnement et Maintenance",e:"2",p:[{n:"Mostafa BEN ABBOUD"},{n:"Mustapha ZERKOU",vac:true}]},
+        {r:"Agent de Maîtrise",e:"1",p:P("Abdelaali LOURIDA")}
+      ]}
+    ]},
+    {r:"Marketing",k:[
+      {r:"Senior Brand Manager",e:"1",p:P("Ghita BERRADA"),no:"+1 ETP Trade Manager (cible à terme)"},
+      {r:"Brand Manager",e:"1",p:P("Yasmina LAKRARI")}
+    ]}
+   ]}
+ }
+});
+
 // ---- Catalogue use cases IA (partagé avec la roadmap) ----
 const UC_CATALOG={1:'Maintenance prédictive turbines',2:'Optimisation process sucrier',3:'Prévision récolte satellite',4:'Demand forecasting sucre',5:'OCR factures fournisseurs',6:'Chatbot RH CorpGPT',7:'Détection anomalies énergie',8:'Analyse contrats NLP',9:'People analytics & turnover',10:'Route optimization livraisons'};
 // Pré-câblage org ↔ UC (heuristique sur les intitulés de poste)
