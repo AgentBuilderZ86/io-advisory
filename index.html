@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>COSUMAR — Mission Roadmap IA & CorpGPT · Sia</title>
-<meta name="description" content="Hub de la mission Sia x Cosumar — Feuille de route IA pluriannuelle & CorpGPT. 18 semaines, 4 phases, 9 outils digitaux interactifs.">
+<meta name="description" content="Hub de la mission Sia x Cosumar — Feuille de route IA pluriannuelle & CorpGPT. 18 semaines, 4 phases, 17 outils digitaux interactifs.">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/sia.css">
 <style>
@@ -50,6 +50,15 @@
 .sec-h{margin:42px 0 4px;display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px}
 .sec-h h2{font-size:1.3rem;color:var(--navy-dark)}
 .sec-h .sh-sub{font-size:.82rem;color:var(--muted)}
+.phase-band{display:flex;align-items:center;gap:12px;margin:34px 0 14px;padding:11px 16px;border-radius:11px;background:#fff;border:1px solid var(--line);border-left:5px solid var(--navy2);box-shadow:var(--shadow)}
+.phase-band b{font-family:'Syne',sans-serif;font-size:1.04rem;color:var(--navy-dark)}
+.phase-band .pb-tag{font-size:.66rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#fff;background:var(--navy2);padding:4px 10px;border-radius:6px}
+.phase-band .pb-w{margin-left:auto;font-size:.78rem;font-weight:600;color:var(--teal-dark)}
+.phase-band.p1{border-left-color:var(--gold)}.phase-band.p1 .pb-tag{background:var(--gold)}
+.phase-band.p2{border-left-color:var(--teal)}.phase-band.p2 .pb-tag{background:var(--teal)}
+.phase-band.p3{border-left-color:var(--navy2)}.phase-band.p3 .pb-tag{background:var(--navy2)}
+.phase-band.p4{border-left-color:var(--navy-dark)}.phase-band.p4 .pb-tag{background:var(--navy-dark)}
+.phase-band.tr{border-left-color:var(--muted)}.phase-band.tr .pb-tag{background:var(--muted)}
 </style>
 </head>
 <body>
@@ -89,7 +98,7 @@
       <div><div class="n">4</div><div class="l">phases</div></div>
       <div><div class="n">42</div><div class="l">entretiens · 8 directions</div></div>
       <div><div class="n">10</div><div class="l">use cases IA identifiés</div></div>
-      <div><div class="n">18</div><div class="l">outils digitaux</div></div>
+      <div><div class="n">17</div><div class="l">outils digitaux</div></div>
     </div>
     <a href="tools/executive-story.html" style="display:inline-flex;align-items:center;gap:11px;margin-top:30px;background:linear-gradient(120deg,var(--teal),#048A7E);color:#fff;padding:15px 26px;border-radius:11px;font-weight:700;font-size:1rem;box-shadow:0 10px 30px rgba(0,168,150,.35);position:relative;z-index:1;transition:.2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">🎬 Présenter au CODIR — Executive Story <span style="opacity:.7">▸</span></a>
   </section>
@@ -114,22 +123,41 @@
     </div>
   </div>
 
-  <div class="sec-h"><h2>Outils digitaux interactifs</h2><span class="sh-sub">16 applications · ouvrir dans le navigateur</span></div>
+  <div class="sec-h"><h2>Outils digitaux interactifs</h2><span class="sh-sub">17 applications · structurées par phase de la mission</span></div>
+
+  <div class="phase-band p1"><span class="pb-tag">Phase 1</span><b>Acculturation</b><span class="pb-w">S1 → S4</span></div>
   <div class="tools-grid">
-    <a class="tool" href="tools/executive-story.html" data-reveal style="border-color:rgba(0,168,150,.4);background:linear-gradient(160deg,rgba(0,168,150,.06),#fff)"><span class="arrow">→</span><div class="ti" style="background:linear-gradient(120deg,var(--teal),#048A7E);color:#fff">🎬</div><h4>Executive Story <span class="chip teal" style="vertical-align:middle">Premium</span></h4><div class="td">Narration plein écran cinématique diagnostic → roadmap → ROI → gouvernance. Export deck PDF. Pour le CODIR.</div><div class="tmeta"><span class="chip navy">Transversal</span><span class="chip gold">Storytelling</span></div></a>
-    <a class="tool" href="tools/jumeau-usine.html" data-reveal style="border-color:rgba(0,168,150,.4);background:linear-gradient(160deg,rgba(46,117,182,.06),#fff)"><span class="arrow">→</span><div class="ti" style="background:linear-gradient(120deg,var(--navy2),var(--navy));color:#fff">🏭</div><h4>Jumeau visuel usine <span class="chip teal" style="vertical-align:middle">Premium</span></h4><div class="td">Schéma interactif de la sucrerie : chaque use case IA s'allume sur l'équipement. Filtres par vague, tournée guidée.</div><div class="tmeta"><span class="chip navy">Phase 3</span><span class="chip gold">Cartographie</span></div></a>
-    <a class="tool" href="tools/process-mapping.html" data-reveal><span class="arrow">→</span><div class="ti">🗂️</div><h4>Parcours & Processus</h4><div class="td">Cartographie des macro-processus Cosumar (amont agricole → expédition → support) : parcours étape par étape, systèmes, points de douleur, use cases IA rattachés. Éditable, export CSV & Mermaid.</div><div class="tmeta"><span class="chip gold">Phase 2</span><span class="chip">Cartographie</span></div></a>
-    <a class="tool" href="tools/atelier-conception.html" data-reveal><span class="arrow">→</span><div class="ti">🎨</div><h4>Studio d'atelier de conception</h4><div class="td">Animation des ateliers de co-design : déroulé minuté, board d'idéation avec dot-voting, canvas de use case & matrice impact/effort. Export CSV & fiches Markdown.</div><div class="tmeta"><span class="chip teal">Phase 3</span><span class="chip">Facilitation</span></div></a>
-    <a class="tool" href="tools/corpgpt.html" data-reveal style="border-color:rgba(0,168,150,.4);background:linear-gradient(160deg,rgba(0,168,150,.07),#fff)"><span class="arrow">→</span><div class="ti" style="background:linear-gradient(135deg,var(--teal),#048A7E);color:#fff">🤖</div><h4>CorpGPT <span class="chip teal" style="vertical-align:middle">Premium</span></h4><div class="td">Assistant IA conversationnel embarqué : interrogez la roadmap, les use cases, le ROI et la conformité en langage naturel. RAG souverain, sources citées.</div><div class="tmeta"><span class="chip navy">AI-native</span><span class="chip gold">Démo live</span></div></a>
     <a class="tool" href="tools/acculturation.html" data-reveal><span class="arrow">→</span><div class="ti">🎓</div><h4>Acculturation & Formation</h4><div class="td">Séminaire C-Level, 50 Champions IA (3 cohortes × 6 modules), sessions 1-to-1, kits communication.</div><div class="tmeta"><span class="chip gold">Phase 1</span><span class="chip">Sensibilisation</span></div></a>
     <a class="tool" href="tools/adoption-gamifiee.html" data-reveal><span class="arrow">→</span><div class="ti">🏆</div><h4>Adoption gamifiée</h4><div class="td">Leaderboard des 50 Champions IA : points, niveaux, badges, podium et défis collectifs pour ancrer l'adoption.</div><div class="tmeta"><span class="chip gold">Phase 1</span><span class="chip teal">Engagement</span></div></a>
-    <a class="tool" href="tools/dashboard-copil.html" data-reveal><span class="arrow">→</span><div class="ti">📊</div><h4>Dashboard COPIL</h4><div class="td">Gantt 18 semaines, checklist livrables, registre risques, log décisions, allocation équipe.</div><div class="tmeta"><span class="chip navy">Transversal</span><span class="chip teal">Pilotage</span></div></a>
+  </div>
+
+  <div class="phase-band p2"><span class="pb-tag">Phase 2</span><b>Diagnostic</b><span class="pb-w">S3 → S6</span></div>
+  <div class="tools-grid">
     <a class="tool" href="tools/dashboard-entretiens.html" data-reveal><span class="arrow">→</span><div class="ti">🎙️</div><h4>Dashboard Entretiens</h4><div class="td">Suivi des 42 entretiens, 8 directions métiers, filtres, pain points, timeline.</div><div class="tmeta"><span class="chip gold">Phase 2</span><span class="chip">Diagnostic</span></div></a>
+    <a class="tool" href="tools/organisation.html" data-reveal><span class="arrow">→</span><div class="ti">🏢</div><h4>Organisation Cosumar</h4><div class="td">Organigrammes interactifs des directions Cosumar (effectifs, postes, vacances, ETP cibles). Pré-chargé Supply Chain & Commercial. Recherche, repli, export CSV.</div><div class="tmeta"><span class="chip gold">Phase 2</span><span class="chip">Organisation</span></div></a>
+    <a class="tool" href="tools/process-mapping.html" data-reveal><span class="arrow">→</span><div class="ti">🗂️</div><h4>Parcours & Processus</h4><div class="td">Cartographie des macro-processus Cosumar (amont agricole → expédition → support) : parcours étape par étape, systèmes, points de douleur, use cases IA rattachés. Éditable, export CSV & Mermaid.</div><div class="tmeta"><span class="chip gold">Phase 2</span><span class="chip">Cartographie</span></div></a>
+  </div>
+
+  <div class="phase-band p3"><span class="pb-tag">Phase 3</span><b>Stratégie & Roadmap</b><span class="pb-w">S6 → S11</span></div>
+  <div class="tools-grid">
     <a class="tool" href="tools/use-cases-ia.html" data-reveal><span class="arrow">→</span><div class="ti">💡</div><h4>Use Cases IA</h4><div class="td">Prérequis, valeur/ROI, risques & de-risking, funnel 3 filtres, fiches projets, Go/No-Go. 10 UC pré-chargés.</div><div class="tmeta"><span class="chip teal">Phase 3</span><span class="chip">Qualification</span></div></a>
+    <a class="tool" href="tools/atelier-conception.html" data-reveal><span class="arrow">→</span><div class="ti">🎨</div><h4>Studio d'atelier de conception</h4><div class="td">Animation des ateliers de co-design : déroulé minuté, board d'idéation avec dot-voting, canvas de use case & matrice impact/effort. Export CSV & fiches Markdown.</div><div class="tmeta"><span class="chip teal">Phase 3</span><span class="chip">Facilitation</span></div></a>
+    <a class="tool" href="tools/jumeau-usine.html" data-reveal style="border-color:rgba(0,168,150,.4);background:linear-gradient(160deg,rgba(46,117,182,.06),#fff)"><span class="arrow">→</span><div class="ti" style="background:linear-gradient(120deg,var(--navy2),var(--navy));color:#fff">🏭</div><h4>Jumeau visuel usine <span class="chip teal" style="vertical-align:middle">Premium</span></h4><div class="td">Schéma interactif de la sucrerie : chaque use case IA s'allume sur l'équipement. Filtres par vague, tournée guidée.</div><div class="tmeta"><span class="chip navy">Phase 3</span><span class="chip gold">Cartographie</span></div></a>
     <a class="tool" href="tools/roi-business-case.html" data-reveal><span class="arrow">→</span><div class="ti">💰</div><h4>ROI & Business Case</h4><div class="td">Comparaison Build vs Buy par use case : TCO, VAN (NPV), payback, ROI, cash-flow cumulé, export CSV.</div><div class="tmeta"><span class="chip teal">Phase 3</span><span class="chip">Business Case</span></div></a>
     <a class="tool" href="tools/monte-carlo.html" data-reveal><span class="arrow">→</span><div class="ti">🎲</div><h4>Simulateur Monte-Carlo <span class="chip teal" style="vertical-align:middle">Premium</span></h4><div class="td">Distribution probabiliste de la VAN du portefeuille (P10/P50/P90), proba d'atteinte d'objectif, profil risque/rendement par UC.</div><div class="tmeta"><span class="chip teal">Phase 3</span><span class="chip gold">Décision invest.</span></div></a>
     <a class="tool" href="tools/roadmap-builder.html" data-reveal><span class="arrow">→</span><div class="ti">🗺️</div><h4>Roadmap Builder</h4><div class="td">Timeline 3 vagues × 8 directions, cards, budget par vague & direction, export CSV.</div><div class="tmeta"><span class="chip teal">Phase 3</span><span class="chip">Roadmap</span></div></a>
+  </div>
+
+  <div class="phase-band p4"><span class="pb-tag">Phase 4</span><b>Operating Model</b><span class="pb-w">S12 → S16</span></div>
+  <div class="tools-grid">
     <a class="tool" href="tools/simulateur-coe.html" data-reveal><span class="arrow">→</span><div class="ti">🏛️</div><h4>Simulateur CoE</h4><div class="td">Staffing/budget CoE, gouvernance + RACI, générateur Charte IA, plan compétences 24 mois.</div><div class="tmeta"><span class="chip navy">Phase 4</span><span class="chip">Operating Model</span></div></a>
+  </div>
+
+  <div class="phase-band tr"><span class="pb-tag">Transversal</span><b>Pilotage, conformité & storytelling</b><span class="pb-w">S1 → S18</span></div>
+  <div class="tools-grid">
+    <a class="tool" href="tools/executive-story.html" data-reveal style="border-color:rgba(0,168,150,.4);background:linear-gradient(160deg,rgba(0,168,150,.06),#fff)"><span class="arrow">→</span><div class="ti" style="background:linear-gradient(120deg,var(--teal),#048A7E);color:#fff">🎬</div><h4>Executive Story <span class="chip teal" style="vertical-align:middle">Premium</span></h4><div class="td">Narration plein écran cinématique diagnostic → roadmap → ROI → gouvernance. Export deck PDF. Pour le CODIR.</div><div class="tmeta"><span class="chip navy">Transversal</span><span class="chip gold">Storytelling</span></div></a>
+    <a class="tool" href="tools/corpgpt.html" data-reveal style="border-color:rgba(0,168,150,.4);background:linear-gradient(160deg,rgba(0,168,150,.07),#fff)"><span class="arrow">→</span><div class="ti" style="background:linear-gradient(135deg,var(--teal),#048A7E);color:#fff">🤖</div><h4>CorpGPT <span class="chip teal" style="vertical-align:middle">Premium</span></h4><div class="td">Assistant IA conversationnel embarqué : interrogez la roadmap, les use cases, le ROI et la conformité en langage naturel. RAG souverain, sources citées.</div><div class="tmeta"><span class="chip navy">AI-native</span><span class="chip gold">Démo live</span></div></a>
+    <a class="tool" href="tools/dashboard-copil.html" data-reveal><span class="arrow">→</span><div class="ti">📊</div><h4>Dashboard COPIL</h4><div class="td">Gantt 18 semaines, checklist livrables, registre risques, log décisions, allocation équipe.</div><div class="tmeta"><span class="chip navy">Transversal</span><span class="chip teal">Pilotage</span></div></a>
     <a class="tool" href="tools/conformite.html" data-reveal><span class="arrow">→</span><div class="ti">🛡️</div><h4>Conformité & Réglementation</h4><div class="td">Référentiels locaux & internationaux, classification EU AI Act, checklists AIPD/DPIA, souveraineté des données.</div><div class="tmeta"><span class="chip navy">Transversal</span><span class="chip teal">IA Responsable</span></div></a>
     <a class="tool" href="tools/compliance-copilot.html" data-reveal><span class="arrow">→</span><div class="ti">📋</div><h4>Compliance Copilot</h4><div class="td">Génération automatique des AIPD/DPIA pré-remplies par use case (CNDP, RGPD, EU AI Act). Avis DPO, export Markdown & PDF.</div><div class="tmeta"><span class="chip navy">Transversal</span><span class="chip gold">AIPD/DPIA</span></div></a>
   </div>

@@ -32,6 +32,19 @@ a{color:inherit;text-decoration:none}
 .topnav a:hover{color:var(--navy);background:var(--cream)}
 .topnav a.active{color:var(--navy);background:rgba(31,78,121,.08)}
 .topnav a.home{color:var(--teal)}
+/* phase-grouped dropdown nav */
+.nav-group{position:relative}
+.nav-trigger{font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;color:var(--muted);padding:8px 12px;border-radius:8px;background:transparent;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:.18s;white-space:nowrap}
+.nav-trigger:hover{color:var(--navy);background:var(--cream)}
+.nav-group.active .nav-trigger{color:var(--navy);background:rgba(31,78,121,.08)}
+.nav-trigger .caret{font-size:.6rem;opacity:.6;transition:.18s}
+.nav-group:hover .nav-trigger .caret,.nav-group:focus-within .nav-trigger .caret{transform:rotate(180deg)}
+.nav-menu{position:absolute;top:calc(100% + 8px);left:0;min-width:240px;background:#fff;border:1px solid var(--line);border-radius:11px;box-shadow:var(--shadow-lg);padding:7px;opacity:0;visibility:hidden;transform:translateY(-6px);transition:.16s;z-index:70}
+.nav-group:hover .nav-menu,.nav-group:focus-within .nav-menu{opacity:1;visibility:visible;transform:none}
+.nav-menu a{display:flex;align-items:center;gap:9px;font-size:.82rem;font-weight:500;color:var(--text);padding:8px 11px;border-radius:8px;white-space:nowrap}
+.nav-menu a:hover{background:var(--cream);color:var(--navy)}
+.nav-menu a.on{background:rgba(0,168,150,.1);color:var(--teal-dark);font-weight:700}
+.nav-menu a .ni{width:18px;text-align:center}
 
 /* ---------- layout ---------- */
 .wrap{max-width:1320px;margin:0 auto;padding:34px 32px 80px}
@@ -111,7 +124,10 @@ footer.sia-foot{margin-top:60px;border-top:1px solid var(--line);padding:26px 32
 footer.sia-foot b{color:var(--navy-dark)}
 
 @media(max-width:880px){
-  .topnav a:not(.home):not(.active){display:none}
+  .topbar{padding:0 14px}
+  .topnav{overflow-x:auto;max-width:62vw;scrollbar-width:none}
+  .topnav::-webkit-scrollbar{display:none}
+  .nav-menu{position:fixed;left:8px;right:8px;min-width:0;width:auto}
   .wrap{padding:24px 18px 60px}
   .grid-2,.grid-3{grid-template-columns:1fr}
   .compliance-split{grid-template-columns:1fr!important}

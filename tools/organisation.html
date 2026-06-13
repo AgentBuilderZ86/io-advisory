@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Organisation Cosumar — Sia × Cosumar</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/sia.css">
+<style>
+.dir-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.dir-tab{font-size:.82rem;font-weight:700;padding:9px 15px;border-radius:9px;border:1.5px solid var(--line2);background:#fff;color:var(--muted);cursor:pointer;transition:.16s;display:inline-flex;align-items:center;gap:7px}
+.dir-tab:hover{color:var(--navy)}
+.dir-tab.on{background:var(--navy-dark);color:#fff;border-color:transparent}
+.toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.toolbar .search{max-width:320px}
+/* arbre */
+.tree{margin-top:6px}
+.onode{position:relative}
+.okids{margin-left:26px;padding-left:18px;border-left:2px solid var(--line);overflow:hidden;transition:.2s}
+.onode.collapsed > .okids{display:none}
+.obox{display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px 12px;background:#fff;border:1px solid var(--line);border-left:5px solid var(--navy);border-radius:11px;padding:11px 14px;margin:7px 0;box-shadow:var(--shadow);position:relative}
+.obox.dim{opacity:.32}
+.obox .otoggle{position:absolute;left:-31px;top:14px;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line2);background:#fff;cursor:pointer;font-size:.7rem;color:var(--muted);display:flex;align-items:center;justify-content:center;z-index:2;padding:0}
+.obox .otoggle:hover{border-color:var(--teal);color:var(--teal-dark)}
+.obox .otop{display:flex;align-items:center;gap:9px;flex-wrap:wrap;width:100%}
+.obox .orole{font-weight:700;font-size:.9rem;color:var(--navy-dark);line-height:1.25}
+.obox .oeff{font-family:'Syne',sans-serif;font-weight:800;font-size:.72rem;color:#fff;background:var(--navy2);padding:2px 9px;border-radius:11px;white-space:nowrap}
+.mk-dot{width:11px;height:11px;border-radius:50%;display:inline-block;border:1.5px solid #fff;box-shadow:0 0 0 1px var(--line2)}
+.opeople{display:flex;flex-wrap:wrap;gap:5px;width:100%}
+.pchip{font-size:.74rem;font-weight:500;background:var(--cream);color:var(--text);border:1px solid var(--line);border-radius:7px;padding:2px 8px}
+.pchip.vac{background:rgba(229,165,10,.13);color:#9a7308;border-color:transparent;font-style:italic}
+.pchip mark{background:rgba(0,168,150,.28);border-radius:3px;padding:0 1px}
+.onote{font-size:.74rem;color:var(--muted);font-style:italic;width:100%;line-height:1.4}
+.st-chip{font-size:.66rem;font-weight:700;padding:2px 8px;border-radius:11px;text-transform:uppercase;letter-spacing:.3px}
+.legend2{display:flex;gap:14px;flex-wrap:wrap;font-size:.74rem;color:var(--muted);align-items:center}
+.legend2 b{color:var(--navy-dark)}
+.legend2 .ld{display:inline-flex;align-items:center;gap:6px}
+.swatch{width:13px;height:13px;border-radius:3px;display:inline-block}
+.uc-chip{font-size:.7rem;font-weight:600;padding:2px 8px;border-radius:11px;background:rgba(0,168,150,.12);color:var(--teal-dark);border:1px solid transparent;cursor:pointer}
+.uc-chip.on{background:var(--teal);color:#fff}
+.oacts{margin-left:auto;display:flex;gap:3px}
+.oacts button{background:transparent;border:1px solid var(--line2);border-radius:6px;cursor:pointer;font-size:.74rem;width:24px;height:24px;color:var(--muted);transition:.15s}
+.oacts button:hover{border-color:var(--teal);color:var(--teal-dark);background:var(--cream)}
+.obox.editing{flex-direction:column;border:1.5px solid var(--teal);box-shadow:0 0 0 3px rgba(0,168,150,.12)}
+.efields{width:100%}
+.efields label{margin-top:9px}
+.efields .erow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+@media(max-width:600px){.efields .erow{grid-template-columns:1fr}}
+@media(max-width:700px){.okids{margin-left:12px;padding-left:12px}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="brand-dot"></span><span class="brand-name">Sia<b>·</b>Cosumar</span><span class="brand-sub">Organisation</span></div>
+  <nav class="topnav"></nav>
+</div>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="flex between center wrap-f">
+      <div>
+        <div class="eyebrow">🏢 Phase 2 · Diagnostic organisationnel</div>
+        <h1 class="page-title">Organisation Cosumar</h1>
+      </div>
+      <button class="btn ghost" onclick="exportCSV()">⬇ Export CSV</button>
+    </div>
+    <p class="page-sub">Organigrammes interactifs des directions Cosumar, reconstitués à partir des organigrammes fournis. Repliez/dépliez les branches, recherchez une personne ou un poste, et visualisez effectifs, postes vacants, ETP additionnels et prestations. <b>Base de contextualisation</b> pour adapter les parcours, processus et use cases à l'organisation réelle. Postes <b>éditables</b> (mode édition) et <b>reliés aux use cases IA</b> (🤖).</p>
+  </div>
+
+  <div class="kpi-row" id="kpis"></div>
+
+  <div class="dir-tabs" id="dirTabs"></div>
+
+  <div class="toolbar">
+    <input class="search" id="search" placeholder="🔍 Rechercher un nom ou un poste…" oninput="onSearch(this.value)">
+    <button class="btn ghost sm" onclick="expandAll()">⊞ Tout déplier</button>
+    <button class="btn ghost sm" onclick="collapseAll()">⊟ Replier</button>
+    <button class="btn ghost sm" id="editBtn" onclick="toggleEdit()">✏️ Mode édition</button>
+    <button class="btn ghost sm" id="resetBtn" style="display:none;color:var(--red);border-color:rgba(224,84,78,.4)" onclick="resetData()">↺ Source</button>
+    <span class="legend2" style="margin-left:auto" id="legend"></span>
+  </div>
+
+  <div class="tree" id="tree"></div>
+</div>
+
+<footer class="sia-foot">
+  <div><b>Sia × Cosumar</b> · Organisation & dimensionnement</div>
+  <div>Données transcrites des organigrammes Cosumar · Confidentiel</div>
+</footer>
+<div id="toast"></div>
+<script src="../assets/sia.js"></script>
+<script>
+// ---- Statuts & marqueurs ----
+const STATUS={
+  exist:{l:'Existant',c:'#1F4E79'},
+  interim:{l:'Intérim / prestation',c:'#8593a8'},
+  etpadd:{l:'ETP additionnel',c:'#E0544E'},
+  apourvoir:{l:'À pourvoir à terme',c:'#9aa6b8'},
+  vacant:{l:'Vacant',c:'#E5A50A'},
+  prest:{l:'Prestation externe',c:'#9b59b6'}
+};
+const MARKS={r:{c:'#E0544E',l:'Poste critique (source)'},y:{c:'#E5A50A',l:'Poste sensible (source)'}};
+
+// helpers de construction
+function P(...names){ return names.map(n=>({n})); }                 // personnes pourvues
+const VAC={n:'(Vacant)',vac:true};
+
+// ============================ DONNÉES ============================
+const DATA={
+ sc:{label:'Supply Chain & Commercial',icon:'📦',
+  root:{r:"Direction Supply Chain & Commercial",
+   k:[
+    {r:"Direction Logistique",k:[
+      {r:"Amont — Manager Transport Groupe",e:"1",p:P("Mohammed OKAIL"),k:[
+        {r:"Entreposage Stock Amont",k:[
+          {r:"Gestionnaire de Flux Sucre Brut et Charbon",e:"1",p:P("Abdellatif MAHOUH")},
+          {r:"Gestionnaire de Stocks Consommables",e:"1",p:P("Lahoucine TALBI"),k:[
+            {r:"Magasinier",e:"3",p:P("Adil CHOUKKAIRI","Yassine ADAAMOUNE","Hamza AGUYAM")}
+          ]},
+          {r:"Gestionnaire des Équipements de Stockage",e:"1",p:P("ELHassan MANSSOURI")},
+          {r:"Chef de Poste Stockage Sucre Brut et Charbon",e:"7",p:P("Abdelmalek BEZZIZ","Mohammed ELBASITY","Soufiane MOUSSAFI","Jamal BELQANOUFI","Said BOUTASS","Ayoub BOUAIBI","Hamza BY")}
+        ]},
+        {r:"Transport Amont",k:[
+          {r:"Coordinateur Logistique Sucre Brut et Combustibles",e:"1",p:P("Youness ESSALAK EL OURRAK")},
+          {r:"Coordinateur Logistique Vrac et Coproduits",e:"1",p:P("Mehdi BOUJROUF")}
+        ]}
+      ]},
+      {r:"Aval — Manager Entreposage",e:"1",p:P("Mounir LAMHAMDI"),k:[
+        {r:"Entreposage Stock PF & by-products / Magasins",k:[
+          {r:"Chargé Infrastructures et QHSE",e:"1",p:P("Mostafa EL GABBOUHI")},
+          {r:"Plateforme Casablanca Centrale et Maamoura 4",k:[
+            {r:"Chef d'équipe Casablanca Centrale",e:"2",p:P("Tarik EL YAZYDY","Ayoub LOUZI")},
+            {r:"Chef d'équipe Maamoura 4",e:"2",p:P("Jalal SABTAN","Mahfoud EL MELIANY")},
+            {r:"Gestionnaire de Stock",e:"1",p:P("Ghita BOUZIDI")}
+          ]},
+          {r:"Entrepôts",k:[
+            {r:"Magasinier Entrepôts",e:"5",p:P("Driss AMALE","Hamza FARSAOUI","Kamal RYAMI","El Mehdi MOURTAZIK","Ayman EL HOUCINI")}
+          ]},
+          {r:"Magasiniers des agences commerciales",k:[
+            {r:"Magasinier",e:"1",p:P("Ayoub GHAFOUR")},
+            {r:"Magasinier",e:"1",p:P("Youssef LAHLIMI")},
+            {r:"Magasinier",e:"1",p:P("Hicham AMIRY")},
+            {r:"Magasinier",e:"1",p:P("Abdeslam AIT TALEB")},
+            {r:"Magasinier",e:"1",p:P("Abdelaziz LAMHADI")},
+            {r:"Magasinier",e:"1",p:P("Mounir ARABI")}
+          ]},
+          {r:"Contrôle & manutention d'expédition",e:"~80",st:"interim",no:"≈80 (permanents / prestation) — détail partiel sur l'organigramme source"}
+        ]},
+        {r:"Transport clients / agences",k:[
+          {r:"Responsable du Transport Produits Finis",e:"1",p:P("Brahim MOUH"),k:[
+            {r:"Coordinateur Transport et Export",e:"1",p:P("Younes RADI")},
+            {r:"Coordinateur Transport PF",e:"2",p:[{n:"Hamza HAFID"},VAC],no:"+1 ETP (idem Hafid)"},
+            {r:"Agent Administratif Expédition",e:"3",p:P("Abdel Ilah ETTABAA","El Arbi MZIOUED","Meriem ROUKBI")}
+          ]}
+        ]}
+      ]}
+    ]},
+    {r:"Planification & Pilotage Performance — Manager Planification et Pilotage des Flux",e:"1",p:P("Ayoub MAHMOUD"),k:[
+      {r:"Pilotage et performance",k:[
+        {r:"Chargé de la Performance Supply Chain et du Suivi Budgétaire",e:"1",p:P("Amal EL YAQINE")},
+        {r:"Chargé du Contrôle des Prestations et des Factures",e:"1",p:P("Nada EL OTMANI")}
+      ]},
+      {r:"Flux amont",k:[
+        {r:"Chargé de la Planification",e:"1",p:P("Ibtissam LACHIBI")},
+        {r:"+1 ETP",e:"1",st:"etpadd",no:"ETP additionnel à prévoir"}
+      ]},
+      {r:"Flux aval",k:[
+        {r:"Coordinateur des Projets Logistiques",e:"1",p:P("Oussama SAHMOUNE")},
+        {r:"+1 ETP",e:"1",st:"etpadd",no:"ETP additionnel à prévoir"}
+      ]}
+    ]}
+   ]}
+ },
+
+ fin:{label:'Finance & Contrôle de Gestion',icon:'💰',
+  root:{r:"Directeur Général Adjoint des Finances et du Contrôle de Gestion Groupe",e:"1",p:P("Jaafar EL AMRANI JOUTEY"),
+   k:[
+    {r:"Office Manager",e:"1",p:P("Farida LFATHI"),k:[
+      {r:"Agent Administratif",e:"1",p:P("Chaimae OUADINANE")}
+    ]},
+    {r:"Responsable Actes Sociaux",e:"1",p:P("Khadija BOUREZGI"),k:[
+      {r:"Juriste",e:"1",p:P("Fatima Zahraa ZIYATI")}
+    ]},
+    {r:"Directeur Adjoint de la Trésorerie et du Financement",e:"1",p:P("Abdelaziz ECHBEL"),k:[
+      {r:"Cadre Chargée de la Trésorerie Groupe",e:"1",p:P("Nidaa Dine")},
+      {r:"Assistant Trésorerie",e:"1",p:P("Soufiane SADQI")},
+      {r:"Chargé du Reporting, Analyse, Devises et Financement",e:"1",p:[VAC],st:"vacant"},
+      {r:"Caissier",e:"2",p:P("Berrouayene SMAHI","Aziz EL HARNANE")}
+    ]},
+    {r:"Directeur Contrôle de Gestion Groupe",e:"1",p:P("Rachid ABOULFADL"),k:[
+      {r:"Chef de Division CG Cosumar SA et Consolidation",e:"1",p:P("Khalid AIT MESKOUR")},
+      {r:"Chef de Division CG Filiales et Consolidation",e:"1",p:P("Meryem CHAAIBI")},
+      {r:"Contrôleur de Gestion Senior",e:"1",p:P("Manal SLITNI AMGHARI")},
+      {r:"Contrôleur de Gestion Senior",e:"1",p:P("Yassine Wakrim")},
+      {r:"Contrôleur de Gestion",e:"1",p:P("Soumaya ARROUB")},
+      {r:"Contrôleur de Gestion Junior",e:"1",p:P("Hamza LAKHDARI")}
+    ]},
+    {r:"Directeur Adjoint de la Comptabilité Générale et Fiscalité",e:"1",p:[VAC],st:"vacant",k:[
+      {r:"Chef de Service Comptabilité Générale",e:"1",p:P("Brahim CHAKIR"),k:[
+        {r:"Agent Comptable — Suivi des immobilisations et Divers",e:"2",p:P("Youssef AIT MALEM","Yassine AFFIRAH")},
+        {r:"Cadre Chargé des Arrêtés Comptables Surac & Sucrunion",e:"1",p:P("Rachid EL GHRIB")},
+        {r:"Agent Comptable — Fiscalité et Suivi des immobilisations",e:"1",p:P("Brahim EL HATMI")},
+        {r:"Agent Comptable — Interco et Divers",e:"1",p:P("Hicham MESSID")},
+        {r:"Agent Comptable — Rapprochement Bancaire",e:"1",p:P("Fatine EL MOUNKIR")},
+        {r:"Agent Comptable — Suivi Fiscalité",e:"1",p:P("Siham RIZK")},
+        {r:"Agent Comptable — Comptabilité Matières",e:"3",p:P("Yassine EL KHALLAF","Khalid OUMAS","Mustapha MAZIGHI")}
+      ]}
+    ]},
+    {r:"Chef de Service Comptabilité Tiers et Fournisseur",e:"1",p:P("Karim BENMIRA"),k:[
+      {r:"Cadre Chargé de la Comptabilité Banque et Analyses des Comptes de Comptabilité Tiers",e:"1",p:P("Abdelilah EL ALAMI")},
+      {r:"Agent Comptable — Comptabilité Clients",e:"1",p:P("Youness LAARABI")},
+      {r:"Cadre Chargé de la Comptabilité Fournisseur",e:"1",p:P("Abderrahim ZRHARI"),k:[
+        {r:"Agent Comptable — Comptabilité Fournisseurs",e:"3",p:P("El Mehdi ATIR","Hicham BOULOUBANE","Abdelkrim HOURANE")},
+        {r:"Agent Comptable — Comptabilité Fournisseurs Étrangers",e:"1",p:P("Alaa LAMKHAYAR")},
+        {r:"Agent Comptable — Contrôle des Factures",e:"5",p:P("Chakib AJRAOUI","Mosaab BOUDHINE","Nezha BENSLIMANE","Chaimae AIT ATMANE","Chaimae HILLI")}
+      ]}
+    ]}
+   ]}
+ },
+
+ dsi:{label:'Systèmes d\'Information & Digital',icon:'💻',
+  root:{r:"Directeur des Systèmes d'Information et de la Transformation Digitale",e:"1",p:P("Amine LAHBICHI"),m:"r",
+   k:[
+    {r:"Gestionnaire Administrative",e:"1",p:P("Ibtissam NEFAA"),m:"y"},
+    {r:"Responsable Sécurité Systèmes d'Information (RSSI)",st:"prest",p:[{n:"Prestation",vac:true}],no:"Prestation — backuped by Orange · + contrats de backup"},
+    {r:"Responsable Infrastructures SI",e:"1",p:P("Rachid FATHALLAH"),m:"r",k:[
+      {r:"Gestionnaire du Helpdesk",e:"2",p:P("Hamid EL ALAOUI","Amine EL YAAQOUBI")},
+      {r:"Administrateur Réseaux et Télécom",e:"1",p:P("Anouar OULAD-SAIAD")},
+      {r:"Administrateur des Systèmes et Sécurité",e:"1",p:[VAC],st:"vacant"},
+      {r:"Relais SI",e:"5",p:P("Yassine BELLAFKIH (Sidi Bennour)","Mohammed JADDAR (Zaio)","Hicham FAKHOURI (Suta)","Hassan KITA (Surac KSB)","Taoufik ABOUTIR (Surac MBK)")}
+    ]},
+    {r:"Responsable BI & Data",e:"1",p:P("Soukaina BOUKIR"),m:"y",k:[
+      {r:"Consultant BI & Data",e:"1",p:[{n:"Omar MALKI (Vacant)",vac:true}],st:"vacant"},
+      {r:"Data Scientist",e:"2",p:P("Hajar SOULAIMANI","Meriem EL MOURABIT")}
+    ]},
+    {r:"Responsable Projets IT et Transformation Digitale",e:"1",p:P("Anouar EL KHALFI"),k:[
+      {r:"Cadre Chargé du Service Desk",e:"1",p:P("Amine BOUHAFSA")},
+      {r:"Cadre Chargé du Monitoring IT",e:"1",p:P("Hassan KERZAZI"),m:"r"},
+      {r:"Chargé AMOA IT",e:"1",p:[VAC],st:"vacant"},
+      {r:"DevSecOps",e:"1",p:[VAC],st:"vacant"}
+    ]},
+    {r:"Responsable P2P & CRM",e:"1",p:P("Amine MOUSTARHIM")},
+    {r:"Responsable Centre de Compétences SAP",e:"1",p:[VAC],st:"vacant",k:[
+      {r:"Chef de projet SAP",e:"1",p:[VAC],st:"vacant"},
+      {r:"Consultant Fonctionnel SAP",e:"2",p:[{n:"Amal BAHAT"},{n:"Houssam EL OUARDI"}],m:"y"},
+      {r:"Consultant Technique SAP",e:"1",p:P("Soukaina OUSGANE")}
+    ]},
+    {r:"Responsable Innovation Digitale et IA",e:"1",p:P("Mohamed MAALAININE")}
+   ]}
+ },
+
+ raf:{label:'Industrie — Raffinerie (Bilan)',icon:'🏭',
+  root:{r:"Directeur Industriel du Groupe",e:"1",p:P("Abdelmotalib EL ABBADI"),
+   k:[
+    {r:"Directeur de la Raffinerie Casablanca",e:"1",p:P("Abdelilah EL YOUNOUSSI"),k:[
+      {r:"Responsable Bilan et Gestion Industrielle",e:"1",p:P("Issam GHILALI"),k:[
+        {r:"Agent de Maîtrise",e:"1",p:P("Zakaria BENHMIDA")},
+        {r:"Gestionnaire de Flux Sucre Brut et Charbon",e:"1",p:P("Abdellatif MAHOUH")},
+        {r:"Gestionnaire de Stocks Consommables",e:"1",p:P("Lahoucine TALBI"),k:[
+          {r:"Magasinier",e:"4",p:P("Adil CHOUKKAIRI","Yassine ADAAMOUNE","Hamza AGUYAM","Abderrazak MOURID")}
+        ]},
+        {r:"Gestionnaire des Équipements de Stockage",e:"1",p:P("ELHassan MANSSOURI")},
+        {r:"Chef de Poste Stockage Sucre Brut et Charbon",e:"7",p:P("Abdelmalek BEZZIZ","Mohammed ELBASITY","Soufiane MOUSSAFI","Jamal BELQANOUFI","Said BOUTASS","Ayoub BOUAIBI","Hamza BY")}
+      ]}
+    ]}
+   ]}
+ },
+
+ chauf:{label:'Industrie — Chaufferie',icon:'🔥',
+  root:{r:"Directeur Industriel du Groupe",e:"1",p:P("Abdelmotalib EL ABBADI"),
+   k:[
+    {r:"Directeur de la Raffinerie Casablanca",e:"1",p:P("Abdelilah EL YOUNOUSSI"),k:[
+      {r:"Chef de Division de l'Exploitation Centrale Chaufferie",e:"1",p:P("Khalid OMARI"),k:[
+        {r:"Cadre Chargé d'Exploitation Centrale Chaufferie",e:"1",p:P("Youssef DAANOUNE"),k:[
+          {r:"Chef de Poste Exploitation Centrale Chaufferie",e:"3",p:P("Khalid RAMRAM","Abdellah SAEL","Zakaria SAHIR"),k:[
+            {r:"Chef d'équipe Exploitation Centrale Chaufferie",e:"3",p:P("Abderrahim EL HISSOUF","Abdelhak EL HIANI","Abdellah FAQDANI"),k:[
+              {r:"Technicien Chaufferie",e:"12",p:P("Taoufik EDDOURHRI","Salaheddine AEKOKY","Zakaria BELATAF","Abdellah HAMDI","Mohammed ABOUARAB","Rachid HARAFI","Badr TOUIL","Mustapha BOUTFOUST","Abdlghani KORAIBAN","Hassan BELAININE","Mouad HAOUASSE","Hicham BENHSSI")},
+              {r:"Technicien Utilités",e:"3",p:P("Kamal AOUDILI"),no:"Détail partiel sur l'organigramme source"}
+            ]}
+          ]}
+        ]}
+      ]}
+    ]},
+    {r:"+1 ETP polyvalent",st:"etpadd",no:"ETP additionnel à prévoir"}
+   ]}
+ },
+
+ suc:{label:'Industrie — Sucrerie (Campagne)',icon:'🍬',
+  note:"Dimensionnement en période de campagne (ETP). Le « Directeur Usine » et ses fonctions sont rattachés au Directeur de la Sucrerie (regroupement des 2 vues de l'organigramme source).",
+  root:{r:"Directeur Industriel du Groupe",e:"1 ETP",
+   k:[
+    {r:"Directeur des sucreries Sidi Bennour et Suta / Directeur de la Coordination Technique des Sucreries (par intérim)",e:"+1 ETP",st:"etpadd",k:[
+      {r:"Directeur de la Sucrerie",e:"1 ETP",k:[
+        {r:"Stocks et flux",k:[
+          {r:"Responsable Gestion de Stocks et Flux",e:"1 ETP",k:[
+            {r:"Gestionnaire de Stock PF",e:"3 ETP"},
+            {r:"Magasinier PDR",e:"3 ETP"},
+            {r:"Agent Bureau des Ventes",e:"1 ETP"},
+            {r:"Agent Bureau de Caisse",e:"1 ETP"},
+            {r:"Cariste",e:"3 ETP"},
+            {r:"Intérim ou prestation ?",st:"interim",no:"Arbitrage à trancher"}
+          ]}
+        ]},
+        {r:"QHSE & Laboratoire",k:[
+          {r:"Responsable QHSE et Laboratoires",e:"1 ETP",k:[
+            {r:"Laboratoire de contrôle",k:[
+              {r:"Laborantin",e:"3 ETP"},
+              {r:"Aide Laborantin",e:"12 ETP",st:"apourvoir"}
+            ]},
+            {r:"Laboratoire de Réception B&CàS",k:[
+              {r:"Laborantin",e:"3 ETP"},
+              {r:"Aide Laborantin",e:"6 ETP",st:"apourvoir",no:"4 décolletage · 2 chaîne d'analyse"}
+            ]},
+            {r:"Animateur HSE",e:"1 ETP"},
+            {r:"Agent Pont Bascule — intrants et produits",e:"2 ETP",st:"etpadd"},
+            {r:"Agent Pont Bascule — Centre de réception",e:"2 ETP",st:"etpadd"}
+          ]}
+        ]},
+        {r:"Relais",k:[
+          {r:"Relais RH",e:"1 ETP"},
+          {r:"Relais SI",e:"1 ETP"},
+          {r:"Relais CI & RM",e:"0,5 ETP"},
+          {r:"Relais CdG",e:"0,5 ETP"}
+        ]},
+        {r:"Directeur Usine",e:"1 ETP",k:[
+          {r:"Ingénierie & Pilotage",k:[
+            {r:"Ingénieur Pilotage Process",e:"1 ETP"},
+            {r:"Les Polyvalents",st:"etpadd",no:"1 ETP four à chaux+épuration+évaporation · 1 ETP lavage extraction/déchargement · 1 ETP chaufferie et centrale · 1 ETP cristallisation · 1 ETP électrique et régulation"}
+          ]},
+          {r:"Conditionnement",no:"*2 lignes pour 300t · **1 ligne pour 100t",k:[
+            {r:"Resp. Conditionnement",e:"1 ETP"},
+            {r:"Chef de Poste",e:"3 ETP"},
+            {r:"Machine 2KG *",k:[
+              {r:"Conducteurs",e:"3 ETP"},{r:"Nettoyage",e:"3 ETP"},{r:"Mise en caisse",e:"6 ETP"},
+              {r:"Fardelage",e:"6 ETP"},{r:"Aide",e:"3 ETP"},{r:"Cariste",e:"3 ETP"}
+            ]},
+            {r:"Machine Pain **",k:[
+              {r:"Conducteurs",e:"3 ETP"},{r:"Aide habilleuse",e:"3 ETP"},{r:"Nettoyage",e:"3 ETP"},
+              {r:"Mise en caisse",e:"9 ETP"},{r:"Cariste",e:"3 ETP"}
+            ]}
+          ]},
+          {r:"Fabrication",k:[
+            {r:"Responsable Fabrication",e:"1 ETP"},
+            {r:"Chef de Poste",e:"3 ETP"},
+            {r:"Avant",k:[
+              {r:"Surveillant Fabrication Avant",e:"3 ETP"},
+              {r:"Déchargement, Stock",k:[
+                {r:"Tech. Conducteur Fabrication",e:"4 ETP"},
+                {r:"Pers. Stockage",e:"2 ETP"},{r:"Pers. Déstockage",e:"3 ETP"},
+                {r:"Équipe Nettoyage",e:"4 ETP"},{r:"Graisseur",e:"1 ETP"}
+              ]},
+              {r:"Lavage",k:[
+                {r:"Tech. Conducteur Fabrication",e:"3 ETP"},{r:"Aide Tech. Fabrication",e:"3 ETP"}
+              ]},
+              {r:"Épuration",k:[
+                {r:"Tech. Conducteur Fabrication",e:"3 ETP"},{r:"Aide Tech. Fabrication",e:"9 ETP"}
+              ]},
+              {r:"Four à chaux",k:[
+                {r:"Tech. Conducteur Fabrication",e:"3 ETP"},{r:"Aide Tech. Fabrication",e:"6 ETP"}
+              ]},
+              {r:"Extraction",k:[
+                {r:"Tech. Conducteur Fabrication",e:"6 ETP"},
+                {r:"Tech. Coupe Racine",e:"3 ETP"},{r:"Tech. Coupe Racine",e:"2 ETP"},
+                {r:"Aide Tech. Diffusion",e:"3 ETP"}
+              ]},
+              {r:"Évaporation",k:[
+                {r:"Tech. Conducteur Fabrication",e:"3 ETP"},{r:"Aide Tech. Fabrication",e:"3 ETP"}
+              ]},
+              {r:"Sécherie",k:[
+                {r:"Tech. Conducteur Fabrication",e:"3 ETP"},{r:"Aide Tech. Fabrication",e:"3 ETP"}
+              ]},
+              {r:"Pelletisation",k:[
+                {r:"Tech. Conducteur Fabrication",e:"6 ETP"},{r:"Pers. Ensachage",e:"3 ETP"},
+                {r:"Pers. Pelletisation",e:"6 ETP"},{r:"Pers. Pour Empiler",e:"18 ETP"}
+              ]}
+            ]},
+            {r:"Arrière et Énergie",k:[
+              {r:"Surveillant Fabrication Arrière et Énergie",e:"3 ETP"},
+              {r:"Chaufferie",k:[
+                {r:"Tech. Conducteur Fabrication",e:"6 ETP"},{r:"Aide Tech. Fabrication",e:"12 ETP"}
+              ]},
+              {r:"Centrale Électrique",k:[
+                {r:"Tech. Conducteur Fabrication",e:"3 ETP"}
+              ]},
+              {r:"Cristallisation",k:[
+                {r:"Cuisson",k:[
+                  {r:"Tech. Conducteur Fabrication",e:"6 ETP"},{r:"Aide Tech. Fabrication",e:"6 ETP"}
+                ]},
+                {r:"Centrifugation",k:[
+                  {r:"Tech. Conducteur Fabrication",e:"3 ETP"},{r:"Aide Tech. Fabrication",e:"3 ETP"}
+                ]},
+                {r:"Séchage / Refroidissement / Tamisage",k:[
+                  {r:"Aide Tech. Fabrication",e:"3 ETP"}
+                ]},
+                {r:"Ensachage",k:[
+                  {r:"Aide Tech. Fabrication",e:"12 ETP"}
+                ]},
+                {r:"Stockage Silo",k:[
+                  {r:"Personnel (sur une ligne)",e:"3 ETP"}
+                ]},
+                {r:"Stockage Pile",k:[
+                  {r:"Personnel externe (3 shifts)",e:"24 ETP",st:"interim"}
+                ]}
+              ]}
+            ]}
+          ]},
+          {r:"Maintenance",k:[
+            {r:"Responsable Maintenance",e:"1 ETP"},
+            {r:"Responsable Maintenance Mécanique",e:"1 ETP",k:[
+              {r:"Chef d'Atelier Mécanique",e:"1 ETP",k:[
+                {r:"Interventions",k:[
+                  {r:"Mécanicien",e:"6 ETP"},{r:"Aide Mécanicien",e:"12 ETP",st:"interim"},{r:"Hydraulicien",e:"1 ETP",st:"interim"}
+                ]},
+                {r:"Chaudronnerie",k:[
+                  {r:"Chaudronniers",e:"61 ETP"},{r:"Tourneur",e:"1 ETP"},{r:"Tourneur",e:"2 ETP",st:"interim"}
+                ]}
+              ]}
+            ]},
+            {r:"Responsable Maintenance Électrique et Automatisme",e:"1 ETP",k:[
+              {r:"Chef d'atelier Électrique",e:"1 ETP",k:[
+                {r:"Électricien",e:"3 ETP"},{r:"Aide Électricien",e:"3 ETP",st:"interim"}
+              ]},
+              {r:"Chef d'atelier Automatisme",e:"1 ETP",k:[
+                {r:"Automaticien",e:"3 ETP"},{r:"Aide Automaticien",e:"3 ETP",st:"interim"}
+              ]}
+            ]},
+            {r:"Responsable Bureau des Méthodes",e:"1 ETP",k:[
+              {r:"Électricien",e:"2 ETP"},{r:"Mécanicien",e:"3 ETP"}
+            ]}
+          ]}
+        ]}
+      ]}
+    ]}
+   ]}
+ }
+};
+
+// ---- Catalogue use cases IA (partagé avec la roadmap) ----
+const UC_CATALOG={1:'Maintenance prédictive turbines',2:'Optimisation process sucrier',3:'Prévision récolte satellite',4:'Demand forecasting sucre',5:'OCR factures fournisseurs',6:'Chatbot RH CorpGPT',7:'Détection anomalies énergie',8:'Analyse contrats NLP',9:'People analytics & turnover',10:'Route optimization livraisons'};
+// Pré-câblage org ↔ UC (heuristique sur les intitulés de poste)
+function seedUC(){
+  const rules=[
+    [/innovation digitale et ia/i,[1,2,3,4,5,6,7,8,9,10]],
+    [/bi & data|data scientist/i,[4,9]],
+    [/centre de comp.tences sap|p2p & crm/i,[5]],
+    [/responsable maintenance$|chef d.atelier m.canique/i,[1]],
+    [/chaufferie|centrale .lectrique|.nergie/i,[7,1]],
+    [/comptabilit. fournisseur|contr.le des factures/i,[5]],
+    [/transport|coordinateur logistique|projets logistiques/i,[10]],
+    [/planification/i,[4]],
+    [/qhse|laboratoire/i,[]],
+    [/juriste|comptabilit. g.n.rale.*fiscalit.|actes sociaux/i,[8]]
+  ];
+  Object.keys(DATA).forEach(dk=>walk(DATA[dk].root,n=>{
+    if(n.uc) return;
+    for(const [re,ids] of rules){ if(ids.length && re.test(n.r||'')){ n.uc=ids.slice(); break; } }
+  }));
+}
+
+// ============================ ÉTAT & RENDU ============================
+let curDir='sc', query='', editMode=false, editingPath=null;
+let collapsed = new Set(store.get('org.collapsed', []));
+const ckey=(d,path)=>d+':'+path;
+
+// ---- Persistance des données (édition) ----
+function saveData(){ const o={}; Object.keys(DATA).forEach(k=>o[k]=DATA[k].root); store.set('org.data',o); }
+(function loadData(){
+  const saved=store.get('org.data',null);
+  if(saved){ Object.keys(saved).forEach(k=>{ if(DATA[k]) DATA[k].root=saved[k]; }); }
+  else seedUC();
+})();
+
+// ---- Résolution de nœud par chemin ('0', '0.1', '0.1.2'…) ----
+function resolve(path){ const parts=path.split('.').slice(1).map(Number); let n=DATA[curDir].root; for(const i of parts) n=n.k[i]; return n; }
+function resolveParent(path){ const parts=path.split('.').slice(1).map(Number); if(!parts.length) return null; let n=DATA[curDir].root; for(let i=0;i<parts.length-1;i++) n=n.k[parts[i]]; return {parent:n,idx:parts[parts.length-1]}; }
+
+function num(v){ const m=(''+(v==null?'':v)).match(/([\d.,]+)/); return m?parseFloat(m[1].replace(',','.')):0; }
+function effOf(n){ return n.e!=null?num(n.e):(n.p?n.p.length:0); }
+
+function walk(node,fn){ fn(node); (node.k||[]).forEach(c=>walk(c,fn)); }
+function stats(dirKey){
+  let etp=0,filled=0,vacant=0,interim=0,etpadd=0,nodes=0;
+  walk(DATA[dirKey].root,n=>{
+    nodes++;
+    etp+=effOf(n);
+    (n.p||[]).forEach(p=>{ p.vac?vacant++:filled++; });
+    if(n.st==='vacant') vacant+=Math.max(0,effOf(n)-((n.p||[]).filter(p=>p.vac).length));
+    if(n.st==='interim'||n.st==='prest') interim++;
+    if(n.st==='etpadd') etpadd+=effOf(n)||1;
+  });
+  return {etp,filled,vacant,interim,etpadd,nodes};
+}
+
+function renderKPIs(){
+  const s=stats(curDir);
+  document.getElementById('kpis').innerHTML=`
+    <div class="kpi navy"><div class="kpi-val">${Math.round(s.etp)}</div><div class="kpi-label">Effectif / ETP cartographiés</div></div>
+    <div class="kpi teal"><div class="kpi-val">${s.filled}</div><div class="kpi-label">Personnes nommées</div></div>
+    <div class="kpi gold"><div class="kpi-val">${s.vacant}</div><div class="kpi-label">Postes vacants</div></div>
+    <div class="kpi"><div class="kpi-val">${s.etpadd}</div><div class="kpi-label">ETP additionnels à prévoir</div></div>`;
+}
+
+function renderTabs(){
+  document.getElementById('dirTabs').innerHTML=Object.keys(DATA).map(k=>
+    `<button class="dir-tab ${k===curDir?'on':''}" onclick="setDir('${k}')">${DATA[k].icon} ${DATA[k].label}</button>`
+  ).join('');
+}
+function setDir(k){ curDir=k; renderTabs(); renderKPIs(); renderTree(); }
+
+function hl(txt){
+  if(!query) return (''+txt).replace(/</g,'&lt;');
+  const t=(''+txt).replace(/</g,'&lt;');
+  try{ return t.replace(new RegExp('('+query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig'),'<mark>$1</mark>'); }catch(e){ return t; }
+}
+function nodeMatches(n){
+  if(!query) return true;
+  const q=query.toLowerCase();
+  if((n.r||'').toLowerCase().includes(q)) return true;
+  if((n.no||'').toLowerCase().includes(q)) return true;
+  return (n.p||[]).some(p=>(p.n||'').toLowerCase().includes(q));
+}
+function subtreeHas(n){ return nodeMatches(n) || (n.k||[]).some(subtreeHas); }
+
+function ucChips(n,interactive){
+  if(!n.uc||!n.uc.length) return '';
+  return `<div class="opeople">`+n.uc.map(id=>interactive
+    ? `<a class="uc-chip" href="use-cases-ia.html" title="${UC_CATALOG[id]||''}">🤖 ${id}. ${UC_CATALOG[id]||''}</a>`
+    : `<span class="uc-chip">🤖 ${id}. ${UC_CATALOG[id]||''}</span>`).join('')+`</div>`;
+}
+function editForm(n,path){
+  const opt=(v,l,cur)=>`<option value="${v}" ${cur===v?'selected':''}>${l}</option>`;
+  const ppl=(n.p||[]).map(p=>p.n+(p.vac?' (vacant)':'')).join('\n');
+  const ucBtns=Object.keys(UC_CATALOG).map(id=>`<span class="uc-chip ${(n.uc||[]).includes(+id)?'on':''}" onclick="toggleUC('${path}',${id})">${id}. ${UC_CATALOG[id]}</span>`).join('');
+  return `<div class="obox editing" style="border-left-color:var(--teal)">
+    <div class="efields">
+      <label>Rôle / intitulé</label><input id="ef-r" value="${(n.r||'').replace(/"/g,'&quot;')}">
+      <div class="erow">
+        <div><label>Effectif / ETP</label><input id="ef-e" value="${(n.e==null?'':n.e).toString().replace(/"/g,'&quot;')}" placeholder="ex. 3 ou 3 ETP"></div>
+        <div><label>Statut</label><select id="ef-st">${opt('','— Existant','')}${Object.keys(STATUS).map(s=>opt(s,STATUS[s].l,n.st||'')).join('')}</select></div>
+        <div><label>Marqueur</label><select id="ef-m">${opt('','—',n.m||'')}${opt('r','🔴 Critique',n.m||'')}${opt('y','🟡 Sensible',n.m||'')}</select></div>
+      </div>
+      <label>Personnes (une par ligne · suffixe « (vacant) » si à pourvoir)</label><textarea id="ef-p" rows="2">${ppl.replace(/</g,'&lt;')}</textarea>
+      <label>Note</label><input id="ef-no" value="${(n.no||'').replace(/"/g,'&quot;')}">
+      <label>Use cases IA rattachés</label><div class="tag-row" style="display:flex;gap:6px;flex-wrap:wrap">${ucBtns}</div>
+      <div class="flex gap" style="margin-top:12px">
+        <button class="btn teal sm" onclick="saveEdit('${path}')">✓ Enregistrer</button>
+        <button class="btn ghost sm" onclick="editingPath=null;renderTree()">Annuler</button>
+      </div>
+    </div>
+  </div>`;
+}
+function nodeHTML(n,path){
+  if(query && !subtreeHas(n)) return '';
+  const kids=(n.k||[]).map((c,i)=>nodeHTML(c,path+'.'+i)).join('');
+  const hasKids=!!(n.k&&n.k.length);
+  const isColl=!query && collapsed.has(ckey(curDir,path));
+  if(editMode && editingPath===path){
+    return `<div class="onode"><div>${editForm(n,path)}</div><div class="okids">${kids}</div></div>`;
+  }
+  const st=n.st?STATUS[n.st]:null;
+  const border=st?st.c:(n.m?MARKS[n.m].c:'var(--navy)');
+  const eff=n.e!=null?`<span class="oeff" style="${st?'background:'+st.c:''}">${n.e}</span>`:'';
+  const mark=n.m?`<span class="mk-dot" style="background:${MARKS[n.m].c}" title="${MARKS[n.m].l}"></span>`:'';
+  const stChip=st?`<span class="st-chip" style="background:${st.c}22;color:${st.c}">${st.l}</span>`:'';
+  const people=(n.p&&n.p.length)?`<div class="opeople">${n.p.map(p=>`<span class="pchip ${p.vac?'vac':''}">${hl(p.n)}</span>`).join('')}</div>`:'';
+  const note=n.no?`<div class="onote">↳ ${hl(n.no)}</div>`:'';
+  const dim=query&&!nodeMatches(n)?'dim':'';
+  const toggle=hasKids?`<button class="otoggle" onclick="toggle('${path}')">${isColl?'+':'–'}</button>`:'';
+  const acts=editMode?`<div class="oacts">
+      <button title="Éditer" onclick="startEdit('${path}')">✎</button>
+      <button title="Ajouter un sous-poste" onclick="addChild('${path}')">＋</button>
+      ${path!=='0'?`<button title="Supprimer" onclick="delNode('${path}')">✕</button>`:''}
+    </div>`:'';
+  return `<div class="onode ${isColl?'collapsed':''}">
+    <div class="obox ${dim}" style="border-left-color:${border}">
+      ${toggle}
+      <div class="otop"><span class="orole">${hl(n.r)}</span>${eff}${mark}${stChip}${acts}</div>
+      ${people}${ucChips(n,!editMode)}${note}
+    </div>
+    <div class="okids">${kids}</div>
+  </div>`;
+}
+function renderTree(){
+  document.getElementById('tree').innerHTML=nodeHTML(DATA[curDir].root,'0');
+  const dn=DATA[curDir].note;
+  if(dn){ document.getElementById('tree').insertAdjacentHTML('afterbegin',`<div class="panel panel-pad" style="margin-bottom:14px;background:rgba(0,168,150,.05);border-color:rgba(0,168,150,.25)"><span class="muted" style="font-size:.82rem">ℹ️ ${dn}</span></div>`); }
+}
+function toggle(path){
+  const key=ckey(curDir,path);
+  collapsed.has(key)?collapsed.delete(key):collapsed.add(key);
+  store.set('org.collapsed',[...collapsed]); renderTree();
+}
+function expandAll(){ [...collapsed].forEach(k=>{ if(k.startsWith(curDir+':')) collapsed.delete(k); }); store.set('org.collapsed',[...collapsed]); renderTree(); }
+function collapseAll(){
+  // replier tout sauf la racine
+  function rec(n,path){ if(n.k&&n.k.length){ if(path!=='0') collapsed.add(ckey(curDir,path)); n.k.forEach((c,i)=>rec(c,path+'.'+i)); } }
+  rec(DATA[curDir].root,'0'); store.set('org.collapsed',[...collapsed]); renderTree();
+}
+function onSearch(v){ query=v.trim(); renderTree(); }
+
+// ---- Édition ----
+function toggleEdit(){ editMode=!editMode; editingPath=null; query=''; document.getElementById('search').value='';
+  document.getElementById('editBtn').classList.toggle('teal',editMode);
+  document.getElementById('editBtn').textContent=editMode?'✓ Terminer l\'édition':'✏️ Mode édition';
+  document.getElementById('resetBtn').style.display=editMode?'':'none';
+  renderTree();
+}
+function startEdit(path){ editingPath=path; renderTree();
+  const el=document.getElementById('ef-r'); if(el){ el.focus(); }
+}
+function saveEdit(path){
+  const n=resolve(path);
+  n.r=document.getElementById('ef-r').value.trim();
+  const e=document.getElementById('ef-e').value.trim(); n.e=e||undefined;
+  const st=document.getElementById('ef-st').value; n.st=st||undefined;
+  const m=document.getElementById('ef-m').value; n.m=m||undefined;
+  n.no=document.getElementById('ef-no').value.trim()||undefined;
+  const lines=document.getElementById('ef-p').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  n.p=lines.map(s=>{ const vac=/\(vacant\)/i.test(s); return {n:s.replace(/\s*\(vacant\)/i,'').trim()||'(Vacant)',vac}; });
+  if(!n.p.length) delete n.p;
+  editingPath=null; saveData(); renderKPIs(); renderTree(); toast('Poste mis à jour');
+}
+function toggleUC(path,id){ const n=resolve(path); n.uc=n.uc||[]; const i=n.uc.indexOf(+id); i<0?n.uc.push(+id):n.uc.splice(i,1);
+  // re-render seulement les boutons UC du formulaire
+  const box=document.querySelectorAll('.editing .uc-chip'); if(box.length){ box.forEach(b=>{ const cid=+b.textContent.split('.')[0]; b.classList.toggle('on',(n.uc||[]).includes(cid)); }); }
+  saveData();
+}
+function addChild(path){ const n=resolve(path); n.k=n.k||[]; n.k.push({r:'Nouveau poste',e:'1'}); collapsed.delete(ckey(curDir,path)); saveData(); editingPath=path+'.'+(n.k.length-1); renderKPIs(); renderTree(); }
+function delNode(path){ if(!confirm('Supprimer ce poste et ses sous-postes ?'))return; const pr=resolveParent(path); if(!pr)return; pr.parent.k.splice(pr.idx,1); if(!pr.parent.k.length) delete pr.parent.k; editingPath=null; saveData(); renderKPIs(); renderTree(); }
+function resetData(){ if(!confirm('Réinitialiser les organigrammes aux données source (perdre les modifications) ?'))return; store.set('org.data',null); location.reload(); }
+
+function renderLegend(){
+  document.getElementById('legend').innerHTML=
+    Object.values(STATUS).map(s=>`<span class="ld"><span class="swatch" style="background:${s.c}"></span>${s.l}</span>`).join('')+
+    `<span class="ld"><span class="mk-dot" style="background:${MARKS.r.c}"></span>critique</span>`+
+    `<span class="ld"><span class="mk-dot" style="background:${MARKS.y.c}"></span>sensible</span>`;
+}
+
+// ---- Export CSV ----
+function exportCSV(){
+  const rows=[['Direction','Niveau','Rôle','Effectif / ETP','Personnes','Statut','Use cases IA','Note']];
+  Object.keys(DATA).forEach(dk=>{
+    const dl=DATA[dk].label;
+    (function rec(n,lvl){
+      const people=(n.p||[]).map(p=>p.n+(p.vac?' (vacant)':'')).join(' ; ');
+      const uc=(n.uc||[]).map(id=>id+'. '+(UC_CATALOG[id]||'')).join(' | ');
+      rows.push([dl,lvl,n.r,n.e||'',people,n.st?STATUS[n.st].l:'',uc,n.no||'']);
+      (n.k||[]).forEach(c=>rec(c,lvl+1));
+    })(DATA[dk].root,0);
+  });
+  downloadCSV('Cosumar_Organisation.csv',rows);
+}
+
+// ---- Init ---- (le menu commun est injecté par sia.js)
+renderTabs(); renderKPIs(); renderLegend(); renderTree();
+</script>
+</body>
+</html>
