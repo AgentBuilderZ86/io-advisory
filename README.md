@@ -17,6 +17,7 @@ tools/
   executive-story.html            ← Premium : narration plein écran CODIR (10 slides) + export deck PDF
   corpgpt.html                    ← Premium : assistant IA conversationnel (RAG local sur la base mission)
   jumeau-usine.html               ← Premium : jumeau visuel de la sucrerie, UC cartographiés sur les équipements
+  organisation.html               ← Phase 2 : organigrammes interactifs Cosumar (Supply Chain, Finance & CG, DSI, Industrie) — effectifs, vacances, ETP cibles, recherche, export CSV
   process-mapping.html            ← Phase 2 : cartographie des parcours & processus Cosumar (étapes, systèmes, douleurs, UC IA), éditable + export CSV/Mermaid
   atelier-conception.html         ← Phase 3 : studio d'animation d'atelier (déroulé minuté, idéation + dot-voting, canvas use case, matrice impact/effort)
   monte-carlo.html                ← Premium : simulation probabiliste du portefeuille (P10/P50/P90)

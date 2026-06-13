@@ -147,8 +147,58 @@
     ks.forEach(k=>localStorage.removeItem(k));
     window.toast && window.toast('État mission réinitialisé');
   };
+  // ---- Navigation structurée par phases (menu commun à toutes les pages) ----
+  const NAV=[
+    {ph:'Phase 1 · Acculturation', items:[
+      {h:'acculturation.html',i:'🎓',l:'Acculturation & Formation'},
+      {h:'adoption-gamifiee.html',i:'🏆',l:'Adoption gamifiée · Champions'},
+    ]},
+    {ph:'Phase 2 · Diagnostic', items:[
+      {h:'dashboard-entretiens.html',i:'🎙️',l:'Dashboard Entretiens'},
+      {h:'organisation.html',i:'🏢',l:'Organisation Cosumar'},
+      {h:'process-mapping.html',i:'🗂️',l:'Parcours & Processus'},
+    ]},
+    {ph:'Phase 3 · Stratégie & Roadmap', items:[
+      {h:'use-cases-ia.html',i:'💡',l:'Use Cases IA'},
+      {h:'atelier-conception.html',i:'🎨',l:'Atelier de conception'},
+      {h:'jumeau-usine.html',i:'🏭',l:'Jumeau visuel usine'},
+      {h:'roi-business-case.html',i:'💰',l:'ROI & Business Case'},
+      {h:'monte-carlo.html',i:'🎲',l:'Simulateur Monte-Carlo'},
+      {h:'roadmap-builder.html',i:'🗺️',l:'Roadmap Builder'},
+    ]},
+    {ph:'Phase 4 · Operating Model', items:[
+      {h:'simulateur-coe.html',i:'🏛️',l:'Simulateur CoE'},
+    ]},
+    {ph:'Transversal', items:[
+      {h:'dashboard-copil.html',i:'📊',l:'Dashboard COPIL'},
+      {h:'conformite.html',i:'🛡️',l:'Conformité & Réglementation'},
+      {h:'compliance-copilot.html',i:'📋',l:'Compliance Copilot · AIPD'},
+      {h:'executive-story.html',i:'🎬',l:'Executive Story'},
+      {h:'corpgpt.html',i:'🤖',l:'CorpGPT'},
+    ]},
+  ];
+  function buildNav(){
+    const nav=document.querySelector('.topbar .topnav');
+    if(!nav) return;
+    const inTools=location.pathname.includes('/tools/');
+    const base=inTools?'':'tools/';
+    const hub=inTools?'../index.html':'index.html';
+    const cur=(location.pathname.split('/').pop()||'index.html');
+    const isHub=(cur===''||cur==='index.html');
+    let h=`<a href="${hub}" class="home${isHub?' active':''}">⬡ Hub</a>`;
+    NAV.forEach(g=>{
+      const activeIn=g.items.some(it=>it.h===cur);
+      h+=`<div class="nav-group${activeIn?' active':''}">`+
+         `<button type="button" class="nav-trigger">${g.ph}<span class="caret">▾</span></button>`+
+         `<div class="nav-menu">`+
+           g.items.map(it=>`<a href="${base}${it.h}"${it.h===cur?' class="on"':''}><span class="ni">${it.i}</span> ${it.l}</a>`).join('')+
+         `</div></div>`;
+    });
+    nav.innerHTML=h;
+  }
   // simple intersection reveal
   document.addEventListener('DOMContentLoaded',()=>{
+    buildNav();
     const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.style.opacity=1;e.target.style.transform='none';obs.unobserve(e.target);}}),{threshold:.06});
     document.querySelectorAll('[data-reveal]').forEach((el,i)=>{el.style.opacity=0;el.style.transform='translateY(16px)';el.style.transition=`opacity .5s ${i*.04}s, transform .5s ${i*.04}s`;obs.observe(el);});
   });
