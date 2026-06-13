@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CorpGPT — Sia × Cosumar</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/sia.css">
+<style>
+.cg-layout{display:grid;grid-template-columns:1fr 320px;gap:22px;align-items:start}
+.chat{display:flex;flex-direction:column;height:calc(100vh - 230px);min-height:520px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.chat-head{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px;background:linear-gradient(120deg,var(--navy-dark),var(--navy))}
+.cg-ava{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--teal),#048A7E);display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.2rem;box-shadow:0 0 16px rgba(0,168,150,.5)}
+.chat-head .ct{color:#fff;font-family:'Syne',sans-serif;font-weight:800}
+.chat-head .cs{color:rgba(255,255,255,.6);font-size:.74rem}
+.chat-head .live{margin-left:auto;font-size:.7rem;color:#5fd6c6;display:flex;align-items:center;gap:6px}
+.chat-head .live::before{content:'';width:7px;height:7px;border-radius:50%;background:#5fd6c6;box-shadow:0 0 8px #5fd6c6;animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.3}}
+.msgs{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;background:var(--cream)}
+.msg{display:flex;gap:11px;max-width:88%}
+.msg.user{align-self:flex-end;flex-direction:row-reverse}
+.msg .av{width:30px;height:30px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:700}
+.msg.bot .av{background:linear-gradient(135deg,var(--teal),#048A7E);color:#fff}
+.msg.user .av{background:var(--navy);color:#fff}
+.bubble{padding:12px 15px;border-radius:14px;font-size:.9rem;line-height:1.6}
+.msg.bot .bubble{background:#fff;border:1px solid var(--line);border-top-left-radius:4px;color:var(--text)}
+.msg.user .bubble{background:var(--navy);color:#fff;border-top-right-radius:4px}
+.bubble b{color:var(--navy-dark)}.msg.user .bubble b{color:#fff}
+.sources{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.src{font-size:.68rem;font-weight:600;padding:3px 9px;border-radius:14px;background:rgba(0,168,150,.1);color:var(--teal-dark);border:1px solid rgba(0,168,150,.2)}
+.typing{display:flex;gap:4px;padding:14px 16px}
+.typing span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:bounce 1.3s infinite}
+.typing span:nth-child(2){animation-delay:.18s}.typing span:nth-child(3){animation-delay:.36s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
+.suggest{display:flex;gap:8px;flex-wrap:wrap;padding:12px 18px;border-top:1px solid var(--line);background:#fff}
+.schip{font-size:.78rem;font-weight:600;padding:7px 13px;border-radius:18px;background:var(--cream);border:1px solid var(--line2);color:var(--navy);cursor:pointer;transition:.15s}
+.schip:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.inbar{display:flex;gap:10px;padding:14px 18px;border-top:1px solid var(--line);background:#fff}
+.inbar input{flex:1}
+.kb-item{padding:9px 0;border-bottom:1px solid var(--line);font-size:.82rem}
+.kb-item:last-child{border:none}
+.kb-item b{color:var(--navy-dark)}
+.guard{display:flex;gap:10px;align-items:flex-start;padding:11px;border-radius:10px;background:var(--cream);border:1px solid var(--line);margin-bottom:9px}
+.guard .gi{font-size:1.1rem}
+.guard .gt{font-weight:700;font-size:.8rem;color:var(--navy-dark)}
+.guard .gd{font-size:.74rem;color:var(--muted);line-height:1.4}
+.demo-note{font-size:.74rem;color:var(--muted);background:rgba(201,151,43,.1);border:1px solid rgba(201,151,43,.25);border-radius:9px;padding:9px 12px;margin-top:14px;line-height:1.5}
+@media(max-width:980px){.cg-layout{grid-template-columns:1fr}.chat{height:70vh}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="brand-dot"></span><span class="brand-name">Sia<b>·</b>Cosumar</span><span class="brand-sub">CorpGPT</span></div>
+  <nav class="topnav">
+    <a href="../index.html" class="home">← Hub</a>
+    <a href="executive-story.html">🎬 Story</a>
+    <a href="jumeau-usine.html">🏭 Jumeau</a>
+    <a href="corpgpt.html" class="active">CorpGPT</a>
+    <a href="use-cases-ia.html">Use Cases</a>
+    <a href="conformite.html">Conformité</a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="eyebrow">🤖 CorpGPT · Assistant IA souverain</div>
+    <h1 class="page-title">CorpGPT — l'assistant IA de Cosumar</h1>
+    <p class="page-sub">Démonstration de l'assistant conversationnel de la mission : interrogez la feuille de route, les use cases, le ROI, la conformité ou la gouvernance en langage naturel. Vendre l'IA… avec de l'IA.</p>
+  </div>
+
+  <div class="cg-layout">
+    <div class="chat">
+      <div class="chat-head">
+        <div class="cg-ava">✦</div>
+        <div><div class="ct">CorpGPT</div><div class="cs">Assistant de la mission Roadmap IA · FR / AR</div></div>
+        <div class="live">en ligne</div>
+      </div>
+      <div class="msgs" id="msgs"></div>
+      <div class="suggest" id="suggest"></div>
+      <div class="inbar">
+        <input id="inp" placeholder="Posez votre question… (ex. « Quel est le budget de la roadmap ? »)" onkeydown="if(event.key==='Enter')send()">
+        <button class="btn teal" onclick="send()">Envoyer ▸</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel panel-pad mb">
+        <h3 style="color:var(--navy-dark);margin-bottom:10px;font-size:1rem">🛡️ Garde-fous</h3>
+        <div class="guard"><div class="gi">🇲🇦</div><div><div class="gt">Souverain</div><div class="gd">Déploiement en environnement souverain marocain.</div></div></div>
+        <div class="guard"><div class="gi">📚</div><div><div class="gt">RAG maîtrisé</div><div class="gd">Réponses ancrées sur la base documentaire de la mission, avec sources.</div></div></div>
+        <div class="guard"><div class="gi">🧑</div><div><div class="gt">Human-in-the-loop</div><div class="gd">Aucune décision critique automatisée — l'humain valide.</div></div></div>
+        <div class="guard" style="margin-bottom:0"><div class="gi">🔐</div><div><div class="gt">Confidentialité</div><div class="gd">Pas de donnée personnelle ; filtres anti-fuite (DLP).</div></div></div>
+      </div>
+      <div class="panel panel-pad">
+        <h3 style="color:var(--navy-dark);margin-bottom:8px;font-size:1rem">📚 Base de connaissances</h3>
+        <div class="kb-item"><b>Mission & phases</b><div class="muted">18 semaines · 4 phases</div></div>
+        <div class="kb-item"><b>10 use cases IA</b><div class="muted">valeur, budget, vague, risques</div></div>
+        <div class="kb-item"><b>Roadmap & budgets</b><div class="muted">3 vagues · ~1,9 M MAD</div></div>
+        <div class="kb-item"><b>Conformité</b><div class="muted">CNDP · EU AI Act · souveraineté</div></div>
+        <div class="kb-item"><b>CoE & gouvernance</b><div class="muted">hub-and-spoke · RACI</div></div>
+        <div class="demo-note">⚠️ <b>Démonstration</b> — assistant local, sans connexion externe, à des fins d'illustration. En production : RAG souverain sur la base documentaire Cosumar, avec supervision humaine.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="../assets/sia.js"></script>
+<script>
+// ---------------- Knowledge base (RAG local) ----------------
+const KB=[
+ {k:["mission","objectif","but","quoi","resume","résumé","contexte","cosumar"],s:["Cadrage mission"],
+  a:"La mission <b>Sia × Cosumar</b> vise à élaborer la <b>feuille de route IA pluriannuelle</b> et à sensibiliser le management. Elle dure <b>18 semaines (4,5 mois)</b> et s'articule en <b>4 phases</b> : Acculturation, Diagnostic, Stratégie & Roadmap, Operating Model. Cosumar est l'opérateur sucrier leader au Maroc et une référence en Afrique."},
+ {k:["phase","phases","etapes","étapes","deroulement","déroulement","planning"],s:["4 phases"],
+  a:"Les <b>4 phases</b> :<br>• <b>Phase 1 — Acculturation</b> (S1-S4) : séminaire C-Level, 50 Champions IA, sessions 1-to-1.<br>• <b>Phase 2 — Diagnostic</b> (S3-S6) : 42 entretiens, audit SI, maturité IA & Data, benchmark.<br>• <b>Phase 3 — Stratégie & Roadmap</b> (S6-S11) : use cases, funnel, roadmap 3 vagues.<br>• <b>Phase 4 — Operating Model</b> (S12-S16) : CoE, gouvernance, Charte IA."},
+ {k:["roadmap","vague","vagues","trajectoire","budget total","enveloppe","cout total","coût total","combien"],s:["Roadmap 3 vagues"],
+  a:"La <b>roadmap</b> se déploie en <b>3 vagues</b> sur 36 mois :<br>• <b>Vague 1 — Quick Wins</b> (0-12 m) : ~490K MAD.<br>• <b>Vague 2 — Structurants</b> (12-24 m) : ~525K MAD.<br>• <b>Vague 3 — Transformants</b> (24-36 m) : ~860K MAD.<br>Enveloppe globale <b>~1,9 M MAD</b>, séquencée pour autofinancer les vagues suivantes."},
+ {k:["use case","use cases","cas usage","cas d'usage","combien de uc","liste","projets","initiatives"],s:["Portefeuille UC"],
+  a:"<b>10 use cases</b> ont été identifiés sur 8 directions : maintenance prédictive turbines, optimisation process sucrier, prévision récolte satellite, demand forecasting, OCR factures, <b>Chatbot RH CorpGPT</b>, détection anomalies énergie, analyse contrats NLP, people analytics, route optimization. Familles : ML, Prescriptive, GenAI, Cognitive, Analytical."},
+ {k:["maintenance","predictive","prédictive","turbine","turbines"],s:["UC1 · Industrie"],
+  a:"<b>Maintenance prédictive des turbines</b> (Industrielle, Build, Vague 2, 150-250K MAD) : modèles prédictifs sur signaux vibratoires/thermiques pour anticiper les pannes. Valeur : <b>+18% de disponibilité</b>, <b>-30% d'arrêts non planifiés</b>."},
+ {k:["demand","forecasting","prevision demande","prévision demande","stock","supply"],s:["UC4 · Supply Chain"],
+  a:"<b>Demand forecasting sucre</b> (Supply Chain, Buy, Vague 1, 100-200K MAD) : prévision de la demande intégrée à SAP IBP. Valeur : <b>-15% de coûts de stock</b>, précision <b>+25%</b>. Payback ~9 mois."},
+ {k:["ocr","facture","factures","fournisseur","fournisseurs","saisie"],s:["UC5 · Finance"],
+  a:"<b>OCR factures fournisseurs</b> (Financière, Buy, Vague 1, 50-100K MAD) : extraction automatique et rapprochement SAP MM/FI. Valeur : <b>-70% de temps de saisie</b>, ~12 000 factures/an. Payback ~6 mois."},
+ {k:["chatbot","rh","corpgpt","assistant","ressources humaines"],s:["UC6 · RH"],
+  a:"Je suis le <b>Chatbot RH CorpGPT</b> (RH, Build, Vague 1, 80-150K MAD) ! Assistant conversationnel en RAG sur les politiques RH, multilingue FR/AR. Valeur : <b>-40% de tickets RH niveau 1</b>, disponible 24/7. Risque CNDP traité par hébergement souverain et anonymisation."},
+ {k:["energie","énergie","anomalie","anomalies","consommation"],s:["UC7 · Industrie"],
+  a:"<b>Détection d'anomalies énergie</b> (Industrielle, Build, Vague 1, 100-200K MAD) : détection des dérives de consommation (vapeur, électricité). Valeur : <b>-8% de facture énergétique</b>. Payback ~10 mois."},
+ {k:["contrat","contrats","nlp","juridique","clause"],s:["UC8 · Juridique"],
+  a:"<b>Analyse de contrats NLP</b> (Juridique, Buy, Vague 2, 80-120K MAD) : extraction de clauses, échéances, risques. Valeur : <b>-50% de temps de revue</b>. Déployé en environnement souverain avec validation juriste."},
+ {k:["people","analytics","turnover","depart","départ","attrition"],s:["UC9 · RH"],
+  a:"<b>People analytics & turnover</b> (RH, Build, Vague 3, 120-200K MAD) : prédiction des risques de départ. <b>Risque élevé (EU AI Act, emploi)</b> : audit de biais, supervision humaine, dialogue social et transparence obligatoires."},
+ {k:["route","optimization","tournee","tournée","livraison","livraisons","transport","logistique"],s:["UC10 · Supply Chain"],
+  a:"<b>Route optimization livraisons</b> (Supply Chain, Buy, Vague 2, 150-300K MAD) : optimisation des tournées. Valeur : <b>-14% de coûts de transport</b> et réduction de l'empreinte carbone."},
+ {k:["process","procede","procédé","optimisation process","rendement","cristallisation","diffusion"],s:["UC2 · Industrie"],
+  a:"<b>Optimisation du process sucrier</b> (Industrielle, Build, Vague 3, 200-400K MAD) : IA prescriptive sur les paramètres du procédé (température, débit, pH). Valeur : <b>+2 pts de rendement d'extraction</b>."},
+ {k:["recolte","récolte","satellite","agricole","betterave","amont"],s:["UC3 · Amont"],
+  a:"<b>Prévision de récolte par satellite</b> (Amont Agricole, Buy, Vague 3, 300-500K MAD) : estimation des rendements par télédétection et ML. Valeur : prévision du tonnage <b>±8%</b> pour planifier le broyage."},
+ {k:["conformite","conformité","cndp","reglementation","réglementation","loi","09-08","rgpd","legal","légal"],s:["Conformité"],
+  a:"La conformité est traitée <b>by design</b> : <b>CNDP (loi 09-08)</b> et hébergement <b>souverain marocain</b> pour les données sensibles, alignement <b>Morocco AI 2030</b>. À l'international : <b>EU AI Act</b>, <b>RGPD</b>, UNESCO, ISO/IEC 42001 & 27001, NIST AI RMF. Chaque UC est classé par niveau de risque."},
+ {k:["eu ai act","risque","classification","niveau de risque","ai act"],s:["EU AI Act"],
+  a:"Selon l'<b>EU AI Act</b> : la plupart des UC sont à risque <b>minimal</b> ; OCR, CorpGPT RH et contrats NLP sont à risque <b>limité</b> (transparence) ; <b>People analytics est à risque élevé</b> (emploi, Annexe III) et déclenche des obligations renforcées (AIPD, audit de biais, supervision humaine)."},
+ {k:["souverain","souverainete","souveraineté","hebergement","hébergement","donnees","données","residence","résidence"],s:["Souveraineté"],
+  a:"Les <b>données critiques</b> (RH, secrets industriels) sont hébergées au <b>Maroc</b> de manière obligatoire. Classification : Public / Interne / Confidentiel / Critique, déterminant l'hébergement autorisé et le chiffrement. CorpGPT tourne en environnement souverain/privé."},
+ {k:["coe","centre","excellence","equipe ia","équipe ia","staffing","etp","organisation","gouvernance"],s:["CoE & gouvernance"],
+  a:"Le <b>Centre d'Excellence IA</b> suit un modèle <b>hub-and-spoke</b> (4-6 ETP) avec 4 rôles : Persuader, Informer, Standardiser, Innover. Gouvernance à 3 niveaux : <b>COPIL IA</b> (stratégie), comité opérationnel (delivery, go/no-go), comités métiers (besoins, adoption)."},
+ {k:["charte","principes","ethique","éthique","responsable"],s:["Charte IA"],
+  a:"La <b>Charte IA Cosumar</b> repose sur <b>8 principes</b> : conformité CNDP, souveraineté, human-in-the-loop, transparence, responsabilité, sécurité, équité, bien-être — alignés Morocco AI 2030, EU AI Act et UNESCO."},
+ {k:["maturite","maturité","diagnostic","score","niveau"],s:["Diagnostic maturité"],
+  a:"Le <b>diagnostic</b> évalue la maturité <b>IA</b> (8 dimensions × 5 niveaux) et <b>Data</b> (9 dimensions × 6 niveaux). Cosumar se situe à un niveau <b>émergent (~2,6/5)</b> avec une cible à <b>4,0</b>, à mi-chemin du benchmark de 14 opérateurs sucriers mondiaux."},
+ {k:["benchmark","concurrent","concurrents","operateurs","opérateurs","tereos","sudzucker"],s:["Benchmark"],
+  a:"Le <b>benchmark</b> couvre 14 opérateurs sucriers (Tereos, Südzucker, Illovo, Cristal Union, Raízen…). Les leaders (Südzucker ~3,8/5) misent sur la maintenance prédictive et le jumeau numérique. Cosumar vise à combler l'écart via sa roadmap."},
+ {k:["roi","retour","rentabilite","rentabilité","payback","valeur","build buy","gains"],s:["ROI & Business case"],
+  a:"Chaque UC dispose d'un <b>business case Build vs Buy</b> (VAN, payback, TCO, ROI). Les quick wins ont un <b>payback de 6 à 14 mois</b>. Un simulateur Monte-Carlo fournit la distribution probabiliste de la VAN du portefeuille (P10/P50/P90)."},
+ {k:["funnel","filtre","filtres","priorisation","selection","sélection","tri"],s:["Funnel 3 filtres"],
+  a:"Le <b>funnel à 3 filtres</b> : ① présélection collaborative (40-60 → 20-25 idées), ② qualification technique & ROI (Build/Buy/Borrow/Bot), ③ priorisation COPIL multicritère (valeur 30%, faisabilité 25%, impact 20%, complexité 15%, timeline 10%)."},
+ {k:["equipe","équipe","qui","consultant","consultants","zriouil","sia"],s:["Équipe Sia"],
+  a:"L'équipe Sia : <b>Adil Zriouil</b> (SM, lead), Louis Houngavou & Bertrand Boulin (Data & IA), Imane El Allam (Consultant Sr), Arsène Bonkoungou (Consultant), Romain Bignotti (Formateur). Advisory Board : D. Martineau, P. Leplatois, J. Bordron, L. Deloire."},
+ {k:["champions","formation","acculturation","seminaire","séminaire","cohorte","modules"],s:["Phase 1 · Formation"],
+  a:"La Phase 1 forme <b>50 Champions IA</b> en 3 cohortes × 6 modules (Fondamentaux IA/GenAI, Données, Idéation, IA responsable, Outils & prompting CorpGPT, Passage à l'échelle), plus un séminaire C-Level (½ journée) et des sessions 1-to-1."},
+];
+const GREET={k:["bonjour","salut","hello","bonsoir","cc","coucou","hi"],s:[],a:"Bonjour 👋 Je suis <b>CorpGPT</b>, l'assistant de la mission Roadmap IA de Cosumar. Posez-moi une question sur la feuille de route, les use cases, le ROI, la conformité ou la gouvernance. Essayez une suggestion ci-dessous !"};
+const THANKS={k:["merci","thanks","parfait","super","genial","génial"],s:[],a:"Avec plaisir ! 😊 Une autre question sur la mission ?"};
+const HELP={k:["aide","help","capacite","capacité","que peux","peux-tu","comment","sais-tu"],s:["Capacités"],a:"Je peux répondre sur : <b>la mission & les 4 phases</b>, les <b>10 use cases</b> (valeur, budget, risques), la <b>roadmap & les budgets</b>, le <b>ROI</b>, la <b>conformité</b> (CNDP, EU AI Act, souveraineté), le <b>CoE & la gouvernance</b>, la <b>Charte IA</b>, le <b>benchmark</b> et l'<b>équipe</b>. Que souhaitez-vous explorer ?"};
+
+const STOP=new Set("le la les de des du un une et a à en pour que qui quoi est sont sur dans par avec ce cette quels quelle quelles quel comment combien c'est qu il elle nous vous je tu se son sa ses au aux ou où mais donc or ni car ce cet".split(" "));
+function tokenize(s){ return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9\s']/g,' ').split(/\s+/).filter(w=>w&&!STOP.has(w)); }
+function score(entry,qTokens,raw){
+  let sc=0;
+  entry.k.forEach(kw=>{ if(raw.includes(kw)) sc+=4; });
+  const kwTokens=entry.k.join(' ').toLowerCase();
+  qTokens.forEach(t=>{ if(kwTokens.includes(t)) sc+=2; else if(entry.a.toLowerCase().includes(t)) sc+=1; });
+  return sc;
+}
+function answer(q){
+  const raw=q.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+  const qt=tokenize(q);
+  for(const sp of [GREET,THANKS,HELP]){ if(sp.k.some(kw=>raw.includes(kw)) && qt.length<=4) return sp; }
+  let best=null,bs=0;
+  KB.forEach(e=>{ const s=score(e,qt,raw); if(s>bs){bs=s;best=e;} });
+  if(!best||bs<2) return {s:[],a:"Je n'ai pas d'information précise là-dessus dans la base de la mission. 🤔 Essayez par exemple : <b>« budget de la roadmap »</b>, <b>« use case OCR »</b>, <b>« conformité CNDP »</b> ou <b>« composition du CoE »</b>."};
+  return best;
+}
+// ---------------- UI ----------------
+const msgs=document.getElementById('msgs');
+let history=store.get('corpgpt.hist',null);
+function addMsg(role,html,sources,save=true){
+  const m=document.createElement('div'); m.className='msg '+role;
+  m.innerHTML=`<div class="av">${role==='bot'?'✦':'V'}</div><div class="bubble">${html}${sources&&sources.length?`<div class="sources">${sources.map(s=>`<span class="src">📄 ${s}</span>`).join('')}</div>`:''}</div>`;
+  msgs.appendChild(m); msgs.scrollTop=msgs.scrollHeight;
+  if(save){ history=history||[]; history.push({role,html,sources}); store.set('corpgpt.hist',history); }
+  return m;
+}
+function botType(resp){
+  const t=document.createElement('div'); t.className='msg bot'; t.innerHTML='<div class="av">✦</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>';
+  msgs.appendChild(t); msgs.scrollTop=msgs.scrollHeight;
+  const delay=600+Math.min(900,resp.a.length*4);
+  setTimeout(()=>{ t.remove(); revealMsg(resp); },delay);
+}
+function revealMsg(resp){
+  const m=document.createElement('div'); m.className='msg bot';
+  const bub=document.createElement('div'); bub.className='bubble';
+  m.innerHTML='<div class="av">✦</div>'; m.appendChild(bub); msgs.appendChild(m);
+  // reveal by chunks (keep HTML intact: reveal final HTML progressively via opacity words)
+  bub.innerHTML=resp.a+(resp.s&&resp.s.length?`<div class="sources">${resp.s.map(s=>`<span class="src">📄 ${s}</span>`).join('')}</div>`:'');
+  bub.style.opacity=0; bub.style.transition='opacity .35s';
+  requestAnimationFrame(()=>bub.style.opacity=1);
+  msgs.scrollTop=msgs.scrollHeight;
+  history=history||[]; history.push({role:'bot',html:resp.a,sources:resp.s}); store.set('corpgpt.hist',history);
+}
+function send(){
+  const inp=document.getElementById('inp'); const q=inp.value.trim(); if(!q)return;
+  inp.value='';
+  addMsg('user',q.replace(/</g,'&lt;'));
+  botType(answer(q));
+}
+function ask(q){ document.getElementById('inp').value=q; send(); }
+const SUGGEST=["Quel est le budget de la roadmap ?","Liste les use cases IA","Comment gérez-vous la conformité CNDP ?","Qu'est-ce que le CorpGPT RH ?","Composition du CoE ?","Quel ROI pour l'OCR factures ?"];
+document.getElementById('suggest').innerHTML=SUGGEST.map(s=>`<span class="schip" onclick="ask('${s.replace(/'/g,"\\'")}')">${s}</span>`).join('');
+// restore or greet
+if(history&&history.length){ history.forEach(h=>addMsg(h.role,h.html,h.sources,false)); }
+else { setTimeout(()=>revealMsg(GREET),300); }
+// reset button via long-press on header? add to toast
+window.resetChat=function(){ store.set('corpgpt.hist',[]); history=[]; msgs.innerHTML=''; revealMsg(GREET); };
+</script>
+</body>
+</html>

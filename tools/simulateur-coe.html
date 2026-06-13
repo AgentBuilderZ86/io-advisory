@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulateur CoE IA — Sia × Cosumar</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/sia.css">
+<style>
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:22px;flex-wrap:wrap}
+.tab{padding:10px 16px;font-size:.86rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent}
+.tab.active{color:var(--navy);border-color:var(--teal)}
+.tabpane{display:none}.tabpane.active{display:block}
+.role-card{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--line)}
+.role-ico{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;background:rgba(0,168,150,.12)}
+.role-card .rn{font-weight:700;color:var(--navy-dark);font-size:.9rem}
+.role-card .rd{font-size:.77rem;color:var(--muted)}
+.raci td span{display:inline-block;width:26px;height:26px;line-height:26px;text-align:center;border-radius:7px;font-weight:700;font-size:.78rem}
+.raci .R{background:var(--navy);color:#fff}.raci .A{background:var(--teal);color:#fff}.raci .C{background:rgba(201,151,43,.2);color:#9a7320}.raci .I{background:var(--line);color:var(--muted)}
+.hub-spoke{display:flex;flex-direction:column;align-items:center;gap:14px;padding:10px 0}
+.hub{background:linear-gradient(135deg,var(--navy),var(--navy-dark));color:#fff;border-radius:14px;padding:16px 26px;text-align:center;box-shadow:var(--shadow);font-weight:700}
+.spokes{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.spoke{background:rgba(0,168,150,.1);border:1px solid rgba(0,168,150,.3);color:var(--teal-dark);border-radius:10px;padding:9px 14px;font-size:.8rem;font-weight:600}
+.principle{display:flex;gap:11px;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--cream)}
+.principle .pi{font-size:1.2rem}.principle .pt{font-weight:700;font-size:.84rem;color:var(--navy-dark)}.principle .pd{font-size:.76rem;color:var(--muted)}
+.charter-out{background:var(--navy-dark);color:#e6eef7;border-radius:12px;padding:22px;font-size:.85rem;line-height:1.7;white-space:pre-wrap;font-family:'DM Sans',sans-serif;max-height:480px;overflow:auto}
+.charter-out h4{color:#5fd6c6;font-family:'Syne',sans-serif;margin:14px 0 4px}
+.skill-track{display:grid;grid-template-columns:120px repeat(4,1fr);gap:8px;align-items:center;font-size:.78rem;margin-bottom:8px}
+.skill-track .sname{font-weight:600;color:var(--navy-dark)}
+.skill-q{height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.72rem}
+/* hub & spoke */
+#hs-diagram svg{width:100%;height:auto}
+.hs-spoke-node{cursor:default;transition:.2s}
+.hs-spoke-node:hover circle{filter:drop-shadow(0 0 7px rgba(0,168,150,.6))}
+.split-row{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:11px;overflow:hidden;margin-bottom:10px}
+.split-col{padding:12px 14px}
+.split-col.hub{background:linear-gradient(160deg,rgba(31,78,121,.07),#fff);border-right:1px solid var(--line)}
+.split-col.spk{background:linear-gradient(160deg,rgba(0,168,150,.06),#fff)}
+.split-col .sh{font-size:.68rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;margin-bottom:7px}
+.split-col.hub .sh{color:var(--navy)}.split-col.spk .sh{color:var(--teal-dark)}
+.split-col ul{list-style:none;font-size:.79rem;color:var(--text);line-height:1.5}
+.split-col li{padding:3px 0 3px 15px;position:relative}
+.split-col li::before{content:'';position:absolute;left:0;top:9px;width:5px;height:5px;border-radius:50%}
+.split-col.hub li::before{background:var(--navy)}.split-col.spk li::before{background:var(--teal)}
+.relay-card{background:var(--cream);border:1px solid var(--line);border-radius:11px;padding:14px}
+.relay-card .rt{font-weight:700;color:var(--navy-dark);font-size:.88rem;display:flex;align-items:center;gap:8px}
+.relay-card .rl{font-size:.79rem;color:var(--muted);margin-top:6px;line-height:1.5}
+.flow-line{display:flex;gap:10px;align-items:stretch;overflow-x:auto;padding-bottom:6px}
+.flow-step{flex:1;min-width:150px;border-radius:12px;padding:14px;position:relative}
+.flow-step.hub{background:linear-gradient(160deg,rgba(31,78,121,.1),rgba(31,78,121,.03));border:1px solid rgba(31,78,121,.2)}
+.flow-step.spk{background:linear-gradient(160deg,rgba(0,168,150,.1),rgba(0,168,150,.03));border:1px solid rgba(0,168,150,.25)}
+.flow-step.both{background:linear-gradient(160deg,rgba(201,151,43,.12),rgba(201,151,43,.03));border:1px solid rgba(201,151,43,.3)}
+.flow-step .fn{font-size:.66rem;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+.flow-step .ft{font-weight:700;color:var(--navy-dark);font-size:.88rem;margin:4px 0}
+.flow-step .fd{font-size:.74rem;color:var(--muted);line-height:1.4}
+.flow-step .fown{display:inline-block;font-size:.64rem;font-weight:700;padding:2px 7px;border-radius:10px;margin-top:8px}
+.fown.hub{background:rgba(31,78,121,.14);color:var(--navy)}.fown.spk{background:rgba(0,168,150,.16);color:var(--teal-dark)}.fown.both{background:rgba(201,151,43,.18);color:#9a7320}
+.traj-row{display:grid;grid-template-columns:130px 1fr 1fr;gap:10px;align-items:center;font-size:.8rem;margin-bottom:8px}
+.traj-bar{height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.72rem;background:var(--navy)}
+.traj-bar.spk{background:var(--teal)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="brand-dot"></span><span class="brand-name">Sia<b>·</b>Cosumar</span><span class="brand-sub">Simulateur CoE IA</span></div>
+  <nav class="topnav">
+    <a href="../index.html" class="home">← Hub</a>
+    <a href="dashboard-copil.html">COPIL</a>
+    <a href="dashboard-entretiens.html">Entretiens</a>
+    <a href="use-cases-ia.html">Use Cases</a>
+    <a href="roadmap-builder.html">Roadmap</a>
+    <a href="simulateur-coe.html" class="active">CoE</a>
+    <a href="conformite.html">Conformité</a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="eyebrow">🏛️ Phase 4 · Operating Model</div>
+    <h1 class="page-title">Simulateur du Centre d'Excellence IA</h1>
+    <p class="page-sub">Concevez le Centre d'Excellence IA de Cosumar : <b>modèle hub-and-spoke détaillé</b>, staffing & budget, gouvernance & RACI, génération de la Charte IA et plan de montée en compétences sur 24 mois.</p>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="hubspoke">🕸️ Modèle Hub & Spoke</div>
+    <div class="tab" data-tab="staff">👥 Staffing & Budget</div>
+    <div class="tab" data-tab="gov">🏛️ Gouvernance & RACI</div>
+    <div class="tab" data-tab="charte">📜 Charte IA</div>
+    <div class="tab" data-tab="skills">🎓 Plan compétences 24m</div>
+  </div>
+
+  <!-- HUB & SPOKE -->
+  <div class="tabpane active" id="tab-hubspoke">
+    <div class="panel panel-pad mb">
+      <h3 style="color:var(--navy-dark);margin-bottom:6px">Le modèle hub-and-spoke en un coup d'œil</h3>
+      <p class="muted" style="font-size:.85rem;margin-bottom:6px">Un <b>hub central</b> (le CoE IA) qui mutualise l'expertise rare, les standards et la plateforme ; des <b>spokes</b> (relais IA embarqués dans chaque direction métier) qui portent le besoin terrain et l'adoption. Le meilleur des deux mondes : la <b>cohérence</b> du centralisé et la <b>proximité</b> du décentralisé.</p>
+    </div>
+    <div class="grid-2" style="grid-template-columns:1.15fr 1fr;align-items:start">
+      <div class="panel panel-pad">
+        <h3 style="color:var(--navy-dark);margin-bottom:4px;font-size:1rem">Schéma cible</h3>
+        <p class="muted" style="font-size:.78rem;margin-bottom:6px">Survolez un spoke pour voir son relais IA.</p>
+        <div id="hs-diagram"></div>
+      </div>
+      <div class="panel panel-pad">
+        <h3 style="color:var(--navy-dark);margin-bottom:12px;font-size:1rem">Qui fait quoi ?</h3>
+        <div id="hs-split"></div>
+      </div>
+    </div>
+
+    <div class="panel panel-pad mt">
+      <h3 style="color:var(--navy-dark);margin-bottom:4px;font-size:1rem">Le rôle du relais IA (« spoke ») dans chaque direction</h3>
+      <p class="muted" style="font-size:.82rem;margin-bottom:14px">Le spoke n'est pas une équipe data dédiée par métier : c'est un <b>référent</b> (souvent un Champion IA) qui fait le pont entre son métier et le hub.</p>
+      <div class="grid-3" id="hs-relay"></div>
+    </div>
+
+    <div class="panel panel-pad mt">
+      <h3 style="color:var(--navy-dark);margin-bottom:4px;font-size:1rem">Mécanique opérationnelle — du besoin au run</h3>
+      <p class="muted" style="font-size:.82rem;margin-bottom:16px">Flux type d'un use case, avec les passages de relais hub ⇄ spoke.</p>
+      <div id="hs-flow"></div>
+    </div>
+
+    <div class="panel panel-pad mt">
+      <h3 style="color:var(--navy-dark);margin-bottom:4px;font-size:1rem">Pourquoi hub-and-spoke pour Cosumar ?</h3>
+      <p class="muted" style="font-size:.82rem;margin-bottom:14px">Comparaison des 3 archétypes d'organisation IA.</p>
+      <div class="tbl-scroll"><table class="tbl"><thead><tr><th>Modèle</th><th>Principe</th><th>Forces</th><th>Limites</th><th>Verdict Cosumar</th></tr></thead><tbody id="hs-compare"></tbody></table></div>
+    </div>
+
+    <div class="panel panel-pad mt">
+      <h3 style="color:var(--navy-dark);margin-bottom:4px;font-size:1rem">Trajectoire de maturité du modèle</h3>
+      <p class="muted" style="font-size:.82rem;margin-bottom:16px">Le hub démarre fort (amorçage) puis transfère progressivement de l'autonomie aux spokes.</p>
+      <div id="hs-traj"></div>
+    </div>
+  </div>
+
+  <!-- STAFFING -->
+  <div class="tabpane" id="tab-staff">
+    <div class="grid-2">
+      <div class="panel panel-pad">
+        <h3 style="color:var(--navy-dark);margin-bottom:16px">Paramètres du CoE</h3>
+        <div class="field"><label>Ambition / maturité cible</label><select id="p-ambition" onchange="calc()"><option value="1">Émergent — amorçage</option><option value="2" selected>Structuré — déploiement</option><option value="3">Avancé — passage à l'échelle</option></select></div>
+        <div class="field"><div class="flex between"><label>Use cases actifs / an</label><b id="v-uc">6</b></div><input type="range" id="p-uc" min="2" max="15" value="6" oninput="calc()"></div>
+        <div class="field"><div class="flex between"><label>Spokes métiers (directions)</label><b id="v-spoke">5</b></div><input type="range" id="p-spoke" min="2" max="8" value="5" oninput="calc()"></div>
+        <div class="field"><label>Modèle de sourcing</label><select id="p-source" onchange="calc()"><option value="0.6">Majoritairement interne</option><option value="0.8" selected>Mixte interne / externe</option><option value="1.0">Fort recours externe</option></select></div>
+        <div class="field"><div class="flex between"><label>Coût moyen chargé / ETP (K MAD/an)</label><b id="v-cost">900</b></div><input type="range" id="p-cost" min="600" max="1400" step="50" value="900" oninput="calc()"></div>
+      </div>
+      <div>
+        <div class="kpi-row" style="grid-template-columns:1fr 1fr">
+          <div class="kpi teal"><div class="kpi-val" id="r-etp">—</div><div class="kpi-label">ETP cibles</div></div>
+          <div class="kpi navy"><div class="kpi-val" id="r-budget">—</div><div class="kpi-label">Budget RH annuel</div></div>
+          <div class="kpi gold"><div class="kpi-val" id="r-run">—</div><div class="kpi-label">Run total (RH+tech)</div></div>
+          <div class="kpi"><div class="kpi-val" id="r-ratio">—</div><div class="kpi-label">ETP / use case</div></div>
+        </div>
+        <div class="panel panel-pad">
+          <h3 style="color:var(--navy-dark);margin-bottom:6px">Composition de l'équipe</h3>
+          <div id="staff-list"></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel panel-pad mt">
+      <h3 style="color:var(--navy-dark);margin-bottom:10px">Modèle hub-and-spoke & 4 rôles structurants</h3>
+      <div class="grid-2" style="align-items:center">
+        <div class="hub-spoke">
+          <div class="hub">🏛️ CoE IA Central<br><span style="font-weight:400;font-size:.78rem;opacity:.85">Hub — standards, plateforme, gouvernance</span></div>
+          <div style="color:var(--muted)">▲ ▼</div>
+          <div class="spokes" id="spokes"></div>
+        </div>
+        <div class="grid-2" style="gap:10px">
+          <div class="principle"><div class="pi">📣</div><div><div class="pt">Persuader</div><div class="pd">Évangéliser, embarquer le management, créer la demande IA</div></div></div>
+          <div class="principle"><div class="pi">📚</div><div><div class="pt">Informer</div><div class="pd">Acculturer, former, diffuser les bonnes pratiques</div></div></div>
+          <div class="principle"><div class="pi">📐</div><div><div class="pt">Standardiser</div><div class="pd">Cadres MLOps, gouvernance, réutilisabilité</div></div></div>
+          <div class="principle"><div class="pi">🚀</div><div><div class="pt">Innover</div><div class="pd">Prototyper, industrialiser, passer à l'échelle</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GOUVERNANCE -->
+  <div class="tabpane" id="tab-gov">
+    <div class="panel panel-pad mb">
+      <h3 style="color:var(--navy-dark);margin-bottom:6px">Instances de gouvernance IA</h3>
+      <p class="muted" style="font-size:.85rem;margin-bottom:14px">Processus go/no-go à 3 niveaux — du COPIL stratégique aux comités métiers.</p>
+      <div class="grid-3">
+        <div class="mini-card" style="background:var(--cream)"><div style="font-weight:700;color:var(--navy-dark)">① COPIL IA transversal</div><div class="muted" style="font-size:.8rem;margin-top:5px">Trimestriel · arbitrages stratégiques, budget, priorisation portefeuille</div></div>
+        <div class="mini-card" style="background:var(--cream)"><div style="font-weight:700;color:var(--navy-dark)">② Comité opérationnel</div><div class="muted" style="font-size:.8rem;margin-top:5px">Mensuel · suivi delivery, go/no-go projets, gestion des risques</div></div>
+        <div class="mini-card" style="background:var(--cream)"><div style="font-weight:700;color:var(--navy-dark)">③ Comités métiers</div><div class="muted" style="font-size:.8rem;margin-top:5px">Bimensuel · expression de besoin, validation usage, adoption terrain</div></div>
+      </div>
+    </div>
+    <div class="panel"><div class="panel-head"><h3>Matrice RACI</h3><span class="ph-sub">R Responsable · A Approbateur · C Consulté · I Informé</span></div>
+      <div class="tbl-scroll"><table class="tbl raci"><thead><tr><th>Activité</th><th>COPIL</th><th>CoE IA</th><th>DSI</th><th>Métier</th><th>DPO / Juridique</th></tr></thead><tbody id="raci-body"></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- CHARTE -->
+  <div class="tabpane" id="tab-charte">
+    <div class="grid-2">
+      <div class="panel panel-pad">
+        <h3 style="color:var(--navy-dark);margin-bottom:14px">Générateur de Charte IA Cosumar</h3>
+        <div class="field"><label>Nom de l'organisation</label><input id="c-org" value="Cosumar" oninput="genCharter()"></div>
+        <div class="field"><label>Engagement souveraineté</label><select id="c-sov" onchange="genCharter()"><option>Hébergement souverain marocain pour les données sensibles</option><option>Cloud hybride avec données critiques au Maroc</option></select></div>
+        <label style="margin-bottom:8px">Principes à inclure (8)</label>
+        <div id="principles-pick" style="display:flex;flex-direction:column;gap:7px"></div>
+        <button class="btn teal mt" onclick="copyCharter()">📋 Copier la charte</button>
+      </div>
+      <div class="panel panel-pad">
+        <h3 style="color:var(--navy-dark);margin-bottom:14px">Aperçu</h3>
+        <div class="charter-out" id="charter-out"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SKILLS -->
+  <div class="tabpane" id="tab-skills">
+    <div class="panel panel-pad">
+      <h3 style="color:var(--navy-dark);margin-bottom:4px">Plan de montée en compétences — 24 mois</h3>
+      <p class="muted" style="font-size:.85rem;margin-bottom:16px">Trajectoire de formation par profil, du niveau cible attendu par trimestre (S=Sensibilisation, P=Pratique, A=Autonome, E=Expert).</p>
+      <div class="skill-track" style="font-weight:700;color:var(--muted);border-bottom:2px solid var(--line2);padding-bottom:6px"><div>Profil</div><div class="tac">T1–T2</div><div class="tac">T3–T4</div><div class="tac">T5–T6</div><div class="tac">T7–T8</div></div>
+      <div id="skills-body" style="margin-top:12px"></div>
+      <div class="divider"></div>
+      <div class="flex gap wrap-f" style="font-size:.76rem;color:var(--muted)">
+        <span class="flex center gap"><span class="dot" style="background:#9aa7bd"></span>Sensibilisation</span>
+        <span class="flex center gap"><span class="dot" style="background:var(--gold)"></span>Pratique</span>
+        <span class="flex center gap"><span class="dot" style="background:var(--teal)"></span>Autonome</span>
+        <span class="flex center gap"><span class="dot" style="background:var(--navy)"></span>Expert</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="sia-foot"><div><b>Sia × Cosumar</b> · Simulateur CoE IA</div><div>Hub-and-spoke · CNDP · Morocco AI 2030</div></footer>
+<div id="toast"></div>
+<script src="../assets/sia.js"></script>
+<script>
+// ---------- Staffing ----------
+function calc(){
+  const amb=+document.getElementById('p-ambition').value;
+  const uc=+document.getElementById('p-uc').value;
+  const spoke=+document.getElementById('p-spoke').value;
+  const src=+document.getElementById('p-source').value;
+  const cost=+document.getElementById('p-cost').value;
+  document.getElementById('v-uc').textContent=uc;
+  document.getElementById('v-spoke').textContent=spoke;
+  document.getElementById('v-cost').textContent=cost;
+  // base roles scale with ambition & uc
+  const base=2+amb;            // core hub
+  const delivery=Math.max(1,Math.round(uc*0.55));
+  const etpRaw=base+delivery+Math.round(spoke*0.25);
+  const etp=Math.max(4,Math.min(12,etpRaw));
+  const budgetRH=etp*cost*src;
+  const techRun=budgetRH*0.35;
+  document.getElementById('r-etp').textContent=etp;
+  document.getElementById('r-budget').textContent=fmtK(budgetRH*1000);
+  document.getElementById('r-run').textContent=fmtK((budgetRH+techRun)*1000);
+  document.getElementById('r-ratio').textContent=(etp/uc).toFixed(1);
+  // composition
+  const roles=[
+    {ico:'🎯',n:'CoE Lead / Head of AI',c:1,d:'Pilotage, stratégie, sponsor'},
+    {ico:'📐',n:'AI Architect / MLOps',c:Math.max(1,Math.round(etp*0.18)),d:'Plateforme, standards, industrialisation'},
+    {ico:'🧪',n:'Data Scientist / ML Engineer',c:Math.max(1,Math.round(etp*0.34)),d:'Modélisation, delivery use cases'},
+    {ico:'🔗',n:'Data Engineer',c:Math.max(1,Math.round(etp*0.18)),d:'Pipelines, qualité, gouvernance data'},
+    {ico:'🤝',n:'AI Business Partner',c:Math.max(1,Math.round(etp*0.16)),d:'Lien spokes métiers, cadrage valeur'},
+    {ico:'🛡️',n:'AI Governance / Ethics',c:1,d:'Conformité CNDP, charte, IA responsable'},
+  ];
+  let h='';
+  roles.forEach(r=>{ h+=`<div class="role-card"><div class="role-ico">${r.ico}</div><div style="flex:1"><div class="rn">${r.n}</div><div class="rd">${r.d}</div></div><span class="scorebox">${r.c} ETP</span></div>`; });
+  document.getElementById('staff-list').innerHTML=h;
+  // spokes
+  const spokeNames=["Industrielle","Supply Chain","Financière","RH","Amont Agricole","Commerciale","Juridique","SI"];
+  document.getElementById('spokes').innerHTML=spokeNames.slice(0,spoke).map(s=>`<div class="spoke">⚙ ${s}</div>`).join('');
+}
+
+// ---------- RACI ----------
+const raci=[
+ ["Définition stratégie IA",["A","R","C","C","I"]],
+ ["Priorisation portefeuille",["A","R","C","C","I"]],
+ ["Cadrage d'un use case",["I","R","C","A","C"]],
+ ["Go/No-Go projet IA",["A","R","C","C","C"]],
+ ["Développement & MLOps",["I","R","A","C","I"]],
+ ["Mise en production",["I","A","R","C","C"]],
+ ["Conformité & données perso.",["I","C","C","I","R"]],
+ ["Adoption & formation",["I","R","I","A","I"]],
+];
+function renderRaci(){
+  let h='';
+  raci.forEach(([act,vals])=>{ h+=`<tr><td style="font-weight:600;color:var(--navy-dark)">${act}</td>`+vals.map(v=>`<td class="tac"><span class="${v}">${v}</span></td>`).join('')+'</tr>'; });
+  document.getElementById('raci-body').innerHTML=h;
+}
+
+// ---------- Charte ----------
+const PRINCIPLES=[
+ ["🇲🇦","Conformité CNDP","Respect de la loi 09-08 et des avis de la CNDP sur les données personnelles."],
+ ["🛡️","Souveraineté des données","Hébergement souverain marocain pour les données sensibles et stratégiques."],
+ ["🧑","Human-in-the-loop","Aucune décision critique entièrement automatisée sans supervision humaine."],
+ ["🔍","Transparence","Explicabilité des modèles et traçabilité des décisions assistées par IA."],
+ ["⚖️","Responsabilité","Attribution claire des responsabilités sur chaque système d'IA déployé."],
+ ["🔐","Sécurité","Protection des modèles et des données contre les usages malveillants."],
+ ["🤝","Équité","Prévention et audit des biais, non-discrimination des systèmes d'IA."],
+ ["🌱","Bien-être","L'IA au service des collaborateurs, augmentation plutôt que substitution."],
+];
+function renderPicks(){
+  document.getElementById('principles-pick').innerHTML=PRINCIPLES.map((p,i)=>`<label class="flex center gap" style="font-weight:500;cursor:pointer"><input type="checkbox" style="width:auto" checked data-p="${i}" onchange="genCharter()"> ${p[0]} ${p[1]}</label>`).join('');
+}
+function genCharter(){
+  const org=document.getElementById('c-org').value||"Cosumar";
+  const sov=document.getElementById('c-sov').value;
+  const picked=[...document.querySelectorAll('#principles-pick input:checked')].map(c=>+c.dataset.p);
+  let out=`CHARTE IA — ${org.toUpperCase()}\n«  Une IA responsable, souveraine et au service de l'humain »\n\nEn cohérence avec Morocco AI 2030, le Digital Morocco 2030, l'EU AI Act et les recommandations UNESCO, ${org} s'engage à déployer l'intelligence artificielle selon les principes suivants :\n`;
+  picked.forEach((i,n)=>{ const p=PRINCIPLES[i]; out+=`\n${n+1}. ${p[1].toUpperCase()}\n   ${i===1?sov:p[2]}`; });
+  out+=`\n\nGOUVERNANCE\nLe respect de cette charte est supervisé par le COPIL IA et le Centre d'Excellence IA, en lien avec le DPO. Tout système d'IA fait l'objet d'une évaluation go/no-go intégrant ces principes.\n\nVersion 1.0 — ${org} · 2026`;
+  // render with headers
+  document.getElementById('charter-out').textContent=out;
+  window.__charter=out;
+}
+function copyCharter(){ navigator.clipboard.writeText(window.__charter||'').then(()=>toast('Charte copiée dans le presse-papier')); }
+
+// ---------- Skills ----------
+const skills=[
+ {n:"C-Level / COMEX",lv:[0,0,1,1]},
+ {n:"Managers métiers",lv:[0,1,1,2]},
+ {n:"Champions IA (50)",lv:[1,1,2,2]},
+ {n:"Data analysts",lv:[1,2,2,3]},
+ {n:"Équipe CoE",lv:[2,2,3,3]},
+ {n:"Collaborateurs",lv:[0,0,1,1]},
+];
+const lvCol=['#9aa7bd','var(--gold)','var(--teal)','var(--navy)'];
+const lvTxt=['S','P','A','E'];
+function renderSkills(){
+  let h='';
+  skills.forEach(s=>{ h+=`<div class="skill-track"><div class="sname">${s.n}</div>`+s.lv.map(l=>`<div class="skill-q" style="background:${lvCol[l]}">${lvTxt[l]}</div>`).join('')+'</div>'; });
+  document.getElementById('skills-body').innerHTML=h;
+}
+
+// ---------- Hub & Spoke ----------
+const HS_SPOKES=[
+ {d:"Industrielle",relay:"Ingénieur procédé référent"},
+ {d:"Supply Chain",relay:"Responsable planification"},
+ {d:"Financière",relay:"Contrôleur de gestion"},
+ {d:"RH",relay:"Chargé SIRH / People"},
+ {d:"Amont Agricole",relay:"Agronome data"},
+ {d:"Commerciale",relay:"Analyste CRM"},
+ {d:"Juridique",relay:"Juriste référent"},
+ {d:"SI / Digital",relay:"Architecte SI"},
+];
+function renderHSDiagram(){
+  const W=440,H=440,cx=W/2,cy=H/2,R=160,nodeR=34;
+  const n=HS_SPOKES.length;
+  let spokes='',lines='';
+  HS_SPOKES.forEach((s,i)=>{
+    const ang=(-90+i*360/n)*Math.PI/180;
+    const x=cx+R*Math.cos(ang), y=cy+R*Math.sin(ang);
+    lines+=`<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="url(#hsg)" stroke-width="2.5" stroke-dasharray="6 5"><animate attributeName="stroke-dashoffset" from="22" to="0" dur="1.5s" repeatCount="indefinite"/></line>`;
+    spokes+=`<g class="hs-spoke-node"><title>${s.d} — relais : ${s.relay}</title>
+      <circle cx="${x}" cy="${y}" r="${nodeR}" fill="#fff" stroke="var(--teal)" stroke-width="2"/>
+      <text x="${x}" y="${y-2}" text-anchor="middle" font-size="9.5" font-weight="700" fill="#0D2B45">${s.d.length>12?s.d.slice(0,11)+'…':s.d}</text>
+      <text x="${x}" y="${y+11}" text-anchor="middle" font-size="7.5" fill="#6B7A99">Relais IA</text></g>`;
+  });
+  document.getElementById('hs-diagram').innerHTML=`<svg viewBox="0 0 ${W} ${H}">
+    <defs><linearGradient id="hsg" x1="0" x2="1"><stop offset="0" stop-color="#1F4E79"/><stop offset="1" stop-color="#00A896"/></linearGradient>
+    <radialGradient id="hubg"><stop offset="0" stop-color="#2E75B6"/><stop offset="1" stop-color="#0D2B45"/></radialGradient></defs>
+    ${lines}${spokes}
+    <circle cx="${cx}" cy="${cy}" r="62" fill="url(#hubg)" stroke="#5fd6c6" stroke-width="2"/>
+    <text x="${cx}" y="${cy-12}" text-anchor="middle" font-size="13" font-weight="800" fill="#fff" font-family="Syne">CoE IA</text>
+    <text x="${cx}" y="${cy+3}" text-anchor="middle" font-size="8" fill="#9fd9d0">HUB CENTRAL</text>
+    <text x="${cx}" y="${cy+16}" text-anchor="middle" font-size="7" fill="rgba(255,255,255,.6)">Persuader · Informer</text>
+    <text x="${cx}" y="${cy+26}" text-anchor="middle" font-size="7" fill="rgba(255,255,255,.6)">Standardiser · Innover</text>
+  </svg>`;
+}
+function renderHSSplit(){
+  const data=[
+   {t:"Stratégie & vision IA",h:["Définit l'ambition & le portefeuille"],s:["Remontent les enjeux métiers"]},
+   {t:"Expertise & delivery",h:["Data scientists, ML/MLOps mutualisés"],s:["Co-construisent le besoin & testent"]},
+   {t:"Plateforme & standards",h:["Stack, MLOps, réutilisabilité, sécurité"],s:["Utilisent les standards du hub"]},
+   {t:"Gouvernance & conformité",h:["Charte, go/no-go, CNDP/EU AI Act"],s:["Appliquent les règles sur le terrain"]},
+   {t:"Adoption & valeur",h:["Outille, forme, mesure le ROI"],s:["Portent l'usage & l'adoption locale"]},
+  ];
+  document.getElementById('hs-split').innerHTML=data.map(d=>`<div class="split-row"><div class="split-col hub"><div class="sh">🏛️ Hub — ${d.t}</div><ul>${d.h.map(x=>`<li>${x}</li>`).join('')}</ul></div><div class="split-col spk"><div class="sh">⚙️ Spoke</div><ul>${d.s.map(x=>`<li>${x}</li>`).join('')}</ul></div></div>`).join('');
+}
+function renderHSRelay(){
+  const cards=[
+   {i:"🎯",t:"Traducteur métier ↔ IA",l:"Transforme un irritant terrain en cas d'usage qualifiable par le hub (valeur, données, faisabilité)."},
+   {i:"📡",t:"Capteur de besoins",l:"Détecte et priorise les opportunités IA dans sa direction, alimente le funnel."},
+   {i:"🧪",t:"Référent de proximité",l:"Accompagne les tests, recette les modèles avec les utilisateurs, remonte les anomalies."},
+   {i:"📣",t:"Ambassadeur d'adoption",l:"Évangélise, forme les pairs, lève les résistances — souvent un Champion IA."},
+   {i:"🛡️",t:"Relais de conformité",l:"Veille au respect de la charte et des règles CNDP dans les usages locaux."},
+   {i:"📊",t:"Garant de la valeur",l:"Suit les KPIs d'usage et de ROI du use case une fois en production."},
+  ];
+  document.getElementById('hs-relay').innerHTML=cards.map(c=>`<div class="relay-card"><div class="rt">${c.i} ${c.t}</div><div class="rl">${c.l}</div></div>`).join('');
+}
+function renderHSFlow(){
+  const steps=[
+   {n:"① Émergence",t:"Besoin métier",d:"Le spoke détecte un irritant et le formule.",own:"spk"},
+   {n:"② Qualification",t:"Cadrage valeur/faisabilité",d:"Hub + spoke évaluent données, ROI, Build/Buy.",own:"both"},
+   {n:"③ Go/No-Go",t:"Arbitrage",d:"COPIL / comité opérationnel décide.",own:"hub"},
+   {n:"④ Delivery",t:"Développement & MLOps",d:"Le hub construit ; le spoke recette.",own:"hub"},
+   {n:"⑤ Adoption",t:"Mise en usage",d:"Le spoke porte l'adoption & la formation.",own:"spk"},
+   {n:"⑥ Run & valeur",t:"Exploitation & ROI",d:"Hub maintient ; spoke suit les KPIs.",own:"both"},
+  ];
+  const lbl={hub:"🏛️ Hub",spk:"⚙️ Spoke",both:"🤝 Hub + Spoke"};
+  document.getElementById('hs-flow').innerHTML=`<div class="flow-line">${steps.map((s,i)=>`<div class="flow-step ${s.own}"><div class="fn">${s.n}</div><div class="ft">${s.t}</div><div class="fd">${s.d}</div><span class="fown ${s.own}">${lbl[s.own]}</span></div>${i<steps.length-1?'<div style="display:flex;align-items:center;color:var(--muted);font-size:1.1rem">→</div>':''}`).join('')}</div>`;
+}
+function renderHSCompare(){
+  const rows=[
+   {m:"Centralisé",p:"Toute l'IA dans une seule équipe.",f:"Cohérence, expertise, standards forts.",l:"Loin du terrain, goulot d'étranglement, faible adoption.",v:"<span class='chip'>Trop rigide</span>"},
+   {m:"Hub-and-spoke",p:"Hub central + relais métiers.",f:"Équilibre cohérence / proximité, montée en autonomie progressive.",l:"Demande des relais identifiés & une gouvernance claire.",v:"<span class='chip green'>✓ Recommandé</span>"},
+   {m:"Décentralisé",p:"Chaque métier fait son IA.",f:"Proximité maximale, rapidité.",l:"Silos, doublons, risques conformité, pas d'échelle.",v:"<span class='chip'>Prématuré</span>"},
+  ];
+  document.getElementById('hs-compare').innerHTML=rows.map(r=>`<tr><td><b style="color:var(--navy-dark)">${r.m}</b></td><td style="font-size:.8rem">${r.p}</td><td style="font-size:.8rem;color:#1d7a44">${r.f}</td><td style="font-size:.8rem;color:#b13b36">${r.l}</td><td>${r.v}</td></tr>`).join('');
+}
+function renderHSTraj(){
+  const phases=[
+   {n:"Amorçage (0-12m)",hub:80,spk:20},
+   {n:"Déploiement (12-24m)",hub:60,spk:40},
+   {n:"Passage à l'échelle (24-36m)",hub:45,spk:55},
+  ];
+  document.getElementById('hs-traj').innerHTML=phases.map(p=>`<div class="traj-row"><span style="font-weight:600;color:var(--navy-dark)">${p.n}</span><div class="traj-bar" style="width:100%">🏛️ Hub ${p.hub}%</div><div class="traj-bar spk" style="width:100%">⚙️ Spokes ${p.spk}%</div></div>`).join('')+`<p class="muted" style="font-size:.74rem;margin-top:8px">Le centre de gravité se déplace du hub vers les spokes à mesure que les métiers gagnent en autonomie — sans jamais abandonner les standards communs.</p>`;
+}
+function renderHubSpoke(){ renderHSDiagram();renderHSSplit();renderHSRelay();renderHSFlow();renderHSCompare();renderHSTraj(); }
+
+// tabs
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tabpane').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); document.getElementById('tab-'+t.dataset.tab).classList.add('active');
+}));
+calc();renderRaci();renderPicks();genCharter();renderSkills();renderHubSpoke();
+</script>
+</body>
+</html>

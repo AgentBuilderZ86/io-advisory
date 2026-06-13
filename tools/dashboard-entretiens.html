@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Entretiens — Sia × Cosumar</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/sia.css">
+<style>
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:20px}
+.filters .field{margin:0;min-width:160px}
+.dir-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-bottom:24px}
+.dir-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 17px;box-shadow:var(--shadow);cursor:pointer;transition:.2s;border-left:4px solid var(--navy2)}
+.dir-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.dir-card.sel{border-color:var(--teal);background:rgba(0,168,150,.04)}
+.dir-card .dh{font-weight:700;color:var(--navy-dark);font-size:.92rem}
+.dir-card .dnum{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:var(--navy);margin-top:6px}
+.dir-card .dnum small{font-size:.72rem;color:var(--muted);font-weight:400}
+.pain-tag{display:inline-block;font-size:.72rem;font-weight:600;padding:3px 9px;border-radius:14px;background:rgba(224,84,78,.1);color:#b13b36;margin:3px 4px 0 0}
+.status-pill{font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:14px}
+.s-done{background:rgba(39,174,96,.13);color:#1d7a44}
+.s-plan{background:rgba(46,117,182,.12);color:var(--navy)}
+.s-prog{background:rgba(229,165,10,.16);color:#9a7308}
+.tl{position:relative;padding-left:26px;margin-top:8px}
+.tl::before{content:'';position:absolute;left:7px;top:4px;bottom:4px;width:2px;background:var(--line2)}
+.tl-item{position:relative;padding:7px 0}
+.tl-item::before{content:'';position:absolute;left:-23px;top:12px;width:11px;height:11px;border-radius:50%;background:var(--teal);border:2px solid #fff;box-shadow:0 0 0 2px var(--line2)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="brand-dot"></span><span class="brand-name">Sia<b>·</b>Cosumar</span><span class="brand-sub">Dashboard Entretiens</span></div>
+  <nav class="topnav">
+    <a href="../index.html" class="home">← Hub</a>
+    <a href="dashboard-copil.html">COPIL</a>
+    <a href="dashboard-entretiens.html" class="active">Entretiens</a>
+    <a href="use-cases-ia.html">Use Cases</a>
+    <a href="roadmap-builder.html">Roadmap</a>
+    <a href="simulateur-coe.html">CoE</a>
+    <a href="conformite.html">Conformité</a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="eyebrow">🎙️ Phase 2 · Diagnostic</div>
+    <h1 class="page-title">Suivi des 42 entretiens structurés</h1>
+    <p class="page-sub">Campagne d'entretiens sur 8 directions métiers. Suivi de l'avancement, des pain points remontés et de la couverture du diagnostic de l'existant.</p>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi navy"><div class="kpi-val" id="k-total">42</div><div class="kpi-label">Entretiens planifiés</div></div>
+    <div class="kpi teal"><div class="kpi-val" id="k-done">—</div><div class="kpi-label">Réalisés</div><div class="kpi-foot" id="k-done-foot"></div></div>
+    <div class="kpi gold"><div class="kpi-val">8</div><div class="kpi-label">Directions couvertes</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-pain">—</div><div class="kpi-label">Pain points remontés</div></div>
+  </div>
+
+  <div class="panel panel-pad mb">
+    <div class="flex between center wrap-f" style="margin-bottom:14px"><h3 style="font-size:1rem;color:var(--navy-dark)">Couverture par direction</h3><span class="muted" style="font-size:.8rem">cliquez pour filtrer le tableau</span></div>
+    <div class="dir-grid" id="dir-grid"></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-head"><h3>Liste des entretiens</h3><button class="btn sm teal" onclick="exportEnt()">⬇ CSV</button></div>
+      <div class="panel-pad">
+        <div class="filters">
+          <div class="field"><label>Recherche</label><input id="f-search" placeholder="Nom, rôle…" oninput="render()"></div>
+          <div class="field"><label>Statut</label><select id="f-status" onchange="render()"><option value="">Tous</option><option>Réalisé</option><option>Planifié</option><option>En cours</option></select></div>
+          <button class="btn ghost sm" onclick="clearFilter()">Réinitialiser</button>
+        </div>
+        <div class="tbl-scroll" style="max-height:520px"><table class="tbl"><thead><tr><th>Interviewé</th><th>Direction</th><th>Rôle</th><th>Date</th><th>Statut</th></tr></thead><tbody id="ent-body"></tbody></table></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h3>Top pain points</h3><span class="ph-sub">par fréquence</span></div>
+      <div class="panel-pad" id="pain-list"></div>
+      <div class="panel-head" style="border-top:1px solid var(--line)"><h3>Timeline récente</h3></div>
+      <div class="panel-pad"><div class="tl" id="timeline"></div></div>
+    </div>
+  </div>
+</div>
+
+<footer class="sia-foot"><div><b>Sia × Cosumar</b> · Dashboard Entretiens</div><div>Phase 2 · Confidentiel</div></footer>
+<div id="toast"></div>
+<script src="../assets/sia.js"></script>
+<script>
+const directions=["Industrielle","Amont Agricole","Supply Chain","Financière","RH","Commerciale & Marketing","SI / Digital","Juridique & Conformité"];
+const dirPlanned={"Industrielle":8,"Amont Agricole":5,"Supply Chain":6,"Financière":5,"RH":5,"Commerciale & Marketing":5,"SI / Digital":5,"Juridique & Conformité":3};
+const roles=["Directeur","Responsable","Chef de service","Manager","Expert métier","Coordinateur"];
+const firstN=["Youssef","Salma","Karim","Nadia","Omar","Hind","Rachid","Leila","Mehdi","Sanaa","Anas","Imane","Tarik","Fatima","Hamza","Khadija","Yassine","Soukaina","Reda","Meryem","Aymane","Asmae","Bilal","Loubna","Ayoub","Wafa","Zakaria","Hajar","Ilyas","Nawal","Othmane","Siham","Marouane","Dounia","Adil","Rim","Hicham","Najwa","Saad","Lina","Driss","Amina"];
+const lastN=["El Amrani","Benani","Tazi","Berrada","Cherkaoui","Idrissi","Fassi","Alaoui","Bennani","Sebti","Lahlou","Kabbaj","Naciri","Sqalli","Bouzoubaa","Mernissi"];
+const painsPool=["Données silotées","Reporting manuel","Maintenance réactive","Prévisions imprécises","Process papier","Manque de visibilité temps réel","Saisie redondante","Outils legacy","Compétences data limitées","Décisions tardives","Suivi qualité manuel","Coûts énergie non optimisés"];
+let entretiens=[];
+function build(){
+  let id=1; const statusByDir={};
+  directions.forEach(d=>{
+    const n=dirPlanned[d];
+    for(let i=0;i<n;i++){
+      // S7 currently: ~70% done
+      const r=Math.random();
+      let st = r<0.72?"Réalisé": r<0.9?"En cours":"Planifié";
+      const fn=firstN[(id-1)%firstN.length], ln=lastN[id%lastN.length];
+      const date = "S"+(3+Math.floor(Math.random()*4));
+      const pains = st==="Réalisé" ? shuffle(painsPool).slice(0,2+Math.floor(Math.random()*2)) : [];
+      entretiens.push({id,name:fn+" "+ln,dir:d,role:roles[Math.floor(Math.random()*roles.length)],date,status:st,pains});
+      id++;
+    }
+  });
+}
+function shuffle(a){return a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);}
+build();
+
+function renderKPIs(){
+  const done=entretiens.filter(e=>e.status==="Réalisé").length;
+  document.getElementById('k-done').textContent=done;
+  document.getElementById('k-done-foot').textContent=Math.round(done/entretiens.length*100)+'% réalisé';
+  const pc=entretiens.reduce((a,e)=>a+e.pains.length,0);
+  document.getElementById('k-pain').textContent=pc;
+}
+let selDir="";
+function renderDirs(){
+  let h='';
+  directions.forEach(d=>{
+    const arr=entretiens.filter(e=>e.dir===d), dn=arr.filter(e=>e.status==="Réalisé").length;
+    h+=`<div class="dir-card ${selDir===d?'sel':''}" onclick="toggleDir('${d}')"><div class="dh">${d}</div><div class="dnum">${dn}<small> / ${arr.length} entretiens</small></div><div class="bar" style="margin-top:8px"><span style="width:${dn/arr.length*100}%"></span></div></div>`;
+  });
+  document.getElementById('dir-grid').innerHTML=h;
+}
+function toggleDir(d){ selDir = selDir===d?"":d; renderDirs(); render(); }
+
+function render(){
+  const q=document.getElementById('f-search').value.toLowerCase();
+  const st=document.getElementById('f-status').value;
+  const pill={"Réalisé":"s-done","Planifié":"s-plan","En cours":"s-prog"};
+  let rows=entretiens.filter(e=>(!selDir||e.dir===selDir)&&(!st||e.status===st)&&(e.name.toLowerCase().includes(q)||e.role.toLowerCase().includes(q)||e.dir.toLowerCase().includes(q)));
+  let h='';
+  rows.forEach(e=>{ h+=`<tr><td><b style="color:var(--navy-dark)">${e.name}</b></td><td><span class="chip navy">${e.dir}</span></td><td class="muted">${e.role}</td><td>${e.date}</td><td><span class="status-pill ${pill[e.status]}">${e.status}</span></td></tr>`; });
+  document.getElementById('ent-body').innerHTML=h||'<tr><td colspan="5" class="tac muted" style="padding:24px">Aucun entretien</td></tr>';
+}
+function clearFilter(){ document.getElementById('f-search').value='';document.getElementById('f-status').value='';selDir='';renderDirs();render(); }
+
+function renderPains(){
+  const cnt={};
+  entretiens.forEach(e=>e.pains.forEach(p=>cnt[p]=(cnt[p]||0)+1));
+  const sorted=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const max=sorted.length?sorted[0][1]:1;
+  let h='';
+  sorted.forEach(([p,c])=>{ h+=`<div style="margin-bottom:11px"><div class="flex between" style="margin-bottom:5px"><span style="font-size:.83rem;font-weight:600;color:var(--navy-dark)">${p}</span><span class="muted" style="font-size:.78rem">${c}×</span></div><div class="bar"><span style="width:${c/max*100}%;background:var(--red)"></span></div></div>`; });
+  document.getElementById('pain-list').innerHTML=h;
+}
+function renderTimeline(){
+  const recent=entretiens.filter(e=>e.status==="Réalisé").slice(-6).reverse();
+  let h='';
+  recent.forEach(e=>{ h+=`<div class="tl-item"><b style="color:var(--navy-dark);font-size:.85rem">${e.name}</b> <span class="muted" style="font-size:.78rem">· ${e.dir}</span><div class="muted" style="font-size:.76rem;margin-top:2px">${e.date} · ${e.pains.join(' · ')}</div></div>`; });
+  document.getElementById('timeline').innerHTML=h;
+}
+function exportEnt(){
+  const rows=[["ID","Interviewé","Direction","Rôle","Semaine","Statut","Pain points"]];
+  entretiens.forEach(e=>rows.push([e.id,e.name,e.dir,e.role,e.date,e.status,e.pains.join(' | ')]));
+  downloadCSV('Cosumar_Entretiens.csv',rows);
+}
+renderKPIs();renderDirs();render();renderPains();renderTimeline();
+</script>
+</body>
+</html>

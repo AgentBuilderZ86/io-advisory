@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ROI & Business Case — Sia × Cosumar</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/sia.css">
+<style>
+.bc-layout{display:grid;grid-template-columns:300px 1fr;gap:22px;align-items:start}
+.uc-list{display:flex;flex-direction:column;gap:8px;max-height:80vh;overflow:auto}
+.uc-item{background:#fff;border:1px solid var(--line);border-left:4px solid var(--navy2);border-radius:10px;padding:11px 13px;cursor:pointer;transition:.15s;box-shadow:var(--shadow)}
+.uc-item:hover{transform:translateX(3px)}
+.uc-item.active{border-left-color:var(--teal);background:rgba(0,168,150,.05)}
+.uc-item .un{font-weight:700;font-size:.84rem;color:var(--navy-dark)}
+.uc-item .um{font-size:.72rem;color:var(--muted);margin-top:3px}
+.scn{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.scn-card{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fff}
+.scn-card.build{border-top:4px solid var(--navy)}
+.scn-card.buy{border-top:4px solid var(--teal)}
+.scn-card h4{color:var(--navy-dark);display:flex;align-items:center;justify-content:space-between}
+.scn-card .winner{font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;background:var(--green);color:#fff;padding:3px 9px;border-radius:20px}
+.in-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+.in-row label{margin:0;font-size:.78rem;flex:1}
+.in-row input{width:96px;text-align:right;padding:6px 9px;font-size:.82rem}
+.res-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);font-size:.85rem}
+.res-row:last-child{border:none}
+.res-row b{font-family:'Syne',sans-serif;color:var(--navy-dark)}
+.res-row .pos{color:#1d7a44;font-weight:700}.res-row .neg{color:#b13b36;font-weight:700}
+.chart-box{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px}
+.legend{display:flex;gap:16px;justify-content:center;font-size:.76rem;color:var(--muted);margin-top:6px}
+.bk-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.bk-h{font-family:'Syne',sans-serif;font-size:.92rem;margin-bottom:10px}
+.bk-tbl{width:100%;border-collapse:collapse;font-size:.78rem}
+.bk-tbl th{text-align:left;font-size:.64rem;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);padding:6px 7px;border-bottom:1.5px solid var(--line2)}
+.bk-tbl td{padding:7px;border-bottom:1px solid var(--line);vertical-align:top}
+.bk-tbl .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bk-tbl .pn{font-weight:600;color:var(--navy-dark)}
+.bk-tbl .pr{font-size:.7rem;color:var(--muted)}
+.bk-tbl tr.sub td{background:var(--cream);font-weight:700;color:var(--navy-dark)}
+.bk-tbl tr.tot td{border-top:2px solid var(--line2);font-weight:800;color:var(--navy)}
+.hyp-list{list-style:none;font-size:.8rem;line-height:1.5}
+.hyp-list li{padding:5px 0 5px 18px;position:relative;color:var(--text);border-bottom:1px solid var(--line)}
+.hyp-list li:last-child{border:none}
+.hyp-list li::before{content:'▸';position:absolute;left:0;color:var(--teal)}
+.hyp-list b{color:var(--navy-dark)}
+.disclaimer{font-size:.74rem;color:#9a7320;background:rgba(201,151,43,.1);border:1px solid rgba(201,151,43,.28);border-radius:9px;padding:10px 13px;margin-top:14px;line-height:1.5}
+.hyp-note{font-size:.74rem;color:var(--muted);margin-top:10px;line-height:1.45;background:var(--cream);border:1px solid var(--line);border-radius:8px;padding:8px 11px}
+@media(max-width:880px){.bc-layout{grid-template-columns:1fr}.scn{grid-template-columns:1fr}.bk-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand"><span class="brand-dot"></span><span class="brand-name">Sia<b>·</b>Cosumar</span><span class="brand-sub">ROI & Business Case</span></div>
+  <nav class="topnav">
+    <a href="../index.html" class="home">← Hub</a>
+    <a href="use-cases-ia.html">Use Cases</a>
+    <a href="roi-business-case.html" class="active">ROI</a>
+    <a href="roadmap-builder.html">Roadmap</a>
+    <a href="simulateur-coe.html">CoE</a>
+    <a href="conformite.html">Conformité</a>
+  </nav>
+</div>
+
+<div class="wrap">
+  <div class="page-head">
+    <div class="flex between center wrap-f">
+      <div><div class="eyebrow">💰 Phase 3 · Business Case</div>
+      <h1 class="page-title">Calculateur ROI — Build vs Buy</h1></div>
+      <div class="flex gap"><button class="btn ghost sm" onclick="resetBC()">↺ Hypothèses par défaut</button><button class="btn teal" onclick="exportBC()">⬇ Export CSV</button></div>
+    </div>
+    <p class="page-sub">Business case par use case : comparez les scénarios <b>Build</b> et <b>Buy</b> sur l'horizon retenu — TCO, VAN (NPV), délai de retour (payback) et ROI. Chaque chiffrage est <b>décomposé en postes et justifié aux TJM du marché marocain</b> (voir « Chiffrage détaillé » plus bas). Hypothèses ajustables (K MAD, HT).</p>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi teal"><div class="kpi-val" id="k-npv">—</div><div class="kpi-label">VAN scénario recommandé</div></div>
+    <div class="kpi navy"><div class="kpi-val" id="k-pay">—</div><div class="kpi-label">Payback</div></div>
+    <div class="kpi gold"><div class="kpi-val" id="k-roi">—</div><div class="kpi-label">ROI sur horizon</div></div>
+    <div class="kpi"><div class="kpi-val" id="k-reco">—</div><div class="kpi-label">Recommandation</div></div>
+  </div>
+
+  <div class="bc-layout">
+    <div class="uc-list" id="uc-list"></div>
+    <div>
+      <div class="panel panel-pad mb">
+        <div class="flex between center wrap-f gap">
+          <h3 id="bc-title" style="color:var(--navy-dark)">—</h3>
+          <div class="flex gap wrap-f">
+            <div class="flex center gap"><label style="margin:0;white-space:nowrap">Horizon</label><select id="g-horizon" onchange="calc()" style="width:auto"><option value="3">3 ans</option><option value="5" selected>5 ans</option><option value="7">7 ans</option></select></div>
+            <div class="flex center gap"><label style="margin:0;white-space:nowrap">Taux d'actualisation</label><select id="g-rate" onchange="calc()" style="width:auto"><option value="0.06">6 %</option><option value="0.08" selected>8 %</option><option value="0.10">10 %</option><option value="0.12">12 %</option></select></div>
+          </div>
+        </div>
+      </div>
+      <div class="scn">
+        <div class="scn-card build">
+          <h4>🔧 Scénario Build <span class="winner" id="win-build" style="display:none">recommandé</span></h4>
+          <div class="muted" style="font-size:.78rem;margin:4px 0 12px">Développement interne — différenciant, données propriétaires</div>
+          <div class="in-row"><label>CAPEX initial (dév.)</label><input type="number" id="b-capex" oninput="calc()"></div>
+          <div class="in-row"><label>OPEX annuel (run, MLOps)</label><input type="number" id="b-opex" oninput="calc()"></div>
+          <div class="in-row"><label>Bénéfice annuel</label><input type="number" id="b-ben" oninput="calc()"></div>
+          <div class="in-row"><label>Montée en charge an 1 (%)</label><input type="number" id="b-ramp" oninput="calc()"></div>
+          <div class="divider"></div>
+          <div id="b-res"></div>
+        </div>
+        <div class="scn-card buy">
+          <h4>🛒 Scénario Buy <span class="winner" id="win-buy" style="display:none">recommandé</span></h4>
+          <div class="muted" style="font-size:.78rem;margin:4px 0 12px">Solution éditeur — time-to-market, besoin standard</div>
+          <div class="in-row"><label>CAPEX initial (intégration)</label><input type="number" id="y-capex" oninput="calc()"></div>
+          <div class="in-row"><label>OPEX annuel (licence, support)</label><input type="number" id="y-opex" oninput="calc()"></div>
+          <div class="in-row"><label>Bénéfice annuel</label><input type="number" id="y-ben" oninput="calc()"></div>
+          <div class="in-row"><label>Montée en charge an 1 (%)</label><input type="number" id="y-ramp" oninput="calc()"></div>
+          <div class="divider"></div>
+          <div id="y-res"></div>
+        </div>
+      </div>
+      <div class="chart-box mt">
+        <div class="flex between center"><h3 style="color:var(--navy-dark);font-size:.98rem">Cash-flow cumulé actualisé</h3><span class="muted" style="font-size:.76rem">K MAD · ligne 0 = seuil de rentabilité</span></div>
+        <div id="chart"></div>
+        <div class="legend"><span class="flex center gap"><span class="dot" style="background:var(--navy)"></span>Build</span><span class="flex center gap"><span class="dot" style="background:var(--teal)"></span>Buy</span></div>
+      </div>
+
+      <div class="panel mt">
+        <div class="panel-head"><h3>Chiffrage détaillé & justification — contexte marché marocain 🇲🇦</h3><span class="ph-sub">décomposition des CAPEX/OPEX en postes, jours-homme aux TJM locaux</span></div>
+        <div class="panel-pad">
+          <p class="muted" style="font-size:.82rem;margin-bottom:14px">Les montants saisis ci-dessus sont décomposés en postes et traduits en <b>jours-homme</b> aux <b>taux journaliers moyens (TJM) du marché marocain</b> (profils data/IA, ESN / Casablanca Finance City). Modifier un CAPEX/OPEX recalcule la répartition.</p>
+          <div class="bk-grid">
+            <div><h4 class="bk-h" style="color:var(--navy)">🔧 Build — décomposition</h4><div id="bk-build"></div></div>
+            <div><h4 class="bk-h" style="color:var(--teal-dark)">🛒 Buy — décomposition</h4><div id="bk-buy"></div></div>
+          </div>
+          <div class="divider"></div>
+          <h4 class="bk-h" style="color:var(--navy-dark)">📌 Hypothèses & contexte marché marocain</h4>
+          <div class="grid-2" style="gap:18px;margin-top:10px">
+            <div>
+              <div class="muted" style="font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">TJM — profils data/IA (MAD/jour, chargé) · <span style="color:var(--teal-dark)">éditables</span></div>
+              <div class="tbl-scroll"><table class="tbl" style="font-size:.8rem"><tbody id="tjm-body"></tbody></table></div>
+            </div>
+            <div>
+              <div class="muted" style="font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Paramètres & facteurs locaux</div>
+              <ul class="hyp-list" id="hyp-list"></ul>
+            </div>
+          </div>
+          <div class="disclaimer">⚠️ Ordres de grandeur <b>indicatifs</b> (marché marocain, 2026) destinés au cadrage budgétaire — à confirmer par devis fournisseurs / ESN et chiffrage RH interne. Montants <b>hors taxes</b> (TVA 20 %).</div>
+        </div>
+      </div>
+
+      <div class="panel mt">
+        <div class="panel-head"><h3>Justification des bénéfices annuels — gisements de valeur 🇲🇦</h3><span class="ph-sub" id="ben-sub">leviers de gain & hypothèses de valorisation</span></div>
+        <div class="panel-pad">
+          <p class="muted" style="font-size:.82rem;margin-bottom:14px">Le bénéfice annuel n'est pas posé : il est <b>décomposé en leviers de valeur</b>, chacun valorisé à partir d'hypothèses ancrées dans le contexte Cosumar / marché marocain (salaires chargés locaux, coût d'un arrêt en campagne sucrière, coût de portage du stock…).</p>
+          <div class="bk-grid">
+            <div><h4 class="bk-h" style="color:var(--teal-dark)">💎 Leviers de valeur</h4><div id="ben-table"></div></div>
+            <div><h4 class="bk-h" style="color:var(--navy-dark)">📐 Hypothèses de valorisation <span class="chip teal" style="vertical-align:middle">éditables</span></h4><div id="ben-hyp"></div></div>
+          </div>
+          <div class="disclaimer">⚠️ Gains <b>potentiels indicatifs</b> à confirmer par mesure terrain (baseline) et pilote. La montée en charge an 1 (paramètre « ramp-up ») reflète l'atteinte progressive de ces gains.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="sia-foot"><div><b>Sia × Cosumar</b> · ROI & Business Case</div><div>VAN · Payback · TCO · Build/Buy</div></footer>
+<div id="toast"></div>
+<script src="../assets/sia.js"></script>
+<script>
+// default model per UC (K MAD). build/buy capex,opex,benefit,ramp%
+const MODEL=[
+ {id:1,name:"Maintenance prédictive turbines",dir:"Industrielle",build:[200,50,350,40],buy:[90,90,330,55]},
+ {id:2,name:"Optimisation process sucrier",dir:"Industrielle",build:[300,75,600,30],buy:[140,150,560,45]},
+ {id:3,name:"Prévision récolte satellite",dir:"Amont Agricole",build:[400,90,250,30],buy:[160,180,260,50]},
+ {id:4,name:"Demand forecasting sucre",dir:"Supply Chain",build:[150,40,400,45],buy:[70,95,420,65]},
+ {id:5,name:"OCR factures fournisseurs",dir:"Financière",build:[120,35,180,50],buy:[45,55,190,70]},
+ {id:6,name:"Chatbot RH CorpGPT",dir:"RH",build:[115,40,220,40],buy:[60,75,210,60]},
+ {id:7,name:"Détection anomalies énergie",dir:"Industrielle",build:[150,38,300,45],buy:[80,85,290,60]},
+ {id:8,name:"Analyse contrats NLP",dir:"Juridique",build:[140,40,150,35],buy:[60,70,160,55]},
+ {id:9,name:"People analytics & turnover",dir:"RH",build:[160,45,200,30],buy:[90,95,195,50]},
+ {id:10,name:"Route optimization livraisons",dir:"Supply Chain",build:[225,55,350,40],buy:[110,120,360,55]},
+];
+let sel=0, state={};
+function loadState(){ state=store.get('roi.overrides',{}); }
+function curKey(){ return 'uc'+MODEL[sel].id; }
+
+function renderList(){
+  document.getElementById('uc-list').innerHTML=MODEL.map((u,i)=>`<div class="uc-item ${i===sel?'active':''}" onclick="select(${i})"><div class="un">${u.id}. ${u.name}</div><div class="um">${u.dir}</div></div>`).join('');
+}
+function select(i){ sel=i; fillInputs(); calc(); renderList(); }
+
+function fillInputs(){
+  const u=MODEL[sel]; const ov=state[curKey()];
+  const b=ov?ov.build:u.build, y=ov?ov.buy:u.buy;
+  document.getElementById('b-capex').value=b[0];document.getElementById('b-opex').value=b[1];document.getElementById('b-ben').value=b[2];document.getElementById('b-ramp').value=b[3];
+  document.getElementById('y-capex').value=y[0];document.getElementById('y-opex').value=y[1];document.getElementById('y-ben').value=y[2];document.getElementById('y-ramp').value=y[3];
+  document.getElementById('bc-title').textContent=u.id+'. '+u.name;
+}
+function readInputs(){
+  const g=id=>+document.getElementById(id).value||0;
+  return {build:[g('b-capex'),g('b-opex'),g('b-ben'),g('b-ramp')],buy:[g('y-capex'),g('y-opex'),g('y-ben'),g('y-ramp')]};
+}
+// returns {flows:[], cum:[], npv, payback, roi, tco, totalBenefit}
+function compute(scn,horizon,rate){
+  const [capex,opex,ben,ramp]=scn;
+  let flows=[-capex], cum=[-capex], disc=[-capex];
+  let npv=-capex, tco=capex, totBen=0, dcum=-capex, payback=null;
+  for(let y=1;y<=horizon;y++){
+    const factor=y===1?ramp/100:1;
+    const benefit=ben*factor;
+    const net=benefit-opex;
+    totBen+=benefit; tco+=opex;
+    const d=net/Math.pow(1+rate,y);
+    npv+=d;
+    flows.push(net);
+    dcum+=d; disc.push(dcum);
+    if(payback===null && dcum>=0){ // interpolate within year
+      const prev=disc[y-1];
+      payback=(y-1)+(0-prev)/(dcum-prev);
+    }
+  }
+  const roi=tco>0?((totBen-tco)/tco*100):0;
+  return {disc,npv,payback,roi,tco,totBen};
+}
+function fmtSign(v){ return (v>=0?'+':'')+Math.round(v).toLocaleString('fr-FR')+'K'; }
+function resHTML(r){
+  return `<div class="res-row"><span>VAN (NPV)</span><b class="${r.npv>=0?'pos':'neg'}">${fmtSign(r.npv)}</b></div>
+   <div class="res-row"><span>Payback</span><b>${r.payback?r.payback.toFixed(1)+' ans':'> horizon'}</b></div>
+   <div class="res-row"><span>ROI sur horizon</span><b class="${r.roi>=0?'pos':'neg'}">${Math.round(r.roi)} %</b></div>
+   <div class="res-row"><span>TCO cumulé</span><b>${Math.round(r.tco).toLocaleString('fr-FR')}K</b></div>
+   <div class="res-row"><span>Bénéfices cumulés</span><b>${Math.round(r.totBen).toLocaleString('fr-FR')}K</b></div>`;
+}
+function calc(){
+  const horizon=+document.getElementById('g-horizon').value, rate=+document.getElementById('g-rate').value;
+  const ins=readInputs();
+  state[curKey()]=ins; store.set('roi.overrides',state);
+  const rb=compute(ins.build,horizon,rate), ry=compute(ins.buy,horizon,rate);
+  document.getElementById('b-res').innerHTML=resHTML(rb);
+  document.getElementById('y-res').innerHTML=resHTML(ry);
+  // winner = higher NPV
+  const buildWins=rb.npv>=ry.npv;
+  document.getElementById('win-build').style.display=buildWins?'inline-block':'none';
+  document.getElementById('win-buy').style.display=buildWins?'none':'inline-block';
+  const best=buildWins?rb:ry;
+  document.getElementById('k-npv').textContent=fmtSign(best.npv);
+  document.getElementById('k-pay').textContent=best.payback?best.payback.toFixed(1)+' ans':'> horizon';
+  document.getElementById('k-roi').textContent=Math.round(best.roi)+' %';
+  document.getElementById('k-reco').textContent=buildWins?'Build':'Buy';
+  drawChart(rb.disc,ry.disc,horizon);
+  renderBreakdown(ins);
+  renderBenefits();
+}
+
+// ---------- Chiffrage détaillé — contexte marché marocain ----------
+// Modèle de coûts PARTAGÉ (sia.js) — TJM marché marocain éditables & persistés ('roi.tjm')
+const COST=COSUMAR_VALUE.COST_MODEL;
+let tjm=COSUMAR_VALUE.loadTJM();
+function bkTable(capexLines,capexTot,opexLines,opexTot){
+  const row=(l,amountK)=>{ const mad=amountK*1000; const rate=l.role?tjm[l.role]:0; const jours=rate?Math.round(mad/rate*10)/10:null;
+    return `<tr><td><div class="pn">${l.p}</div><div class="pr">${l.pr}</div></td><td class="num">${jours!=null?jours.toLocaleString('fr-FR')+' j':'—'}</td><td class="num">${rate?rate.toLocaleString('fr-FR'):'—'}</td><td class="num">${Math.round(amountK)} K</td><td class="num">${Math.round(l.w*100)}%</td></tr>`; };
+  let h=`<table class="bk-tbl"><thead><tr><th>Poste</th><th class="num">Jours-h</th><th class="num">TJM</th><th class="num">Montant</th><th class="num">%</th></tr></thead><tbody>`;
+  h+=`<tr class="sub"><td colspan="5">CAPEX initial — ${Math.round(capexTot)} K MAD</td></tr>`;
+  capexLines.forEach(l=>h+=row(l,l.w*capexTot));
+  h+=`<tr class="sub"><td colspan="5">OPEX annuel — ${Math.round(opexTot)} K MAD/an</td></tr>`;
+  opexLines.forEach(l=>h+=row(l,l.w*opexTot));
+  const jh=capexLines.reduce((a,l)=>{ const rate=l.role?tjm[l.role]:0; return a+(rate?(l.w*capexTot*1000)/rate:0); },0);
+  h+=`<tr class="tot"><td>Effort projet (CAPEX)</td><td class="num">${Math.round(jh)} j</td><td></td><td class="num">${Math.round(capexTot)} K</td><td></td></tr>`;
+  h+='</tbody></table>';
+  return h;
+}
+function renderBreakdown(ins){
+  document.getElementById('bk-build').innerHTML=bkTable(COST.buildCapex,ins.build[0],COST.buildOpex,ins.build[1]);
+  document.getElementById('bk-buy').innerHTML=bkTable(COST.buyCapex,ins.buy[0],COST.buyOpex,ins.buy[1]);
+}
+function renderMarketHyp(){
+  let t=COSUMAR_VALUE.TJM_META.map(m=>`<tr><td class="pn" style="font-weight:600;color:var(--navy-dark)">${m.l}</td><td class="num" style="text-align:right"><input type="number" id="tjm-${m.k}" value="${tjm[m.k]}" step="100" min="1500" max="12000" style="width:94px;text-align:right" oninput="onTJM()"></td></tr>`).join('');
+  t+=`<tr><td colspan="2" style="text-align:right;padding-top:8px"><button class="btn ghost sm" onclick="resetTJM()">↺ TJM par défaut</button></td></tr>`;
+  document.getElementById('tjm-body').innerHTML=t;
+  const hyp=[
+   "<b>Profils data/IA rares</b> au Maroc : TJM tirés vers le haut, recours fréquent aux ESN de Casablanca Finance City.",
+   "<b>Build</b> = jours-homme internes/ESN × TJM ; pèse sur la masse salariale mais capitalise le savoir-faire et l'IP.",
+   "<b>Buy</b> = licences souvent libellées en <b>EUR/USD</b> (≈ 11 MAD/EUR, ≈ 10 MAD/USD) → exposition au change.",
+   "<b>Souveraineté</b> : l'hébergement souverain marocain (CNDP) peut induire un surcoût vs cloud public international.",
+   "<b>Ramp-up an 1</b> : bénéfices partiels la 1ère année (déploiement, adoption) — modélisé par la montée en charge.",
+   "Montants <b>HT</b> ; <b>TVA 20 %</b> applicable ; aides possibles (Maroc Digital, programmes d'innovation).",
+  ];
+  document.getElementById('hyp-list').innerHTML=hyp.map(h=>`<li>${h}</li>`).join('');
+}
+function onTJM(){
+  COSUMAR_VALUE.TJM_META.forEach(m=>{ const el=document.getElementById('tjm-'+m.k); if(el) tjm[m.k]=+el.value||COSUMAR_VALUE.TJM_DEF[m.k]; });
+  COSUMAR_VALUE.saveTJM(tjm);
+  renderBreakdown(readInputs());
+}
+function resetTJM(){ tjm=Object.assign({},COSUMAR_VALUE.TJM_DEF); COSUMAR_VALUE.saveTJM(tjm); renderMarketHyp(); renderBreakdown(readInputs()); toast('TJM réinitialisés'); }
+
+// ---------- Justification des bénéfices (gisements de valeur, hypothèses éditables) ----------
+// cat : levier de valeur rattaché à une hypothèse éditable — modèle partagé dans sia.js
+const PARAM_META=[
+ {k:"portage",l:"Coût de portage du stock (%/an)",ref:5,step:0.5,min:1,max:12},
+ {k:"salEmp",l:"Salaire chargé — employé qualifié (K MAD/an)",ref:150,step:10,min:80,max:300},
+ {k:"salCadre",l:"Salaire chargé — cadre (K MAD/an)",ref:300,step:20,min:150,max:600},
+ {k:"rendement",l:"Valorisation gain de rendement (%)",ref:100,step:5,min:40,max:200},
+ {k:"energie",l:"Valorisation gains énergie (%)",ref:100,step:5,min:40,max:200},
+ {k:"arret",l:"Valorisation coût d'arrêt (%)",ref:100,step:5,min:40,max:200},
+ {k:"transport",l:"Valorisation coût transport (%)",ref:100,step:5,min:40,max:200},
+];
+const PARAM_DEF=COSUMAR_VALUE.PARAM_DEF;
+let params={};
+function loadParams(){ params=COSUMAR_VALUE.loadParams(); }
+function benefitLines(){ return COSUMAR_VALUE.benefitLines(params,MODEL[sel].id); }
+function renderBenefits(){
+  const lines=benefitLines();
+  const tot=lines.reduce((a,l)=>a+l.v,0);
+  let h='<table class="bk-tbl"><thead><tr><th>Levier de valeur</th><th>Hypothèse (contexte)</th><th class="num">Gain/an</th></tr></thead><tbody>';
+  lines.forEach(l=>{ const moved=l.v!==l.base; h+=`<tr><td class="pn">${l.l}</td><td class="pr" style="white-space:normal">${l.h}</td><td class="num"${moved?' style="color:var(--teal-dark)"':''}>${l.v} K</td></tr>`; });
+  h+=`<tr class="tot"><td colspan="2">Gisement de valeur annuel</td><td class="num">${tot} K MAD/an</td></tr></tbody></table>`;
+  h+=`<div class="flex gap wrap-f" style="margin-top:10px"><button class="btn teal sm" onclick="applyBenefits(${tot})">↧ Appliquer au business case</button><button class="btn ghost sm" onclick="resetParams()">↺ Hypothèses par défaut</button></div>`;
+  document.getElementById('ben-table').innerHTML=h;
+  const benIn=Math.round((+document.getElementById('b-ben').value + +document.getElementById('y-ben').value)/2);
+  const diff=tot-benIn;
+  document.getElementById('ben-sub').textContent=`gisement ≈ ${tot} K/an · bénéfice retenu ≈ ${benIn} K/an${Math.abs(diff)>2?` (écart ${diff>0?'+':''}${diff} K)`:''}`;
+}
+function renderBenForm(){
+  let h='<div style="display:grid;grid-template-columns:1fr;gap:9px">';
+  PARAM_META.forEach(p=>{ h+=`<div class="in-row"><label style="flex:1">${p.l}</label><input type="number" style="width:92px;text-align:right" id="prm-${p.k}" value="${params[p.k]}" min="${p.min}" max="${p.max}" step="${p.step}" oninput="onParam()"></div>`; });
+  h+='</div><div class="hyp-note">Modifiez une hypothèse → les gisements concernés se recalculent. « Appliquer » reporte le total dans le bénéfice annuel et met à jour VAN / payback / ROI. <b>Hypothèses partagées avec le simulateur Monte-Carlo.</b></div>';
+  document.getElementById('ben-hyp').innerHTML=h;
+}
+function onParam(){
+  PARAM_META.forEach(p=>{ const el=document.getElementById('prm-'+p.k); if(el) params[p.k]=+el.value||PARAM_DEF[p.k]; });
+  store.set('roi.params',params);
+  renderBenefits();
+}
+function resetParams(){ params=Object.assign({},PARAM_DEF); store.set('roi.params',params); renderBenForm(); renderBenefits(); toast('Hypothèses réinitialisées'); }
+function applyBenefits(tot){
+  document.getElementById('b-ben').value=tot;
+  document.getElementById('y-ben').value=tot;
+  calc();
+  toast('Gisement reporté au business case ('+tot+' K/an)');
+}
+function drawChart(b,y,horizon){
+  const W=720,H=240,P=42;
+  const all=b.concat(y); const min=Math.min(0,...all), max=Math.max(0,...all);
+  const xs=i=>P+(W-P-12)*(i/horizon);
+  const ys=v=>H-P-(H-P-18)*((v-min)/(max-min||1));
+  const line=(arr,col)=>{ let d=arr.map((v,i)=>(i?'L':'M')+xs(i).toFixed(1)+' '+ys(v).toFixed(1)).join(' ');
+    let pts=arr.map((v,i)=>`<circle cx="${xs(i).toFixed(1)}" cy="${ys(v).toFixed(1)}" r="3.2" fill="${col}"/>`).join('');
+    return `<path d="${d}" fill="none" stroke="${col}" stroke-width="2.5"/>${pts}`; };
+  let grid='';
+  for(let i=0;i<=horizon;i++){ grid+=`<text x="${xs(i)}" y="${H-P+16}" font-size="10" fill="#6B7A99" text-anchor="middle">An ${i}</text>`; }
+  const zeroY=ys(0);
+  document.getElementById('chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">
+    <line x1="${P}" y1="${zeroY}" x2="${W-12}" y2="${zeroY}" stroke="#E0544E" stroke-width="1" stroke-dasharray="4 4"/>
+    <text x="${P-6}" y="${zeroY-4}" font-size="9" fill="#E0544E" text-anchor="end">0</text>
+    ${grid}${line(b,'#1F4E79')}${line(y,'#00A896')}</svg>`;
+}
+function resetBC(){ delete state[curKey()]; store.set('roi.overrides',state); fillInputs(); calc(); toast('Hypothèses par défaut restaurées'); }
+function exportBC(){
+  const horizon=+document.getElementById('g-horizon').value, rate=+document.getElementById('g-rate').value;
+  const rows=[["Use Case","Direction","Scénario","CAPEX K","OPEX/an K","Bénéfice/an K","VAN K","Payback ans","ROI %","TCO K"]];
+  MODEL.forEach((u,i)=>{ const ins=state['uc'+u.id]||{build:u.build,buy:u.buy};
+    [["Build",ins.build],["Buy",ins.buy]].forEach(([lbl,scn])=>{ const r=compute(scn,horizon,rate);
+      rows.push([u.name,u.dir,lbl,scn[0],scn[1],scn[2],Math.round(r.npv),r.payback?r.payback.toFixed(1):">"+horizon,Math.round(r.roi),Math.round(r.tco)]);
+    });
+  });
+  downloadCSV('Cosumar_Business_Case_ROI.csv',rows);
+}
+loadState();loadParams();renderMarketHyp();renderBenForm();renderList();fillInputs();calc();
+</script>
+</body>
+</html>

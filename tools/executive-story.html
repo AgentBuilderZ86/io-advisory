@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Executive Story — Cosumar × Sia</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1F4E79;--navy2:#2E75B6;--navy-dark:#0D2B45;--teal:#00A896;--teal-l:#5fd6c6;--gold:#C9972B;--ink:#071521}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--ink);color:#fff;overflow:hidden}
+h1,h2,h3,.head{font-family:'Syne',sans-serif;font-weight:800;letter-spacing:-.5px}
+/* progress */
+#prog{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--teal),var(--teal-l));z-index:50;transition:width .5s ease;box-shadow:0 0 12px rgba(0,168,150,.6)}
+/* deck */
+#deck{height:100vh;width:100vw;position:relative}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:6vh 8vw;opacity:0;visibility:hidden;transform:translateY(30px) scale(.99);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1),visibility .7s}
+.slide.active{opacity:1;visibility:visible;transform:none}
+.slide::before{content:'';position:absolute;inset:0;z-index:-1;opacity:.9}
+.s-bg1::before{background:radial-gradient(1200px 600px at 75% 15%,rgba(0,168,150,.28),transparent 60%),linear-gradient(160deg,#0D2B45,#071521)}
+.s-bg2::before{background:radial-gradient(900px 500px at 15% 85%,rgba(46,117,182,.3),transparent 60%),linear-gradient(160deg,#0a2236,#071521)}
+.s-bg3::before{background:radial-gradient(1000px 600px at 85% 80%,rgba(201,151,43,.18),transparent 60%),linear-gradient(160deg,#0D2B45,#071521)}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:.8rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal-l);margin-bottom:22px}
+.eyebrow .ln{width:34px;height:2px;background:var(--teal)}
+.slide h1{font-size:clamp(2.2rem,6vw,5rem);line-height:1.02;max-width:16ch}
+.slide h2{font-size:clamp(1.8rem,4.2vw,3.4rem);line-height:1.05;max-width:18ch;margin-bottom:8px}
+.lead{font-size:clamp(1rem,1.6vw,1.35rem);color:rgba(255,255,255,.72);max-width:60ch;line-height:1.6;margin-top:18px}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s,transform .7s}
+.slide.active .reveal{opacity:1;transform:none}
+.slide.active .reveal:nth-child(2){transition-delay:.12s}
+.slide.active .reveal:nth-child(3){transition-delay:.24s}
+.slide.active .reveal:nth-child(4){transition-delay:.36s}
+.slide.active .reveal:nth-child(5){transition-delay:.48s}
+/* stat row */
+.stats{display:flex;gap:54px;flex-wrap:wrap;margin-top:40px}
+.stat .n{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2.4rem,4vw,3.6rem);background:linear-gradient(120deg,#fff,var(--teal-l));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.stat .l{font-size:.86rem;color:rgba(255,255,255,.6);margin-top:8px;max-width:18ch}
+/* grids */
+.cards{display:grid;gap:16px;margin-top:34px}
+.c3{grid-template-columns:repeat(3,1fr)}.c4{grid-template-columns:repeat(4,1fr)}.c2{grid-template-columns:1fr 1fr}
+.card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:22px;backdrop-filter:blur(6px)}
+.card .ct{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:#fff}
+.card .cl{font-size:.82rem;color:rgba(255,255,255,.6);margin-top:6px}
+.card .cd{font-size:.9rem;color:rgba(255,255,255,.78);margin-top:8px;line-height:1.5}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;padding:4px 11px;border-radius:20px;background:rgba(0,168,150,.18);color:var(--teal-l);margin:3px 5px 0 0}
+.tag.gold{background:rgba(201,151,43,.2);color:#e9c987}
+.tag.navy{background:rgba(46,117,182,.25);color:#a9cdf0}
+/* maturity bar */
+.matline{margin-top:30px;max-width:760px}
+.matrow{display:flex;align-items:center;gap:16px;margin-bottom:14px}
+.matrow .ml{width:130px;font-size:.86rem;color:rgba(255,255,255,.7)}
+.track{flex:1;height:12px;border-radius:8px;background:rgba(255,255,255,.1);position:relative;overflow:hidden}
+.track .now{position:absolute;left:0;top:0;bottom:0;border-radius:8px;background:linear-gradient(90deg,var(--navy2),var(--teal));width:0;transition:width 1.2s cubic-bezier(.2,.7,.2,1)}
+.track .tgt{position:absolute;top:-4px;bottom:-4px;width:3px;background:var(--gold);border-radius:2px}
+/* funnel */
+.fnl{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:30px}
+.fstage{padding:20px;border-radius:14px;text-align:center;color:#fff;font-weight:700;font-size:1.1rem;transition:transform .6s}
+.fstage .fn{font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;display:block}
+.f1{width:min(720px,80vw);background:linear-gradient(135deg,#163a5c,#0D2B45)}
+.f2{width:min(520px,62vw);background:linear-gradient(135deg,var(--navy2),var(--navy))}
+.f3{width:min(330px,46vw);background:linear-gradient(135deg,var(--teal),var(--teal-dark,#048A7E))}
+/* waves */
+.waves{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:34px}
+.wave{border-radius:18px;padding:24px;position:relative;overflow:hidden}
+.wave.w1{background:linear-gradient(160deg,rgba(0,168,150,.22),rgba(0,168,150,.06));border:1px solid rgba(0,168,150,.3)}
+.wave.w2{background:linear-gradient(160deg,rgba(46,117,182,.22),rgba(46,117,182,.06));border:1px solid rgba(46,117,182,.3)}
+.wave.w3{background:linear-gradient(160deg,rgba(201,151,43,.2),rgba(201,151,43,.05));border:1px solid rgba(201,151,43,.3)}
+.wave .wp{font-size:.74rem;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.wave .wt{font-family:'Syne',sans-serif;font-weight:800;font-size:1.25rem;margin:6px 0 4px}
+.wave .wb{font-family:'Syne',sans-serif;font-weight:800;font-size:1.7rem;color:var(--teal-l)}
+.wave ul{list-style:none;margin-top:12px;font-size:.84rem;color:rgba(255,255,255,.72)}
+.wave li{padding:4px 0 4px 16px;position:relative}
+.wave li::before{content:'';position:absolute;left:0;top:11px;width:6px;height:6px;border-radius:50%;background:var(--teal-l)}
+/* brand mark */
+.mark{position:fixed;left:8vw;bottom:4vh;display:flex;align-items:center;gap:10px;z-index:40;opacity:.9}
+.mark .d{width:9px;height:9px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 4px rgba(0,168,150,.18)}
+.mark .t{font-family:'Syne',sans-serif;font-weight:800;font-size:.92rem}
+.mark .t b{color:var(--teal-l)}
+.snum{position:fixed;right:8vw;bottom:4vh;font-size:.82rem;color:rgba(255,255,255,.4);z-index:40;letter-spacing:1px}
+/* controls */
+#ctrl{position:fixed;right:24px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:45}
+.dot{width:11px;height:11px;border-radius:50%;border:none;background:rgba(255,255,255,.22);cursor:pointer;transition:.25s;padding:0}
+.dot.on{background:var(--teal);transform:scale(1.35);box-shadow:0 0 10px rgba(0,168,150,.7)}
+#bar{position:fixed;bottom:0;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:14px;padding:14px;z-index:45;opacity:0;transition:.3s;pointer-events:none}
+#bar.show{opacity:1;pointer-events:auto}
+.cbtn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);color:#fff;border-radius:10px;padding:9px 14px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.84rem;cursor:pointer;transition:.2s;display:inline-flex;align-items:center;gap:7px}
+.cbtn:hover{background:var(--teal);border-color:var(--teal)}
+.cbtn.home{background:transparent}
+.hint{position:fixed;left:50%;bottom:64px;transform:translateX(-50%);font-size:.78rem;color:rgba(255,255,255,.4);z-index:40;transition:.4s}
+/* counter on KPI cards */
+.gauge-ring{display:flex;align-items:center;gap:30px;margin-top:30px;flex-wrap:wrap}
+/* PRINT — export deck to PDF */
+@media print{
+  @page{size:landscape;margin:0}
+  body{overflow:visible;background:#fff}
+  #prog,#ctrl,#bar,.hint{display:none!important}
+  #deck{height:auto}
+  .slide{position:relative;inset:auto;opacity:1!important;visibility:visible!important;transform:none!important;height:100vh;page-break-after:always;break-after:page}
+  .slide .reveal{opacity:1!important;transform:none!important}
+  .mark,.snum{position:absolute}
+}
+@media(max-width:760px){.cards.c3,.cards.c4{grid-template-columns:1fr 1fr}.waves{grid-template-columns:1fr}.stats{gap:28px}}
+</style>
+</head>
+<body>
+<div id="prog"></div>
+
+<div id="deck">
+  <!-- 1 COVER -->
+  <section class="slide s-bg1 active" data-bg>
+    <div class="eyebrow reveal"><span class="ln"></span>Cosumar × Sia · Confidentiel</div>
+    <h1 class="reveal">Faire de Cosumar le <span style="color:var(--teal-l)">leader IA</span> du sucre en Afrique.</h1>
+    <p class="lead reveal">Feuille de route IA pluriannuelle & CorpGPT — une trajectoire de transformation sur 36 mois, conçue, chiffrée et gouvernée.</p>
+    <div class="stats reveal">
+      <div class="stat"><div class="n" data-count="18">0</div><div class="l">semaines de mission · 4 phases</div></div>
+      <div class="stat"><div class="n" data-count="10">0</div><div class="l">use cases IA identifiés</div></div>
+      <div class="stat"><div class="n" data-count="36">0</div><div class="l">mois d'horizon roadmap</div></div>
+    </div>
+  </section>
+
+  <!-- 2 MANDAT -->
+  <section class="slide s-bg2" data-bg>
+    <div class="eyebrow reveal"><span class="ln"></span>Le mandat</div>
+    <h2 class="reveal">Une démarche structurée, du COMEX au terrain.</h2>
+    <div class="cards c4 reveal">
+      <div class="card"><div class="tag gold">Phase 1</div><div class="ct" style="font-size:1.15rem;margin-top:10px">Acculturation</div><div class="cd">Séminaire C-Level · 50 Champions IA</div></div>
+      <div class="card"><div class="tag navy">Phase 2</div><div class="ct" style="font-size:1.15rem;margin-top:10px">Diagnostic</div><div class="cd">42 entretiens · audit SI · maturité</div></div>
+      <div class="card"><div class="tag">Phase 3</div><div class="ct" style="font-size:1.15rem;margin-top:10px">Stratégie</div><div class="cd">Use cases · roadmap 3 vagues</div></div>
+      <div class="card"><div class="tag navy">Phase 4</div><div class="ct" style="font-size:1.15rem;margin-top:10px">Operating Model</div><div class="cd">CoE · gouvernance · Charte IA</div></div>
+    </div>
+    <p class="lead reveal">Framework <b style="color:#fff">AI Roadmap 360</b> de Sia — 7 axes : Strategy, Value, Organization, People, Governance, Engineering, Data.</p>
+  </section>
+
+  <!-- 3 DIAGNOSTIC -->
+  <section class="slide s-bg2" data-bg>
+    <div class="eyebrow reveal"><span class="ln"></span>Le diagnostic</div>
+    <h2 class="reveal">Une maturité émergente, un potentiel considérable.</h2>
+    <div class="matline reveal" id="matline"></div>
+    <p class="lead reveal"><b style="color:var(--teal-l)">2,6 → 4,0</b> de maturité IA cible · positionnement à mi-chemin du benchmark de 14 opérateurs sucriers mondiaux. <span style="color:rgba(255,255,255,.5)">— le repère doré marque la cible.</span></p>
+  </section>
+
+  <!-- 4 POTENTIEL -->
+  <section class="slide s-bg1" data-bg>
+    <div class="eyebrow reveal"><span class="ln"></span>Le potentiel</div>
+    <h2 class="reveal">10 use cases IA, 8 directions, toutes les familles d'IA.</h2>
+    <div class="cards c3 reveal">
+      <div class="card"><div class="ct">Industrie</div><div class="cd">Maintenance prédictive · optimisation process · anomalies énergie</div><div style="margin-top:10px"><span class="tag">ML</span><span class="tag">Prescriptive</span></div></div>
+      <div class="card"><div class="ct">Supply Chain</div><div class="cd">Demand forecasting · optimisation des tournées</div><div style="margin-top:10px"><span class="tag navy">ML</span><span class="tag navy">Prescriptive</span></div></div>
+      <div class="card"><div class="ct">RH · Finance · Juridique</div><div class="cd">CorpGPT RH · OCR factures · contrats NLP · people analytics</div><div style="margin-top:10px"><span class="tag gold">GenAI</span><span class="tag gold">Cognitive</span></div></div>
+    </div>
+    <div class="stats reveal" style="margin-top:30px">
+      <div class="stat"><div class="n" data-count="40" data-suffix="-60">0</div><div class="l">idées générées en ateliers</div></div>
+      <div class="stat"><div class="n" data-count="6">0</div><div class="l">familles d'IA mobilisées</div></div>
+      <div class="stat"><div class="n" data-count="8">0</div><div class="l">directions métiers impliquées</div></div>
+    </div>
+  </section>
+
+  <!-- 5 FUNNEL -->
+  <section class="slide s-bg3" data-bg>
+    <div class="eyebrow reveal"><span class="ln"></span>La rigueur du tri</div>
+    <h2 class="reveal">Un funnel à 3 filtres, de l'idée à l'investissement.</h2>
+    <div class="fnl reveal">
+      <div class="fstage f1"><span class="fn">40–60</span>Présélection collaborative</div>
+      <div class="fstage f2"><span class="fn">20–25</span>Qualification technique & ROI</div>
+      <div class="fstage f3"><span class="fn">10</span>Priorisation COPIL</div>
+    </div>
+    <p class="lead reveal" style="text-align:center;margin-left:auto;margin-right:auto">Scoring multicritère pondéré · cadre Build / Buy / Borrow / Bot pour chaque décision.</p>
+  </section>
+
+  <!-- 6 ROADMAP -->
+  <section class="slide s-bg2" data-bg>
+    <div class="eyebrow reveal"><span class="ln"></span>La trajectoire</div>
+    <h2 class="reveal">Une roadmap en 3 vagues sur 36 mois.</h2>
+    <div class="waves reveal">
+      <div class="wave w1"><div class="wp">0–12 mois</div><div class="wt">Quick Wins</div><div class="wb">~490K MAD</div><ul><li>Demand forecasting</li><li>OCR factures</li><li>CorpGPT RH</li><li>Anomalies énergie</li></ul></div>
+      <div class="wave w2"><div class="wp">12–24 mois</div><div class="wt">Structurants</div><div class="wb">~525K MAD</div><ul><li>Maintenance prédictive</li><li>Contrats NLP</li><li>Route optimization</li></ul></div>
+      <div class="wave w3"><div class="wp">24–36 mois</div><div class="wt">Transformants</div><div class="wb">~860K MAD</div><ul><li>Optimisation process</li><li>Prévision récolte satellite</li><li>People analytics</li></ul></div>
+    </div>
+    <p class="lead reveal">Enveloppe globale <b style="color:var(--teal-l)">~1,9 M MAD</b> sur 3 ans · séquencée pour financer les vagues suivantes par les gains des premières.</p>
+  </section>
+
+  <!-- 7 VALEUR -->
+  <section class="slide s-bg1" data-bg>
+    <div class="eyebrow reveal"><span class="ln"></span>La valeur</div>
+    <h2 class="reveal">Un retour sur investissement démontré, use case par use case.</h2>
+    <div class="cards c4 reveal">
+      <div class="card"><div class="ct" style="color:var(--teal-l)">6–14<span style="font-size:1rem"> mois</span></div><div class="cl">payback des quick wins</div></div>
+      <div class="card"><div class="ct" style="color:var(--teal-l)">-15%</div><div class="cl">coûts de stock (demand forecasting)</div></div>
+      <div class="card"><div class="ct" style="color:var(--teal-l)">-70%</div><div class="cl">temps de saisie (OCR factures)</div></div>
+      <div class="card"><div class="ct" style="color:var(--teal-l)">-8%</div><div class="cl">facture énergétique industrielle</div></div>
+    </div>
+    <p class="lead reveal">Chaque projet est doté d'un <b style="color:#fff">business case Build vs Buy</b> : VAN, payback, TCO, ROI — décision d'investissement éclairée.</p>
+  </section>
+
+  <!-- 8 ORGANISATION -->
+  <section class="slide s-bg3" data-bg>
+    <div class="eyebrow reveal"><span class="ln"></span>L'organisation</div>
+    <h2 class="reveal">Un Centre d'Excellence IA pour passer à l'échelle.</h2>
+    <div class="cards c4 reveal">
+      <div class="card"><div class="ct">📣</div><div class="cl" style="font-weight:700;color:#fff;font-size:1rem;margin-top:6px">Persuader</div><div class="cd">Embarquer le management</div></div>
+      <div class="card"><div class="ct">📚</div><div class="cl" style="font-weight:700;color:#fff;font-size:1rem;margin-top:6px">Informer</div><div class="cd">Acculturer & former</div></div>
+      <div class="card"><div class="ct">📐</div><div class="cl" style="font-weight:700;color:#fff;font-size:1rem;margin-top:6px">Standardiser</div><div class="cd">MLOps & gouvernance</div></div>
+      <div class="card"><div class="ct">🚀</div><div class="cl" style="font-weight:700;color:#fff;font-size:1rem;margin-top:6px">Innover</div><div class="cd">Prototyper & industrialiser</div></div>
+    </div>
+    <div class="stats reveal" style="margin-top:30px">
+      <div class="stat"><div class="n" data-count="4" data-suffix="–6">0</div><div class="l">ETP au CoE (hub-and-spoke)</div></div>
+      <div class="stat"><div class="n" data-count="3">0</div><div class="l">instances de gouvernance go/no-go</div></div>
+      <div class="stat"><div class="n" data-count="24">0</div><div class="l">mois de plan de compétences</div></div>
+    </div>
+  </section>
+
+  <!-- 9 CONFIANCE -->
+  <section class="slide s-bg2" data-bg>
+    <div class="eyebrow reveal"><span class="ln"></span>La confiance</div>
+    <h2 class="reveal">Une IA souveraine, responsable et conforme.</h2>
+    <div class="cards c3 reveal">
+      <div class="card"><div class="ct" style="font-size:1.2rem">🇲🇦 Souveraineté</div><div class="cd">Hébergement souverain marocain des données critiques · alignement Morocco AI 2030.</div></div>
+      <div class="card"><div class="ct" style="font-size:1.2rem">⚖️ Conformité</div><div class="cd">CNDP (loi 09-08) · EU AI Act · RGPD · classification des UC par niveau de risque.</div></div>
+      <div class="card"><div class="ct" style="font-size:1.2rem">🧭 Éthique</div><div class="cd">Charte IA en 8 principes · human-in-the-loop · transparence · équité.</div></div>
+    </div>
+    <p class="lead reveal">La conformité n'est pas une contrainte : c'est un <b style="color:var(--teal-l)">avantage différenciant</b> traité <i>by design</i>.</p>
+  </section>
+
+  <!-- 10 VISION -->
+  <section class="slide s-bg1" data-bg>
+    <div class="eyebrow reveal"><span class="ln"></span>La vision</div>
+    <h1 class="reveal">Le sucre marocain,<br>augmenté par l'IA.</h1>
+    <p class="lead reveal">Une trajectoire claire, chiffrée et gouvernée. Des premiers gains en moins de 12 mois. Une organisation capable de passer à l'échelle. Et une IA digne de confiance.</p>
+    <p class="reveal" style="margin-top:30px;font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--teal-l)">Prêts à lancer la Vague 1 ?</p>
+  </section>
+</div>
+
+<div class="mark"><span class="d"></span><span class="t">Sia<b>·</b>Cosumar</span></div>
+<div class="snum"><span id="cur">1</span> / <span id="tot">10</span></div>
+<div id="ctrl"></div>
+<div class="hint" id="hint">← → ou espace pour naviguer · <b>P</b> plein écran · <b>A</b> lecture auto</div>
+
+<div id="bar">
+  <a class="cbtn home" href="../index.html">← Hub</a>
+  <button class="cbtn" onclick="go(cur-1)">‹ Précédent</button>
+  <button class="cbtn" id="play" onclick="toggleAuto()">▶ Lecture auto</button>
+  <button class="cbtn" onclick="go(cur+1)">Suivant ›</button>
+  <button class="cbtn" onclick="toggleFS()">⛶ Plein écran</button>
+  <button class="cbtn" onclick="window.print()">⬇ Exporter (PDF)</button>
+</div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+const N=slides.length; let cur=0, auto=null;
+document.getElementById('tot').textContent=N;
+// dots
+const ctrl=document.getElementById('ctrl');
+slides.forEach((s,i)=>{ const b=document.createElement('button'); b.className='dot'+(i===0?' on':''); b.onclick=()=>go(i); ctrl.appendChild(b); });
+const dots=[...document.querySelectorAll('.dot')];
+
+function go(i){
+  i=(i+N)%N;
+  slides[cur].classList.remove('active');
+  dots[cur].classList.remove('on');
+  cur=i;
+  slides[cur].classList.add('active');
+  dots[cur].classList.add('on');
+  document.getElementById('cur').textContent=cur+1;
+  document.getElementById('prog').style.width=((cur+1)/N*100)+'%';
+  animate(slides[cur]);
+}
+function animate(sl){
+  // counters
+  sl.querySelectorAll('[data-count]').forEach(el=>{
+    const target=+el.dataset.count, suf=el.dataset.suffix||'';
+    let t0=null; const dur=1000;
+    function step(ts){ if(!t0)t0=ts; const p=Math.min((ts-t0)/dur,1); el.textContent=Math.round(target*(1-Math.pow(1-p,3)))+(p>=1?suf:''); if(p<1)requestAnimationFrame(step); }
+    el.textContent='0'; requestAnimationFrame(step);
+  });
+  // maturity bars
+  if(sl.querySelector('#matline')) buildMaturity();
+}
+const MAT=[["Stratégie & Vision",3,4],["Données & Infra",2,4],["Talents & Compétences",2,4],["Gouvernance & Éthique",3,4],["Cas d'usage & Valeur",2,5],["Technologie & MLOps",2,4]];
+function buildMaturity(){
+  const el=document.getElementById('matline'); if(el.dataset.done)return; el.dataset.done='1';
+  el.innerHTML=MAT.map(([n,now,tgt])=>`<div class="matrow"><span class="ml">${n}</span><div class="track"><span class="now" data-w="${now/5*100}"></span><span class="tgt" style="left:${tgt/5*100}%"></span></div></div>`).join('');
+  setTimeout(()=>el.querySelectorAll('.now').forEach(s=>s.style.width=s.dataset.w+'%'),120);
+}
+// nav
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();go(cur+1);}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(cur-1);}
+  else if(e.key.toLowerCase()==='p'){toggleFS();}
+  else if(e.key.toLowerCase()==='a'){toggleAuto();}
+  else if(e.key==='Home'){go(0);} else if(e.key==='End'){go(N-1);}
+});
+// autoplay
+function toggleAuto(){
+  const btn=document.getElementById('play');
+  if(auto){ clearInterval(auto); auto=null; btn.textContent='▶ Lecture auto'; }
+  else { auto=setInterval(()=>{ if(cur===N-1){clearInterval(auto);auto=null;document.getElementById('play').textContent='▶ Lecture auto';} else go(cur+1); },7000); btn.textContent='⏸ Pause'; }
+}
+function toggleFS(){ if(!document.fullscreenElement){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}else{document.exitFullscreen&&document.exitFullscreen();} }
+// show control bar on mouse move
+let hideT; const bar=document.getElementById('bar');
+function showBar(){ bar.classList.add('show'); clearTimeout(hideT); hideT=setTimeout(()=>bar.classList.remove('show'),2600); }
+document.addEventListener('mousemove',showBar); showBar();
+setTimeout(()=>document.getElementById('hint').style.opacity=0,6000);
+// touch swipe
+let tx=0; document.addEventListener('touchstart',e=>tx=e.touches[0].clientX);
+document.addEventListener('touchend',e=>{ const dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50)go(cur+(dx<0?1:-1)); });
+animate(slides[0]);
+</script>
+</body>
+</html>

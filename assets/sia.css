@@ -1,0 +1,118 @@
+/* ============================================================
+   Sia x Cosumar — Design System
+   Palette navy / teal · Syne + DM Sans · gridlines off
+   ============================================================ */
+:root{
+  --navy:#1F4E79; --navy2:#2E75B6; --navy-dark:#0D2B45;
+  --teal:#00A896; --teal-dark:#048A7E; --gold:#C9972B;
+  --cream:#F7F9FC; --white:#FFFFFF; --panel:#FFFFFF;
+  --text:#1A2744; --muted:#6B7A99; --line:rgba(31,78,121,.10);
+  --line2:rgba(31,78,121,.18);
+  --green:#27AE60; --amber:#E5A50A; --red:#E0544E;
+  --shadow:0 2px 18px rgba(13,43,69,.07);
+  --shadow-lg:0 16px 48px rgba(13,43,69,.14);
+  --radius:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',system-ui,sans-serif;color:var(--text);background:var(--cream);-webkit-font-smoothing:antialiased;line-height:1.5}
+h1,h2,h3,h4,.font-head{font-family:'Syne','DM Sans',sans-serif;font-weight:800}
+a{color:inherit;text-decoration:none}
+::selection{background:rgba(0,168,150,.22)}
+
+/* ---------- top bar ---------- */
+.topbar{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:62px}
+.brand{display:flex;align-items:center;gap:11px}
+.brand-dot{width:10px;height:10px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 4px rgba(0,168,150,.15)}
+.brand-name{font-family:'Syne',sans-serif;font-weight:800;font-size:1.02rem;color:var(--navy-dark);letter-spacing:-.2px}
+.brand-name b{color:var(--teal)}
+.brand-sub{font-size:.72rem;color:var(--muted);font-weight:500;border-left:1px solid var(--line2);padding-left:11px;margin-left:4px}
+.topnav{display:flex;gap:6px;align-items:center}
+.topnav a{font-size:.82rem;font-weight:600;color:var(--muted);padding:8px 13px;border-radius:8px;transition:.18s}
+.topnav a:hover{color:var(--navy);background:var(--cream)}
+.topnav a.active{color:var(--navy);background:rgba(31,78,121,.08)}
+.topnav a.home{color:var(--teal)}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1320px;margin:0 auto;padding:34px 32px 80px}
+.page-head{margin-bottom:26px}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:.7rem;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--teal-dark);background:rgba(0,168,150,.09);padding:5px 11px;border-radius:6px;margin-bottom:14px}
+.page-title{font-size:clamp(1.6rem,2.6vw,2.3rem);color:var(--navy-dark);line-height:1.12;letter-spacing:-.5px}
+.page-sub{color:var(--muted);font-size:.98rem;max-width:760px;margin-top:10px;line-height:1.65}
+
+/* ---------- cards & panels ---------- */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.panel-pad{padding:22px 24px}
+.panel-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 22px;border-bottom:1px solid var(--line)}
+.panel-head h3{font-size:1.02rem;color:var(--navy-dark)}
+.panel-head .ph-sub{font-size:.78rem;color:var(--muted);font-weight:500}
+
+/* ---------- kpi tiles ---------- */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:26px}
+.kpi{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--navy2)}
+.kpi.teal::before{background:var(--teal)}.kpi.gold::before{background:var(--gold)}.kpi.navy::before{background:var(--navy)}
+.kpi-val{font-family:'Syne',sans-serif;font-weight:800;font-size:1.85rem;color:var(--navy-dark);line-height:1}
+.kpi-label{font-size:.76rem;color:var(--muted);margin-top:7px;font-weight:500}
+.kpi-foot{font-size:.72rem;color:var(--teal-dark);margin-top:6px;font-weight:600}
+
+/* ---------- chips / badges ---------- */
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:600;padding:4px 10px;border-radius:20px;background:var(--cream);color:var(--muted);border:1px solid var(--line)}
+.chip.navy{background:rgba(31,78,121,.1);color:var(--navy);border-color:transparent}
+.chip.teal{background:rgba(0,168,150,.12);color:var(--teal-dark);border-color:transparent}
+.chip.gold{background:rgba(201,151,43,.14);color:#9a7320;border-color:transparent}
+.chip.green{background:rgba(39,174,96,.13);color:#1d7a44;border-color:transparent}
+.chip.amber{background:rgba(229,165,10,.16);color:#9a7308;border-color:transparent}
+.chip.red{background:rgba(224,84,78,.13);color:#b13b36;border-color:transparent}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;gap:8px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.85rem;padding:10px 18px;border-radius:9px;transition:.2s;background:var(--navy);color:#fff}
+.btn:hover{background:var(--navy2);transform:translateY(-1px);box-shadow:0 8px 22px rgba(31,78,121,.22)}
+.btn.teal{background:var(--teal)}.btn.teal:hover{background:var(--teal-dark);box-shadow:0 8px 22px rgba(0,168,150,.25)}
+.btn.ghost{background:transparent;color:var(--navy);border:1.5px solid var(--line2)}.btn.ghost:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn.gold{background:var(--gold)}.btn.gold:hover{background:#b1841f}
+.btn.sm{padding:7px 13px;font-size:.78rem}
+
+/* ---------- forms ---------- */
+input,select,textarea{font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--text);border:1.5px solid var(--line2);border-radius:9px;padding:9px 12px;background:#fff;outline:none;transition:.18s;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,168,150,.13)}
+label{font-size:.78rem;font-weight:600;color:var(--navy-dark);display:block;margin-bottom:6px}
+.field{margin-bottom:16px}
+.range-wrap{display:flex;align-items:center;gap:12px}
+input[type=range]{accent-color:var(--teal);padding:0}
+
+/* ---------- tables ---------- */
+.tbl{width:100%;border-collapse:collapse;font-size:.84rem}
+.tbl th{text-align:left;font-weight:700;color:var(--navy-dark);font-size:.72rem;text-transform:uppercase;letter-spacing:.6px;padding:11px 14px;border-bottom:2px solid var(--line2);white-space:nowrap;cursor:default}
+.tbl td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tbody tr{transition:.12s}
+.tbl tbody tr:hover{background:var(--cream)}
+.tbl-scroll{overflow:auto;border-radius:var(--radius)}
+
+/* ---------- progress ---------- */
+.bar{height:8px;border-radius:6px;background:var(--line);overflow:hidden}
+.bar > span{display:block;height:100%;border-radius:6px;background:var(--teal);transition:width .5s cubic-bezier(.4,0,.2,1)}
+
+/* ---------- toast ---------- */
+#toast{position:fixed;bottom:26px;right:26px;z-index:999;background:var(--navy-dark);color:#fff;padding:13px 22px;border-radius:10px;font-size:.86rem;font-weight:500;box-shadow:var(--shadow-lg);transform:translateY(80px);opacity:0;transition:.4s cubic-bezier(.34,1.56,.64,1);max-width:340px}
+#toast.show{transform:translateY(0);opacity:1}
+
+/* ---------- misc ---------- */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.flex{display:flex}.between{justify-content:space-between}.center{align-items:center}.gap{gap:12px}.wrap-f{flex-wrap:wrap}
+.muted{color:var(--muted)}.tac{text-align:center}.tar{text-align:right}
+.mt{margin-top:18px}.mb{margin-bottom:18px}
+.divider{height:1px;background:var(--line);margin:18px 0}
+.scorebox{font-family:'Syne',sans-serif;font-weight:800;font-size:1.05rem;color:var(--navy);padding:5px 12px;border-radius:8px;background:rgba(31,78,121,.07);display:inline-block;min-width:54px;text-align:center}
+
+footer.sia-foot{margin-top:60px;border-top:1px solid var(--line);padding:26px 32px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;color:var(--muted);font-size:.78rem}
+footer.sia-foot b{color:var(--navy-dark)}
+
+@media(max-width:880px){
+  .topnav a:not(.home):not(.active){display:none}
+  .wrap{padding:24px 18px 60px}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .compliance-split{grid-template-columns:1fr!important}
+}
